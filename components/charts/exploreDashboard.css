@@ -17,8 +17,12 @@
   --surface-page: #FAFAF9; --surface-card: #FFFFFF; --surface-sunken: #F4F4F2; --surface-tint: #FFF7F2;
   --ink-900: #0B0B0C; --ink-700: #2A2A2E; --ink-500: #5C5C63; --ink-400: #8A8A92; --ink-300: #B4B4BA;
   --rule: #E4E4E7; --rule-strong: #111113; --rule-grid: #EFEFEC;
-  --accent: #EA580C; --accent-hover: #C2410C; --good: #15803D; --bad: #B91C1C;
-  --series-1: #4285F4; --series-2: #EA4335; --series-3: #FBBC04; --series-4: #34A853;
+  /* Bridge the handoff's accent + lead chart series to the APP THEME so the
+     Explore dashboard follows the agency's skin/theme_config/brand color instead
+     of a fixed orange/blue. The remaining series stay distinct fixed hues for
+     multi-series legibility. (Falls back to the originals if --primary is unset.) */
+  --accent: hsl(var(--primary, 21 90% 48%)); --accent-hover: hsl(var(--primary, 21 90% 40%)); --good: #15803D; --bad: #B91C1C;
+  --series-1: hsl(var(--primary, 217 89% 61%)); --series-2: #EA4335; --series-3: #FBBC04; --series-4: #34A853;
   --series-5: #7E57C2; --series-6: #00ACC1; --series-7: #E91E63; --series-8: #8D6E63;
   --series-compare: #8A8A92; --series-dim: #D4D4D7; --bar-track: #F4F4F2;
   --heat-1: #E8F0FE; --heat-2: #AECBFA; --heat-3: #669DF6; --heat-4: #1A73E8; --heat-5: #174EA6;

@@ -71,11 +71,12 @@ export function SkinProvider({
   // Agency token overrides (base/accent/chart/radius/fonts) applied on top of skin.
   const [themeConfig, setThemeConfig] = useState<ThemeConfig | null>(null);
 
-  // Hydrate from localStorage once on mount (client-only; avoids SSR mismatch).
+  // Hydrate ONLY the mode from localStorage (a legit per-user preference). The
+  // SKIN is agency-authoritative (set from /branding), so we do NOT restore a
+  // stale per-browser skin — and we clear any left over from an old build.
   useEffect(() => {
-    const savedSkin = localStorage.getItem(SKIN_KEY);
+    localStorage.removeItem(SKIN_KEY);
     const savedMode = localStorage.getItem(MODE_KEY) as Mode | null;
-    if (savedSkin) setSkinIdState(savedSkin);
     if (savedMode === "light" || savedMode === "dark") setModeState(savedMode);
   }, []);
 
@@ -108,10 +109,11 @@ export function SkinProvider({
 
   const setAgencyDefaultSkin = useCallback((id: string | null | undefined) => {
     if (!id) return;
-    // Respect an explicit per-browser choice; only apply the agency default when
-    // the user hasn't picked a skin themselves (writes localStorage via setSkinId).
-    if (localStorage.getItem(SKIN_KEY)) return;
-    if (!SKINS.some((s) => s.id === id)) return; // unknown id → ignore, keep default
+    // The agency's configured skin is AUTHORITATIVE — end users don't pick skins,
+    // so there is no per-browser override to respect. Always apply it so a change
+    // saved in the admin reflects on the next load/refresh. (An unknown id is
+    // ignored, keeping the built-in default.)
+    if (!SKINS.some((s) => s.id === id)) return;
     setSkinIdState(id);
   }, []);
 

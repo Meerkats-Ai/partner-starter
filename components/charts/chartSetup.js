@@ -30,10 +30,20 @@ ChartJS.register(
     Filler,
 )
 
-// Brand palette (matches the CDP page accent + neutral greys).
+// The app's live accent, read from the theme's --primary token (set by the skin /
+// theme_config / brand color). Chart.js accepts `hsl(var(--x))` color strings, so
+// charts follow the agency's theme instead of a hard-coded indigo. Falls back to
+// the raw hsl() if the var is unset. `<alpha>` fills work via the /-alpha syntax.
+export const primaryColor = (alpha) =>
+    alpha == null ? 'hsl(var(--primary))' : `hsl(var(--primary) / ${alpha})`;
+export const chartColor = (alpha) =>
+    alpha == null ? 'hsl(var(--chart-1, var(--primary)))' : `hsl(var(--chart-1, var(--primary)) / ${alpha})`;
+
+// Brand palette. `primary`/`primarySoft` are GETTERS so every read resolves the
+// current --primary token at paint time (they change when the theme changes).
 export const COLORS = {
-    primary: '#4f46e5',      // indigo
-    primarySoft: 'rgba(79,70,229,0.15)',
+    get primary() { return primaryColor(); },
+    get primarySoft() { return primaryColor(0.15); },
     green: '#059669',
     greenSoft: 'rgba(5,150,105,0.15)',
     amber: '#d97706',
@@ -43,8 +53,10 @@ export const COLORS = {
     grid: 'rgba(100,116,139,0.12)',
 }
 
-// A rotating palette for categorical (channel/platform) bars.
-export const SERIES = ['#4f46e5', '#059669', '#d97706', '#e11d48', '#0891b2', '#7c3aed', '#65a30d', '#db2777']
+// A rotating palette for categorical (channel/platform) bars. The FIRST entry is
+// the live accent (so the lead series follows the theme); the rest are fixed
+// distinct hues for multi-series legibility.
+export const SERIES = ['hsl(var(--primary))', '#059669', '#d97706', '#e11d48', '#0891b2', '#7c3aed', '#65a30d', '#db2777']
 
 // Semantic good/warn/bad trio — performance-coloured marks (ROAS bars, deltas)
 // use these instead of the rotating SERIES palette.
