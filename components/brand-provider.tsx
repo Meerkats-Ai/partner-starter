@@ -6,12 +6,14 @@
  */
 import { createContext, useContext, useEffect, useState } from "react";
 import { applyBrandColor, type Branding } from "@/lib/theme";
+import { useSkin } from "@/components/skin-provider";
 
 const BrandContext = createContext<Branding | null>(null);
 export const useBranding = () => useContext(BrandContext);
 
 export function BrandProvider({ children }: { children: React.ReactNode }) {
   const [branding, setBranding] = useState<Branding | null>(null);
+  const { setAgencyDefaultSkin, setAgencyThemeConfig } = useSkin();
 
   useEffect(() => {
     fetch("/api/branding")
@@ -19,9 +21,16 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
       .then((res) => {
         const b: Branding = res?.data || res || {};
         setBranding(b);
+        // Agency-configured skin becomes the default (unless the user picked one).
+        setAgencyDefaultSkin(b.skin);
+        // Token overrides (base/accent/chart/radius/fonts) on top of the skin.
+        setAgencyThemeConfig(b.theme_config);
+        // Stores the hex + applies it now. applySkin() also re-applies it as its
+        // last step on any later skin/mode swap, so the brand color always wins.
         applyBrandColor(b.primary_color);
       })
       .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <BrandContext.Provider value={branding}>{children}</BrandContext.Provider>;

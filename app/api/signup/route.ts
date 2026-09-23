@@ -6,13 +6,13 @@
 import { NextResponse } from "next/server";
 import { apiCall } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import { assertServerConfig } from "@/lib/config";
+import { assertServerConfig, appIdFromRequest } from "@/lib/config";
 
 export async function POST(req: Request) {
   assertServerConfig();
   const { email, password, full_name } = await req.json();
   const r = await apiCall<{ success: boolean; data: { token: string; user: any } }>("/auth/signup", {
-    method: "POST", body: { email, password, full_name },
+    method: "POST", body: { email, password, full_name }, appId: appIdFromRequest(req),
   });
   // The API wraps the payload: { success, data: { token, user } }.
   const payload = r.data?.data;

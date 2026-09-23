@@ -20,11 +20,15 @@ interface CallOpts {
   body?: any;
   token?: string;        // end-user JWT (Authorization: Bearer)
   workspaceId?: string;  // X-Workspace-Id
+  appId?: string;        // HOST mode: app id from the subdomain (→ X-App-Id)
   query?: Record<string, string | number | undefined>;
 }
 
 export async function apiCall<T = any>(path: string, opts: CallOpts = {}): Promise<ApiResult<T>> {
-  const headers: Record<string, string> = { "X-API-Key": config.apiKey };
+  const headers: Record<string, string> = {};
+  // Auth: secret key wins if configured; otherwise host-mode app id.
+  if (config.apiKey) headers["X-API-Key"] = config.apiKey;
+  else if (opts.appId) headers["X-App-Id"] = opts.appId;
   if (opts.body) headers["Content-Type"] = "application/json";
   if (opts.token) headers["Authorization"] = `Bearer ${opts.token}`;
   if (opts.workspaceId) headers["X-Workspace-Id"] = opts.workspaceId;

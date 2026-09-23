@@ -1,13 +1,32 @@
 /**
- * GET /api/branding — the agency's white-label config (app name, logo, colors).
- * Needs only the API key, so it works before login (themes the auth screens).
+ * GET /api/branding — the agency's white-label config (app name, logo, colors,
+ * skin, theme_config). Works before login (themes the auth screens).
+ *
+ * Two modes:
+ *   • SECRET-KEY: calls /branding with X-API-Key.
+ *   • HOST (<appId>.meerkats.ai): no key — calls the public
+ *     /apps/:appId/public-branding endpoint, resolving the app by subdomain.
  */
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { apiCall } from "@/lib/api";
-import { assertServerConfig } from "@/lib/config";
+import { assertServerConfig, appIdFromRequest } from "@/lib/config";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // DEV OVERRIDE: set MK_DEV_BRANDING to a JSON blob to stub /branding locally.
+  if (process.env.MK_DEV_BRANDING) {
+    try {
+      return NextResponse.json({ success: true, data: JSON.parse(process.env.MK_DEV_BRANDING) });
+    } catch {
+      /* fall through to the real call on bad JSON */
+    }
+  }
   assertServerConfig();
-  const r = await apiCall("/branding");
+
+  const appId = appIdFromRequest(req);
+  // HOST mode: resolve branding by subdomain app id (no secret key).
+  const r = appId
+    ? await apiCall(`/apps/${encodeURIComponent(appId)}/public-branding`)
+    : await apiCall("/branding");
+
   return NextResponse.json(r.data ?? { success: false }, { status: r.status || 200 });
 }

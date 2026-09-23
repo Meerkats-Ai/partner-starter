@@ -29,8 +29,13 @@ export function hexToHslString(hex: string): string | null {
   return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
 }
 
+// The agency's brand primary, remembered so applySkin can re-apply it as the LAST
+// step of any skin/mode swap (applySkin resets --primary to the skin's value first).
+let brandPrimaryHex: string | null = null;
+
 /** Apply an agency's primary color to the document (client-side). */
 export function applyBrandColor(primaryColorHex?: string | null) {
+  brandPrimaryHex = primaryColorHex ?? null;
   if (typeof document === "undefined" || !primaryColorHex) return;
   const hsl = hexToHslString(primaryColorHex);
   if (!hsl) return;
@@ -39,10 +44,72 @@ export function applyBrandColor(primaryColorHex?: string | null) {
   root.style.setProperty("--ring", hsl);
 }
 
+import type { Skin } from "./themes/skins";
+
+/**
+ * Apply a full SKIN (all shadcn tokens) for the given mode. This re-colors the
+ * whole app — every component reads these tokens via Tailwind. Sets the light OR
+ * dark token set as inline vars on <html>, toggles the .dark class (so any
+ * remaining dark:-prefixed utilities still resolve), and applies the skin font.
+ *
+ * A per-agency brand color (applyBrandColor) can be layered AFTER this to override
+ * just --primary/--ring on top of the chosen skin.
+ */
+export function applySkin(skin: Skin, mode: "light" | "dark") {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  const tokens = mode === "dark" ? skin.dark : skin.light;
+
+  for (const [name, value] of Object.entries(tokens)) {
+    // `radius` maps to --radius; everything else is a color token named directly.
+    root.style.setProperty(`--${name}`, value);
+  }
+
+  root.classList.toggle("dark", mode === "dark");
+  root.style.colorScheme = mode;
+
+  if (skin.font) {
+    root.style.setProperty("--font-sans", skin.font);
+    document.body.style.fontFamily = skin.font;
+  } else {
+    root.style.removeProperty("--font-sans");
+    document.body.style.removeProperty("fontFamily");
+  }
+
+  // Inject the skin's web font once (idempotent by data attribute).
+  if (skin.fontHref) {
+    const existing = document.querySelector<HTMLLinkElement>(
+      `link[data-skin-font="${skin.id}"]`
+    );
+    if (!existing) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = skin.fontHref;
+      link.dataset.skinFont = skin.id;
+      document.head.appendChild(link);
+    }
+  }
+
+  // Re-apply the agency brand color LAST so it wins over the skin's --primary.
+  if (brandPrimaryHex) {
+    const hsl = hexToHslString(brandPrimaryHex);
+    if (hsl) {
+      root.style.setProperty("--primary", hsl);
+      root.style.setProperty("--ring", hsl);
+    }
+  }
+}
+
 export interface Branding {
   app_name: string | null;
   tagline: string | null;
   logo_url: string | null;
   primary_color: string | null;
   support_email: string | null;
+  /** Agency-chosen skin id (matches lib/themes/skins.ts). NULL = starter default. */
+  skin?: string | null;
+  /** Reserved for the multi-template phase. NULL = default shell. */
+  template?: string | null;
+  /** tweakcn-style token overrides (base/accent/chart/radius/fonts). */
+  theme_config?: import("./themes/theme-config").ThemeConfig | null;
 }

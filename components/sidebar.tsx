@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Gauge, Compass, Bot, Inbox, LogOut, ChevronsUpDown } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { SkinSwitcher } from "@/components/skin-switcher";
 import { authFetch, logout, setWorkspace } from "@/lib/client";
 import { useWorkspace } from "@/lib/useWorkspace";
 import { cn } from "@/lib/utils";
@@ -99,8 +100,9 @@ export function Sidebar({ email }: { email: string }) {
       </nav>
 
       {/* footer */}
-      <div className="p-3 border-t">
-        <div className="text-xs text-muted-foreground truncate mb-2">{email}</div>
+      <div className="p-3 border-t space-y-2">
+        <SkinSwitcher />
+        <div className="text-xs text-muted-foreground truncate">{email}</div>
         <button onClick={doLogout} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <LogOut className="h-4 w-4" /> Sign out
         </button>

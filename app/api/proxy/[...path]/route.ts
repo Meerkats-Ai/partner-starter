@@ -12,7 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiCall } from "@/lib/api";
 import { getSession } from "@/lib/session";
-import { assertServerConfig } from "@/lib/config";
+import { assertServerConfig, appIdFromRequest } from "@/lib/config";
 
 async function handle(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
   assertServerConfig();
@@ -38,6 +38,7 @@ async function handle(req: NextRequest, ctx: { params: Promise<{ path: string[] 
     body,
     token: session.token,
     workspaceId: session.workspaceId,
+    appId: appIdFromRequest(req),   // HOST mode: identify the app by subdomain
     query: Object.keys(query).length ? query : undefined,
   });
 
