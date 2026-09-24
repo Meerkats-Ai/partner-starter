@@ -4,6 +4,7 @@
  * set --primary / --ring so the whole shadcn theme rebrands automatically — no
  * rebuild, no per-agency fork. Falls back to the CSS defaults if unset.
  */
+import { normalizeCssColors } from "./themes/parse-css-theme";
 
 /** #rrggbb (or #rgb) → "H S% L%" for a CSS custom property. */
 export function hexToHslString(hex: string): string | null {
@@ -36,12 +37,58 @@ let brandPrimaryHex: string | null = null;
 /** Apply an agency's primary color to the document (client-side). */
 export function applyBrandColor(primaryColorHex?: string | null) {
   brandPrimaryHex = primaryColorHex ?? null;
-  if (typeof document === "undefined" || !primaryColorHex) return;
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  // Clearing: REMOVE the inline override so a lower layer (skin / injected custom
+  // CSS :root{}) shows through. Without this, a previously-set inline --primary
+  // stays stuck and keeps winning over an uploaded theme's own --primary.
+  if (!primaryColorHex) {
+    root.style.removeProperty("--primary");
+    root.style.removeProperty("--ring");
+    return;
+  }
   const hsl = hexToHslString(primaryColorHex);
   if (!hsl) return;
-  const root = document.documentElement;
   root.style.setProperty("--primary", hsl);
   root.style.setProperty("--ring", hsl);
+}
+
+// The agency's brand font stack, remembered so applySkin/applyThemeConfig can
+// re-assert it as the LAST step of any theme swap (like brandPrimaryHex), so the
+// agency font always wins over a skin/theme_config font.
+let brandFontStack: string | null = null;
+
+/**
+ * Apply an agency's body-font stack to the document (client-side). Sets --font-sans
+ * and body font-family so the WHOLE app (which reads font-sans → var(--font-sans))
+ * re-fonts, and injects the webfont stylesheet if a url is given. Mirrors
+ * applyBrandColor. A falsy stack leaves the skin/theme_config/default font in place.
+ */
+export function applyBrandFont(fontStack?: string | null, fontUrl?: string | null) {
+  brandFontStack = fontStack ?? null;
+  if (typeof document === "undefined" || !fontStack) return;
+  // Inject the webfont href once (idempotent) so the family actually renders.
+  if (fontUrl) {
+    const existing = document.querySelector<HTMLLinkElement>(`link[data-brand-font]`);
+    if (!existing || existing.href !== fontUrl) {
+      existing?.parentNode?.removeChild(existing);
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = fontUrl;
+      link.dataset.brandFont = "1";
+      document.head.appendChild(link);
+    }
+  }
+  const root = document.documentElement;
+  root.style.setProperty("--font-sans", fontStack);
+  document.body.style.fontFamily = fontStack;
+}
+
+/** Re-assert the agency brand font after a skin/theme_config swap (internal). */
+export function reassertBrandFont() {
+  if (typeof document === "undefined" || !brandFontStack) return;
+  document.documentElement.style.setProperty("--font-sans", brandFontStack);
+  document.body.style.fontFamily = brandFontStack;
 }
 
 /**
@@ -113,6 +160,8 @@ export function applySkin(skin: Skin, mode: "light" | "dark") {
       root.style.setProperty("--ring", hsl);
     }
   }
+  // ...and the agency brand font, so it wins over the skin's font.
+  reassertBrandFont();
 }
 
 /**
@@ -142,6 +191,67 @@ export function applyParsedCustomTheme(
       root.style.setProperty("--ring", hsl);
     }
   }
+  reassertBrandFont();
+}
+
+// The id of the injected agency-theme <style> tag (single, reused/replaced).
+const CUSTOM_CSS_STYLE_ID = "agency-custom-theme";
+
+/**
+ * Apply an uploaded custom theme by INJECTING THE WHOLE FILE as a <style> tag,
+ * rather than extracting a fixed 19-token set. The agency's raw CSS (custom_css)
+ * is normalized so every `--token: <color>` value becomes the "H S% L%" triplet the
+ * app's `hsl(var(--token))` Tailwind expects — but ALL of the file survives: extra
+ * tokens (--chart-*, --sidebar-*, --radius), @font-face, comments, non-color props.
+ *
+ * This is the "load the full CSS file" path (vs applyParsedCustomTheme's lossy
+ * token extraction). The file's own :root{} / .dark{} selectors do the theming, so
+ * we do NOT set per-token inline styles here. We DO toggle .dark for the mode (so
+ * the file's .dark block + any dark:-utilities resolve).
+ *
+ * The uploaded file OWNS the colors. An inline style on <html> (e.g. a stray
+ * --primary from applyBrandColor / an earlier applySkin re-assert) would beat this
+ * injected <style> and make the upload look like it did nothing — so we REMOVE any
+ * inline --primary/--ring here, making the result independent of effect ordering.
+ * (The caller decides whether a brand accent should still layer on top by calling
+ * applyBrandColor AFTER this; by default custom CSS wins.)
+ *
+ * Idempotent: reuses one <style id="agency-custom-theme"> element, replacing its
+ * contents. Passing empty/null removes it (revert to the base skin).
+ */
+export function applyCustomCssRaw(rawCss: string | null | undefined, mode: "light" | "dark") {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  const head = document.head;
+  let styleEl = document.getElementById(CUSTOM_CSS_STYLE_ID) as HTMLStyleElement | null;
+
+  if (!rawCss || !rawCss.trim()) {
+    // No custom CSS — remove any previously injected theme.
+    styleEl?.parentNode?.removeChild(styleEl);
+    return;
+  }
+
+  // Normalize color VALUES to triplets; keep every selector/declaration.
+  const normalized = normalizeCssColors(rawCss);
+
+  if (!styleEl) {
+    styleEl = document.createElement("style");
+    styleEl.id = CUSTOM_CSS_STYLE_ID;
+    // Append LAST so agency :root/.dark rules win over globals.css by source order.
+    head.appendChild(styleEl);
+  } else if (styleEl.parentNode !== head || head.lastElementChild !== styleEl) {
+    // Keep it last in <head> even if something else was appended after it.
+    head.appendChild(styleEl);
+  }
+  styleEl.textContent = normalized;
+
+  root.classList.toggle("dark", mode === "dark");
+  root.style.colorScheme = mode;
+
+  // Let the injected file's --primary/--ring win: drop any inline overrides that
+  // an earlier applyBrandColor / applySkin re-assert may have left on <html>.
+  root.style.removeProperty("--primary");
+  root.style.removeProperty("--ring");
 }
 
 export interface Branding {
@@ -160,4 +270,8 @@ export interface Branding {
   theme_config?: import("./themes/theme-config").ThemeConfig | null;
   /** Uploaded tweakcn/shadcn CSS export (raw text). When set it OVERRIDES the skin. */
   custom_css?: string | null;
+  /** Agency body-font CSS stack applied to --font-sans at runtime. NULL = default. */
+  font_family?: string | null;
+  /** Optional webfont stylesheet href (e.g. Google Fonts) for font_family. */
+  font_family_url?: string | null;
 }

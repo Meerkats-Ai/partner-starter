@@ -36,11 +36,11 @@ import '@/components/pages/campaign-mockup.css'
 
 // Tailwind colour sets per health status (bar / sparkline / dot / pill / text).
 const HEALTH = {
-    ok: { bar: 'bg-emerald-500', left: 'border-l-emerald-500', dot: 'bg-emerald-500', pill: 'bg-emerald-50 text-emerald-700', text: 'text-emerald-700' },
-    warn: { bar: 'bg-amber-500', left: 'border-l-amber-500', dot: 'bg-amber-500', pill: 'bg-amber-50 text-amber-700', text: 'text-amber-700' },
-    critical: { bar: 'bg-red-500', left: 'border-l-red-500', dot: 'bg-red-500', pill: 'bg-red-50 text-red-700', text: 'text-red-700' },
-    paused: { bar: 'bg-gray-300', left: 'border-l-gray-300', dot: 'bg-gray-300', pill: 'bg-gray-100 text-gray-500', text: 'text-gray-500' },
-    running: { bar: 'bg-sky-400', left: 'border-l-sky-400', dot: 'bg-sky-400', pill: 'bg-sky-50 text-sky-700', text: 'text-sky-700' },
+    ok: { bar: 'bg-success', left: 'border-l-success', dot: 'bg-success', pill: 'bg-success/10 text-success', text: 'text-success' },
+    warn: { bar: 'bg-warning', left: 'border-l-warning', dot: 'bg-warning', pill: 'bg-warning/10 text-warning', text: 'text-warning' },
+    critical: { bar: 'bg-destructive', left: 'border-l-destructive', dot: 'bg-destructive', pill: 'bg-destructive/10 text-destructive', text: 'text-destructive' },
+    paused: { bar: 'bg-muted-foreground/30', left: 'border-l-muted-foreground/30', dot: 'bg-muted-foreground/30', pill: 'bg-muted text-muted-foreground', text: 'text-muted-foreground' },
+    running: { bar: 'bg-info', left: 'border-l-info', dot: 'bg-info', pill: 'bg-info/10 text-info', text: 'text-info' },
 }
 // run status → health token (for run rows + sparkline bars)
 const runToken = (s) => (s === 'error' ? 'critical' : s === 'success' ? 'ok' : 'running')
@@ -113,7 +113,10 @@ function Sparkline({ history, paused }) {
 // A run's status → a 0..1 "health score" for the weekly trend line.
 const runScore = (s) => (s === 'error' ? 0.12 : s === 'no_action' ? 0.6 : s === 'success' ? 1 : 0.4)
 // Stroke colour of the trend line = health of its final (newest) point.
-const trendStroke = { ok: '#10b981', warn: '#f59e0b', critical: '#ef4444', paused: '#9ca3af', running: '#38bdf8' }
+const trendStroke = {
+    ok: 'hsl(var(--success))', warn: 'hsl(var(--warning))', critical: 'hsl(var(--destructive))',
+    paused: 'hsl(var(--muted-foreground))', running: 'hsl(var(--info))',
+}
 
 // TrendLine — the WEEKLY view's run-history graph (matches the mockup): a small
 // SVG polyline of the last N runs' health scores, tinted by current health, with
@@ -251,27 +254,27 @@ export default function HealthDashboard({ source = 'health' }) {
             <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 
                 <button onClick={load} disabled={loading}
-                    className="ml-auto inline-flex items-center gap-1.5 text-xs text-gray-400 transition hover:text-gray-600 disabled:opacity-50">
+                    className="ml-auto inline-flex items-center gap-1.5 text-xs text-muted-foreground/70 transition hover:text-foreground disabled:opacity-50">
                     <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
                 </button>
             </div>
 
             {/* Health summary bar + legend */}
             <div className="mb-5">
-                <div className="mb-2 flex h-2 overflow-hidden rounded-full bg-gray-100">
+                <div className="mb-2 flex h-2 overflow-hidden rounded-full bg-muted">
                     <div className={HEALTH.ok.bar} style={{ width: summary.pct(summary.ok) }} />
                     <div className={HEALTH.warn.bar} style={{ width: summary.pct(summary.warn) }} />
                     <div className={HEALTH.critical.bar} style={{ width: summary.pct(summary.critical) }} />
                     <div className={HEALTH.running.bar} style={{ width: summary.pct(summary.running) }} />
                     <div className={HEALTH.paused.bar} style={{ width: summary.pct(summary.paused) }} />
                 </div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <span><b className={HEALTH.ok.text}>{summary.ok}</b> healthy</span>
                     <span><b className={HEALTH.warn.text}>{summary.warn}</b> needs review</span>
                     <span><b className={HEALTH.critical.text}>{summary.critical}</b> critical</span>
                     {summary.running > 0 && <span><b className={HEALTH.running.text}>{summary.running}</b> running</span>}
-                    <span><b className="text-gray-500">{summary.paused}</b> paused</span>
-                    <span className="ml-auto text-gray-400">{summary.total} scheduled</span>
+                    <span><b className="text-muted-foreground">{summary.paused}</b> paused</span>
+                    <span className="ml-auto text-muted-foreground/70">{summary.total} scheduled</span>
                 </div>
             </div>
 
@@ -280,7 +283,7 @@ export default function HealthDashboard({ source = 'health' }) {
                 can't render the status dot the old chips used). */}
             <div className="mb-3 flex flex-wrap items-center gap-2">
                 <select value={platform} onChange={(e) => onPlatformChange(e.target.value)}
-                    className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-[13px] text-gray-700 focus:border-gray-300 focus:outline-none">
+                    className="rounded-lg border border-border bg-card px-2.5 py-1.5 text-[13px] text-foreground focus:border-ring focus:outline-none">
                     {HEALTH_PLATFORMS.map((p) => (
                         <option key={p.value} value={p.value}>
                             {p.label}{isPlatformConnected(p.value) ? '' : ' · not connected'}
@@ -289,20 +292,20 @@ export default function HealthDashboard({ source = 'health' }) {
                 </select>
 
                 <select value={cadence} onChange={(e) => setCadence(e.target.value)}
-                    className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-[13px] text-gray-700 focus:border-gray-300 focus:outline-none">
+                    className="rounded-lg border border-border bg-card px-2.5 py-1.5 text-[13px] text-foreground focus:border-ring focus:outline-none">
                     {CADENCE_FILTER_OPTIONS.map((c) => (
                         <option key={c.v} value={c.v}>{c.t}</option>
                     ))}
                 </select>
                 {cadence !== 'all' && (
-                    <span className="text-[12px] text-gray-400">{CADENCE_ROLE[cadence]}</span>
+                    <span className="text-[12px] text-muted-foreground/70">{CADENCE_ROLE[cadence]}</span>
                 )}
 
                 {/* Real vs test runs — only in the run-history view. A "test" run is
                     one triggered by the beaker / drawer "Test run" (never scheduled);
                     "real" is scheduled cadence runs + queue re-runs. */}
                 {isRunHistory && (
-                    <div style={{ marginLeft: 'auto', display: 'inline-flex', overflow: 'hidden', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+                    <div style={{ marginLeft: 'auto', display: 'inline-flex', overflow: 'hidden', borderRadius: 8, border: '1px solid hsl(var(--border))' }}>
                         {[
                             { v: 'all', label: 'All runs' },
                             { v: 'real', label: 'Prod' },
@@ -314,9 +317,9 @@ export default function HealthDashboard({ source = 'health' }) {
                                     style={{
                                         padding: '6px 14px', fontSize: 12.5, fontWeight: active ? 600 : 500,
                                         border: 0, cursor: 'pointer', transition: 'background .15s',
-                                        borderLeft: i > 0 ? '1px solid #e5e7eb' : 0,
-                                        background: active ? '#f97316' : '#fff',
-                                        color: active ? '#fff' : '#4b5563',
+                                        borderLeft: i > 0 ? '1px solid hsl(var(--border))' : 0,
+                                        background: active ? 'hsl(var(--primary))' : 'hsl(var(--card))',
+                                        color: active ? 'hsl(var(--primary-foreground))' : 'hsl(var(--muted-foreground))',
                                     }}>
                                     {o.label}
                                 </button>
@@ -328,26 +331,26 @@ export default function HealthDashboard({ source = 'health' }) {
 
             {/* Task list */}
             {loading ? (
-                <div className="flex items-center justify-center gap-2 rounded-xl border border-gray-100 bg-white p-8 text-sm text-gray-400">
+                <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground/70">
                     <Loader2 className="h-4 w-4 animate-spin" /> Loading scheduled runs…
                 </div>
             ) : error ? (
-                <div className="flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 p-4 text-[13px] text-red-700">
+                <div className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-[13px] text-destructive">
                     <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {error}
                 </div>
             ) : (tasks || []).length === 0 ? (
-                <div className="rounded-xl border border-gray-100 bg-white p-8 text-center text-sm text-gray-400">
+                <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground/70">
                     {isRunHistory ? 'No runs yet. ' : 'No agents enabled yet. '}
                     {isRunHistory ? 'Test or enable an agent on the ' : 'Enable a scheduled agent on the '}
-                    <a href="/dashboard/agents" className="font-medium text-orange-600 hover:underline">Agents</a>{' '}
+                    <a href="/dashboard/agents" className="font-medium text-primary hover:underline">Agents</a>{' '}
                     page and it'll show up here.
                 </div>
             ) : rows.length === 0 ? (
-                <div className="rounded-xl border border-gray-100 bg-white p-8 text-center text-sm text-gray-400">
+                <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground/70">
                     {isRunHistory ? 'No runs match this filter.' : 'No scheduled agents match this filter.'}
                 </div>
             ) : (
-                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="overflow-hidden rounded-xl border border-border bg-card">
                     {rows.map((t, i) => {
                         const h = HEALTH[t.health]
                         const isPaused = t.status === 'paused'
@@ -358,7 +361,7 @@ export default function HealthDashboard({ source = 'health' }) {
                         const goConnect = () => navigate(`/dashboard/mcp/servers${t.platform ? `?connect=${encodeURIComponent(t.platform)}` : ''}`)
                         return (
                             <div key={t.id}
-                                className={`border-l-2 ${h.left} ${i < rows.length - 1 ? 'border-b border-gray-100' : ''} ${isPaused ? 'opacity-70' : ''} ${disconnected ? 'bg-gray-50/60' : ''}`}>
+                                className={`border-l-2 ${h.left} ${i < rows.length - 1 ? 'border-b border-border' : ''} ${isPaused ? 'opacity-70' : ''} ${disconnected ? 'bg-muted/60' : ''}`}>
                                 <div className="flex items-center gap-3 px-4 py-3">
                                     <button onClick={() => setExpanded(isOpen ? null : t.id)}
                                         className={`flex min-w-0 flex-1 items-center gap-3 text-left ${disconnected ? 'opacity-60' : ''}`}>
@@ -368,35 +371,35 @@ export default function HealthDashboard({ source = 'health' }) {
                                             ? <Sparkline history={t.history} paused={isPaused} />
                                             : <TrendLine history={t.history} health={t.health} paused={isPaused} />}
                                         {isPaused ? (
-                                            <span className="w-[74px] shrink-0 rounded bg-gray-100 py-0.5 text-center text-[11px] text-gray-500">Paused</span>
+                                            <span className="w-[74px] shrink-0 rounded bg-muted py-0.5 text-center text-[11px] text-muted-foreground">Paused</span>
                                         ) : (
-                                            <span className="w-[74px] shrink-0 text-[12px] text-gray-400">{fmtDay(t.last_run_at)}</span>
+                                            <span className="w-[74px] shrink-0 text-[12px] text-muted-foreground/70">{fmtDay(t.last_run_at)}</span>
                                         )}
-                                        <span className="min-w-0 flex-1 truncate text-[14px] text-gray-900">{t.insight}</span>
+                                        <span className="min-w-0 flex-1 truncate text-[14px] text-foreground">{t.insight}</span>
                                         {disconnected && (
-                                            <span className="hidden shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 sm:inline">
+                                            <span className="hidden shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning sm:inline">
                                                 Disconnected
                                             </span>
                                         )}
-                                        <span className="hidden shrink-0 rounded-full bg-gray-50 px-2 py-0.5 text-[11px] text-gray-500 ring-1 ring-gray-200 sm:inline">
+                                        <span className="hidden shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground ring-1 ring-border sm:inline">
                                             {PLATFORM_LABEL[t.platform] || t.platformLabel}
                                         </span>
-                                        <span className="shrink-0 text-[12px] capitalize text-gray-400">{cadenceShort(t.cadence)}</span>
+                                        <span className="shrink-0 text-[12px] capitalize text-muted-foreground/70">{cadenceShort(t.cadence)}</span>
                                     </button>
                                     {disconnected ? (
                                         <button onClick={goConnect} title="Connect platform"
-                                            className="flex h-[26px] shrink-0 items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 text-[11px] font-medium text-amber-700 transition hover:bg-amber-100">
+                                            className="flex h-[26px] shrink-0 items-center gap-1 rounded-md border border-warning/20 bg-warning/10 px-2 text-[11px] font-medium text-warning transition hover:bg-warning/20">
                                             <Plug className="h-3.5 w-3.5" /> Connect
                                         </button>
                                     ) : (
                                         <button onClick={() => togglePause(t)}
                                             title={isPaused ? 'Resume' : 'Pause'}
-                                            className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-md border border-gray-200 text-gray-500 transition hover:bg-gray-50 hover:text-gray-800">
+                                            className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground">
                                             {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
                                         </button>
                                     )}
                                     <button onClick={() => setExpanded(isOpen ? null : t.id)}
-                                        className="shrink-0 text-gray-400 hover:text-gray-600">
+                                        className="shrink-0 text-muted-foreground/70 hover:text-foreground">
                                         <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                                     </button>
                                 </div>
@@ -404,17 +407,17 @@ export default function HealthDashboard({ source = 'health' }) {
                                 {isOpen && (
                                     <div className="px-4 pb-4">
                                         {/* Metric + schedule + run stats */}
-                                        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-gray-500">
-                                            <span>Signal: <b className="text-gray-700">{t.metric}</b></span>
-                                            <span>Cadence: <b className="text-gray-700 capitalize">{t.cadence}</b></span>
-                                            <span>Runs: <b className="text-gray-700">{t.run_count}</b></span>
-                                            {t.next_run_at && !isPaused && <span>Next: <b className="text-gray-700">{fmtWhen(t.next_run_at)}</b></span>}
+                                        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-muted-foreground">
+                                            <span>Signal: <b className="text-foreground">{t.metric}</b></span>
+                                            <span>Cadence: <b className="text-foreground capitalize">{t.cadence}</b></span>
+                                            <span>Runs: <b className="text-foreground">{t.run_count}</b></span>
+                                            {t.next_run_at && !isPaused && <span>Next: <b className="text-foreground">{fmtWhen(t.next_run_at)}</b></span>}
                                         </div>
 
                                         {t.health === 'critical' && t.last_error && (
-                                            <div className="mb-3 flex items-start gap-2 rounded-lg bg-red-50 p-3">
-                                                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                                                <p className="text-[13px] text-red-700">{t.last_error}</p>
+                                            <div className="mb-3 flex items-start gap-2 rounded-lg bg-destructive/10 p-3">
+                                                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                                                <p className="text-[13px] text-destructive">{t.last_error}</p>
                                             </div>
                                         )}
 
@@ -422,19 +425,19 @@ export default function HealthDashboard({ source = 'health' }) {
                                             agents). Hidden in the run-history view. */}
                                         {!isRunHistory && (
                                             <>
-                                                <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-gray-400">
-                                                    FRAME process <span className="text-gray-300">· walked in order, every run</span>
+                                                <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+                                                    FRAME process <span className="text-muted-foreground/60">· walked in order, every run</span>
                                                 </p>
-                                                <div className="mb-3 overflow-hidden rounded-lg border border-gray-100">
+                                                <div className="mb-3 overflow-hidden rounded-lg border border-border">
                                                     {FRAME.map((st, si) => (
                                                         <div key={st.key}
-                                                            className={`flex items-start gap-3 px-3 py-2 ${si < FRAME.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                                                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gray-100 text-[11px] font-bold text-gray-600">{st.letter}</span>
+                                                            className={`flex items-start gap-3 px-3 py-2 ${si < FRAME.length - 1 ? 'border-b border-border' : ''}`}>
+                                                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-muted text-[11px] font-bold text-muted-foreground">{st.letter}</span>
                                                             <div className="min-w-0">
-                                                                <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                                                                    {st.label} <span className="font-normal normal-case text-gray-400">· {st.q}</span>
+                                                                <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                                                    {st.label} <span className="font-normal normal-case text-muted-foreground/70">· {st.q}</span>
                                                                 </div>
-                                                                <div className="text-[13px] text-gray-700">{t.frame?.[st.key] || '—'}</div>
+                                                                <div className="text-[13px] text-foreground">{t.frame?.[st.key] || '—'}</div>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -443,31 +446,31 @@ export default function HealthDashboard({ source = 'health' }) {
                                         )}
 
                                         {/* Last 3 runs */}
-                                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-gray-400">
+                                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
                                             Last {Math.min(3, t.runs?.length || 0)} runs
                                         </p>
                                         {!t.runs?.length ? (
-                                            <div className="rounded-lg border border-gray-100 p-3 text-[12px] text-gray-400">No runs recorded yet.</div>
+                                            <div className="rounded-lg border border-border p-3 text-[12px] text-muted-foreground/70">No runs recorded yet.</div>
                                         ) : (
-                                            <div className="overflow-hidden rounded-lg border border-gray-100">
+                                            <div className="overflow-hidden rounded-lg border border-border">
                                                 {t.runs.slice(0, 3).map((r, ri) => {
                                                     const rt = runToken(r.status)
                                                     return (
                                                         <div key={r.id || ri}
-                                                            className={`flex items-start gap-2.5 px-3 py-2.5 ${ri < Math.min(3, t.runs.length) - 1 ? 'border-b border-gray-100' : ''}`}>
+                                                            className={`flex items-start gap-2.5 px-3 py-2.5 ${ri < Math.min(3, t.runs.length) - 1 ? 'border-b border-border' : ''}`}>
                                                             <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${HEALTH[rt].dot}`} />
                                                             <div className="min-w-0 flex-1">
-                                                                <p className="text-[11.5px] text-gray-400">
+                                                                <p className="text-[11.5px] text-muted-foreground/70">
                                                                     {fmtWhen(r.started_at)}{fmtDur(r.duration_s) ? ` · ${fmtDur(r.duration_s)}` : ''}
                                                                 </p>
-                                                                <div className={`mk-streamdown overflow-x-auto text-[13px] ${rt === 'critical' ? 'text-red-700' : 'text-gray-700'}`}>
+                                                                <div className={`mk-streamdown overflow-x-auto text-[13px] ${rt === 'critical' ? 'text-destructive' : 'text-foreground'}`}>
                                                                     <Streamdown>{r.output || ''}</Streamdown>
                                                                 </div>
                                                                 {(r.thread_id || r.is_compiled) && (
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => setRunDetail({ ...r, insight: t.insight, agent_id: t.agent_id })}
-                                                                        className="mt-1.5 text-[11.5px] font-medium text-indigo-600 hover:text-indigo-800"
+                                                                        className="mt-1.5 text-[11.5px] font-medium text-primary hover:text-primary/80"
                                                                     >
                                                                         {r.is_compiled ? 'View full run log →' : 'View full run →'}
                                                                     </button>
@@ -490,9 +493,9 @@ export default function HealthDashboard({ source = 'health' }) {
             )}
 
             {/* Legend footer — what the cadences mean (from the catalog). */}
-            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[11.5px] text-gray-400">
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[11.5px] text-muted-foreground/70">
                 {['daily', 'weekly', 'monthly'].map((c) => (
-                    <span key={c}><b className="text-gray-500">{CADENCE_LABEL[c]}</b> — {CADENCE_ROLE[c]}</span>
+                    <span key={c}><b className="text-muted-foreground">{CADENCE_LABEL[c]}</b> — {CADENCE_ROLE[c]}</span>
                 ))}
                 <span className="inline-flex items-center gap-1"><Check className="h-3 w-3" /> paused rows keep their history but don't run</span>
             </div>

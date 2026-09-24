@@ -23,7 +23,7 @@ import { ChartCard } from './ChartCard'
 import TrendDelta, { TrendDeltaPoints } from './TrendDelta'
 import { lastFullWeek, thisWeekToDate, lastNDays, windowLabel } from './dateWindows'
 import WindowSelector, { useWindow, useCardWindow, CardControls } from './WindowSelector'
-import { fmtMoney, fmtNumCompact, fmtPct, fmtMoneyInr } from './chartSetup'
+import { fmtMoney, fmtNumCompact, fmtPct, fmtMoneyInr, SEMANTIC } from './chartSetup'
 
 const num = (v) => { const x = Number(v); return isFinite(x) ? x : 0 }
 // Ratio that stays honest: null (not 0) when the denominator is missing.
@@ -42,14 +42,14 @@ const resolveWindow = (win) => {
 }
 
 // Flat prototype-style KPI tile (same as FounderDashboard's).
-function Kpi({ label, value, delta, sub, subCls = 'text-gray-400', loading }) {
+function Kpi({ label, value, delta, sub, subCls = 'text-muted-foreground/70', loading }) {
     if (loading) {
         return (
             <div>
-                <div className="text-sm text-gray-500">{label}</div>
+                <div className="text-sm text-muted-foreground">{label}</div>
                 <div className="mt-2 animate-pulse space-y-2.5" aria-label="Loading">
-                    <div className="h-7 w-24 rounded-md bg-gray-200" />
-                    <div className="h-3 w-32 rounded bg-gray-100" />
+                    <div className="h-7 w-24 rounded-md bg-muted" />
+                    <div className="h-3 w-32 rounded bg-muted" />
                 </div>
             </div>
         )
@@ -57,8 +57,8 @@ function Kpi({ label, value, delta, sub, subCls = 'text-gray-400', loading }) {
     const noData = value === 'No data'
     return (
         <div>
-            <div className="text-sm text-gray-500">{label}</div>
-            <div className={`mt-1.5 leading-9 tracking-tight tabular-nums ${noData ? 'text-xl font-semibold text-gray-300' : 'text-[28px] font-bold text-gray-900'}`}>{value}</div>
+            <div className="text-sm text-muted-foreground">{label}</div>
+            <div className={`mt-1.5 leading-9 tracking-tight tabular-nums ${noData ? 'text-xl font-semibold text-muted-foreground/60' : 'text-[28px] font-bold text-foreground'}`}>{value}</div>
             {!noData && delta && <div className="mt-2">{delta}</div>}
             {sub && <div className={`mt-1 text-xs ${subCls}`}>{sub}</div>}
         </div>
@@ -67,10 +67,10 @@ function Kpi({ label, value, delta, sub, subCls = 'text-gray-400', loading }) {
 
 // Semantic chip for the stage table: value against green/amber thresholds.
 const CHIP = {
-    good: 'bg-green-100 text-green-700',
-    warn: 'bg-amber-100 text-amber-700',
-    bad: 'bg-red-100 text-red-700',
-    mut: 'bg-gray-100 text-gray-400',
+    good: 'bg-success/10 text-success',
+    warn: 'bg-warning/10 text-warning',
+    bad: 'bg-destructive/10 text-destructive',
+    mut: 'bg-muted text-muted-foreground/70',
 }
 function StageChip({ value, fmt = fmtPct, good, warn }) {
     if (value == null) return <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${CHIP.mut}`}>—</span>
@@ -155,9 +155,9 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                 : null
             return {
                 stages: [
-                    { label: 'Saw the ad', value: impressions, color: '#3A5A7A' },
-                    { label: 'Clicked', value: clicks, color: '#4A6E93' },
-                    { label: 'Converted', value: conv, color: '#16a34a' },
+                    { label: 'Saw the ad', value: impressions, color: 'hsl(var(--chart-1))' },
+                    { label: 'Clicked', value: clicks, color: 'hsl(var(--chart-2))' },
+                    { label: 'Converted', value: conv, color: SEMANTIC.good },
                 ],
                 steps, leak,
             }
@@ -174,11 +174,11 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
             : null
         return {
             stages: [
-                { label: 'Saw the ad', value: impressions, color: '#3A5A7A' },
-                { label: 'Clicked', value: clicks, color: '#4A6E93' },
-                { label: 'Reached the page', value: lpv, color: '#6E8FB0' },
-                { label: 'Added to cart', value: atc, color: '#8FA9C4' },
-                { label: 'Started checkout', value: co, color: '#16a34a' },
+                { label: 'Saw the ad', value: impressions, color: 'hsl(var(--chart-1))' },
+                { label: 'Clicked', value: clicks, color: 'hsl(var(--chart-2))' },
+                { label: 'Reached the page', value: lpv, color: 'hsl(var(--chart-3))' },
+                { label: 'Added to cart', value: atc, color: 'hsl(var(--chart-4))' },
+                { label: 'Started checkout', value: co, color: SEMANTIC.good },
             ],
             steps, leak,
         }
@@ -315,7 +315,7 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                         <select
                             value={funnelMode}
                             onChange={(e) => setFunnelMode(e.target.value)}
-                            className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700"
+                            className="rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
                             title="Show absolute counts or % of the top of the funnel"
                         >
                             <option value="number">Number</option>
@@ -350,14 +350,14 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                                         ? [top > 0 ? fmtPct(value / top) : '—', name]
                                         : [fmtNumCompact(value), name]
                                 }}
-                                contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #e2e8f0' }}
+                                contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid hsl(var(--border))' }}
                             />
                             <Funnel
                                 dataKey="value"
                                 data={funnel.stages.map((s) => ({ name: s.label, value: num(s.value), fill: s.color }))}
                                 isAnimationActive
                             >
-                                <LabelList position="right" dataKey="name" fill="#0f172a" stroke="none" fontSize={12} />
+                                <LabelList position="right" dataKey="name" fill="hsl(var(--foreground))" stroke="none" fontSize={12} />
                                 <LabelList
                                     position="center"
                                     dataKey="value"
@@ -367,7 +367,7 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                                             ? (top > 0 ? fmtPct(v / top) : '—')
                                             : fmtNumCompact(v)
                                     }}
-                                    fill="#fff" stroke="none" fontSize={12} fontWeight={600}
+                                    fill="hsl(var(--primary-foreground))" stroke="none" fontSize={12} fontWeight={600}
                                 />
                                 {funnel.stages.map((s, i) => <Cell key={i} fill={s.color} />)}
                             </Funnel>
@@ -379,7 +379,7 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                     {funnel.steps.map((step) => {
                         const isLeak = funnel.leak && step.key === funnel.leak.key
                         return (
-                            <span key={step.key} className={`tabular-nums ${isLeak ? 'font-semibold text-red-600' : 'text-gray-500'}`}>
+                            <span key={step.key} className={`tabular-nums ${isLeak ? 'font-semibold text-destructive' : 'text-muted-foreground'}`}>
                                 ↓ {step.rate == null ? 'not reported' : `${fmtPct(step.rate)} ${step.label}`}{isLeak ? ' — the leak' : ''}
                             </span>
                         )
@@ -400,7 +400,7 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="text-left text-xs uppercase tracking-wide text-gray-400">
+                            <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground/70">
                                 <th className="py-2 pr-3">Campaign</th>
                                 <th className="py-2 px-3 text-right">Spend</th>
                                 <th className="py-2 px-3 text-right">Click rate</th>
@@ -422,22 +422,22 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                                     ? ratio(c.total_ad_spend, c.ad_checkouts_initiated)
                                     : ratio(c.total_ad_spend, c.ad_conversions)
                                 const avgCost = hasMetaFunnel ? avgCostPerCheckout : avgCostPerConversion
-                                const cpcoCls = cCost == null || avgCost == null ? 'text-gray-400'
-                                    : cCost > avgCost * 1.5 ? 'font-medium text-red-600'
-                                        : cCost <= avgCost ? 'text-gray-700' : 'text-amber-600'
+                                const cpcoCls = cCost == null || avgCost == null ? 'text-muted-foreground/70'
+                                    : cCost > avgCost * 1.5 ? 'font-medium text-destructive'
+                                        : cCost <= avgCost ? 'text-foreground' : 'text-warning'
                                 return (
-                                    <tr key={c.ad_row__campaign_name || i} className="border-t border-gray-100">
-                                        <td className="max-w-[220px] truncate py-2 pr-3 font-medium text-gray-700" title={c.ad_row__campaign_name}>
+                                    <tr key={c.ad_row__campaign_name || i} className="border-t border-border">
+                                        <td className="max-w-[220px] truncate py-2 pr-3 font-medium text-foreground" title={c.ad_row__campaign_name}>
                                             {c.ad_row__campaign_name}
                                         </td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{fmtMoneyInr(c.total_ad_spend)}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{fmtMoneyInr(c.total_ad_spend)}</td>
                                         <td className="py-2 px-3 text-right"><StageChip value={c.ctr == null ? null : num(c.ctr)} good={0.02} warn={0.01} /></td>
                                         {hasMetaFunnel && <>
                                             <td className="py-2 px-3 text-right"><StageChip value={cReach} good={0.6} warn={0.4} /></td>
                                             <td className="py-2 px-3 text-right"><StageChip value={cAtc} good={0.08} warn={0.04} /></td>
-                                            <td className="py-2 px-3 text-right tabular-nums text-gray-500">{num(c.ad_checkouts_initiated) > 0 ? fmtNumCompact(c.ad_checkouts_initiated) : '—'}</td>
+                                            <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{num(c.ad_checkouts_initiated) > 0 ? fmtNumCompact(c.ad_checkouts_initiated) : '—'}</td>
                                         </>}
-                                        <td className="py-2 px-3 text-right tabular-nums font-medium text-gray-700">{num(c.ad_conversions) > 0 ? fmtNumCompact(c.ad_conversions) : '—'}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums font-medium text-foreground">{num(c.ad_conversions) > 0 ? fmtNumCompact(c.ad_conversions) : '—'}</td>
                                         <td className={`py-2 pl-3 text-right tabular-nums ${cpcoCls}`}>{cCost == null ? '—' : fmtMoneyInr(cCost)}</td>
                                     </tr>
                                 )
@@ -445,7 +445,7 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
                         </tbody>
                     </table>
                 </div>
-                <p className="mt-3 text-[11px] text-gray-400">
+                <p className="mt-3 text-[11px] text-muted-foreground/70">
                     {hasMetaFunnel ? (
                         <>
                             {avgCostPerCheckout != null && <>Cost / checkout coloured against the {fmtMoneyInr(avgCostPerCheckout)} account average · </>}
@@ -464,11 +464,11 @@ export default function MediaBuyerDashboard({ admin = false, workspaceId, platfo
             {recs.length > 0 && (
                 <div className="space-y-3">
                     {recs.map((r, i) => (
-                        <div key={i} className="flex items-start gap-3 rounded-xl border border-orange-200 border-l-4 border-l-orange-500 bg-orange-50/50 px-4 py-3">
-                            <span className="text-orange-600" aria-hidden="true">◆</span>
+                        <div key={i} className="flex items-start gap-3 rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 px-4 py-3">
+                            <span className="text-primary" aria-hidden="true">◆</span>
                             <div>
-                                <div className="text-sm font-semibold text-gray-900">{r.title}</div>
-                                <div className="mt-0.5 text-xs leading-relaxed text-gray-600">{r.body}</div>
+                                <div className="text-sm font-semibold text-foreground">{r.title}</div>
+                                <div className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{r.body}</div>
                             </div>
                         </div>
                     ))}

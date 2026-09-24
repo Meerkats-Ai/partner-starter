@@ -52,7 +52,7 @@ const TABS = [
   { id: 'placement_m', label: 'Placement MoM' },
 ];
 
-const dash = <span className="text-gray-300">—</span>;
+const dash = <span className="text-muted-foreground/60">—</span>;
 
 export default function ReportingPack() {
   const [loading, setLoading] = useState(false);
@@ -113,10 +113,10 @@ export default function ReportingPack() {
   return (
     <div className="p-6 max-w-full">
       <div className="flex items-center gap-2 mb-1">
-        <Database className="h-4 w-4 text-emerald-700" />
-        <h1 className="text-lg font-semibold text-gray-900">Reporting Pack</h1>
+        <Database className="h-4 w-4 text-success" />
+        <h1 className="text-lg font-semibold text-foreground">Reporting Pack</h1>
       </div>
-      <p className="mb-4 text-xs text-gray-400">
+      <p className="mb-4 text-xs text-muted-foreground/70">
         Amazon / Flipkart / Google / Meta performance across your connected platforms. Spend, clicks &amp; impressions
         are as-reported; sales &amp; units are the ad console&apos;s attributed figures. ROAS / ACOS / CPC / CVR / AOV are derived.
       </p>
@@ -125,7 +125,7 @@ export default function ReportingPack() {
       <div className="flex flex-wrap items-end gap-3 mb-4">
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[11px] text-gray-400">Window</span>
+          <span className="text-[11px] text-muted-foreground/70">Window</span>
           <WindowSelector presets={WINDOWS} ctrl={winCtrl} suffix="" />
         </div>
         <Button onClick={load} disabled={loading}>
@@ -133,18 +133,18 @@ export default function ReportingPack() {
           <span className="ml-1.5">Refresh</span>
         </Button>
         <Button onClick={onExport} variant="outline" disabled={!hasData}
-          className="text-emerald-700 border-emerald-200 hover:bg-emerald-50">
+          className="text-success border-success/20 hover:bg-success/10">
           <FileSpreadsheet className="h-4 w-4" />
           <span className="ml-1.5">Export to Excel</span>
         </Button>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 mb-4 border-b overflow-x-auto">
+      <div className="flex items-center gap-1 mb-4 border-b border-border overflow-x-auto">
         {TABS.map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px whitespace-nowrap ${
-              tab === t.id ? 'border-emerald-600 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'
+              tab === t.id ? 'border-success text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}>
             {t.label}
           </button>
@@ -152,11 +152,11 @@ export default function ReportingPack() {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center gap-2 py-16 text-gray-400 bg-white rounded-lg border">
+        <div className="flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground/70 bg-card rounded-lg border border-border">
           <Loader2 className="h-5 w-5 animate-spin" /><span className="text-xs">Loading…</span>
         </div>
       ) : !hasData ? (
-        <div className="py-12 text-center text-gray-400 text-sm bg-white rounded-lg border">
+        <div className="py-12 text-center text-muted-foreground/70 text-sm bg-card rounded-lg border border-border">
           No ad data for this window. Connect a platform (Google / Meta / Amazon / Flipkart) and sync, or widen the range.
         </div>
       ) : (
@@ -185,36 +185,36 @@ function DailyLogTab({ groups, rows }) {
   }, [groups, rows]);
 
   return (
-    <div className="bg-white rounded-lg border overflow-x-auto">
+    <div className="bg-card rounded-lg border border-border overflow-x-auto">
       <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr>
-            <th rowSpan={2} className="sticky left-0 z-20 bg-gray-50 border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Date</th>
+            <th rowSpan={2} className="sticky left-0 z-20 bg-muted border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Date</th>
             {groupCols.map((g) => (
               <th key={g.key} colSpan={g.cols.length} className={`border-b border-l px-3 py-1.5 text-center text-[12px] font-bold uppercase tracking-wider text-white ${g.meta.head}`}>{g.meta.label}</th>
             ))}
           </tr>
-          <tr className="bg-gray-50">
+          <tr className="bg-muted">
             {groupCols.map((g) => g.cols.map((m, i) => (
-              <th key={`${g.key}:${m.k}`} className={`border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap ${i === 0 ? 'border-l' : ''}`}>{m.label}</th>
+              <th key={`${g.key}:${m.k}`} className={`border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground whitespace-nowrap ${i === 0 ? 'border-l' : ''}`}>{m.label}</th>
             )))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-border">
           {rows.map((r) => {
             const { day, mon, dow } = dayParts(r.date);
             return (
-              <tr key={r.date} className="hover:bg-gray-50/70">
-                <td className="sticky left-0 z-10 bg-white border-r px-3 py-1.5 whitespace-nowrap">
-                  <span className="font-semibold text-gray-800">{day} {mon}</span>
-                  <span className="ml-1.5 text-[11px] text-gray-400">{dow}</span>
+              <tr key={r.date} className="hover:bg-muted/50">
+                <td className="sticky left-0 z-10 bg-card border-r px-3 py-1.5 whitespace-nowrap">
+                  <span className="font-semibold text-foreground">{day} {mon}</span>
+                  <span className="ml-1.5 text-[11px] text-muted-foreground/70">{dow}</span>
                 </td>
                 {groupCols.map((g) => {
                   const c = cellOfRow(r, g.key);
                   return g.cols.map((m, i) => {
                     const hl = roasCellClass(m.k, m.get(c));
                     return (
-                      <td key={`${g.key}:${m.k}`} className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap ${i === 0 ? 'border-l' : ''} ${hl || g.meta.tint} ${m.strong ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>{m.fmt(c)}</td>
+                      <td key={`${g.key}:${m.k}`} className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap ${i === 0 ? 'border-l' : ''} ${hl || g.meta.tint} ${m.strong ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>{m.fmt(c)}</td>
                     );
                   });
                 })}
@@ -223,12 +223,12 @@ function DailyLogTab({ groups, rows }) {
           })}
         </tbody>
         <tfoot>
-          <tr className="bg-gray-800 text-white">
-            <td className="sticky left-0 z-10 bg-gray-800 border-r border-gray-700 px-3 py-2 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">Total · {rows.length}d</td>
+          <tr className="bg-foreground text-background">
+            <td className="sticky left-0 z-10 bg-foreground border-r border-background/20 px-3 py-2 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">Total · {rows.length}d</td>
             {groupCols.map((g) => g.cols.map((m, i) => {
               const hlDark = roasCellClassDark(m.k, m.get(totals[g.key]));
               return (
-                <td key={`${g.key}:${m.k}`} className={`px-2.5 py-2 text-right tabular-nums whitespace-nowrap text-[12px] ${i === 0 ? 'border-l border-gray-700' : ''} ${hlDark || (m.strong ? 'font-bold text-white' : 'text-gray-200')} ${hlDark && m.strong ? 'font-bold' : ''}`}>{m.k === 'search_impression_share' || m.k === 'search_lost_is_budget' ? '—' : m.fmt(totals[g.key])}</td>
+                <td key={`${g.key}:${m.k}`} className={`px-2.5 py-2 text-right tabular-nums whitespace-nowrap text-[12px] ${i === 0 ? 'border-l border-background/20' : ''} ${hlDark || (m.strong ? 'font-bold text-background' : 'text-background/80')} ${hlDark && m.strong ? 'font-bold' : ''}`}>{m.k === 'search_impression_share' || m.k === 'search_lost_is_budget' ? '—' : m.fmt(totals[g.key])}</td>
               );
             }))}
           </tr>
@@ -238,7 +238,7 @@ function DailyLogTab({ groups, rows }) {
   );
 }
 
-const deltaCls = (f) => (f == null ? 'text-gray-300' : f >= 0 ? 'text-emerald-600' : 'text-rose-600');
+const deltaCls = (f) => (f == null ? 'text-muted-foreground/60' : f >= 0 ? 'text-success' : 'text-destructive');
 
 // ── Weekly Summary tab ───────────────────────────────────────────────────────
 function WeeklyTab({ groups, rows, platforms }) {
@@ -260,35 +260,35 @@ function WeeklyTab({ groups, rows, platforms }) {
   const effLabel = (g) => (g.headline ? g.headline.label.replace('Conv. Val / Cost', 'Conv.V/Cost') : 'ROAS');
 
   return (
-    <div className="bg-white rounded-lg border overflow-x-auto">
+    <div className="bg-card rounded-lg border border-border overflow-x-auto">
       <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr>
-            <th rowSpan={2} className="sticky left-0 z-20 bg-gray-50 border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Week</th>
-            <th rowSpan={2} className="bg-gray-50 border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Dates</th>
+            <th rowSpan={2} className="sticky left-0 z-20 bg-muted border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Week</th>
+            <th rowSpan={2} className="bg-muted border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Dates</th>
             {groupCols.map((g) => (
               <th key={g.key} colSpan={g.cols.length + 2} className={`border-b border-l px-3 py-1.5 text-center text-[12px] font-bold uppercase tracking-wider text-white ${g.meta.head}`}>{g.meta.label}</th>
             ))}
           </tr>
-          <tr className="bg-gray-50">
+          <tr className="bg-muted">
             {groupCols.map((g) => (
               <React.Fragment key={g.key}>
                 {g.cols.map((m, i) => (
-                  <th key={`${g.key}:${m.k}`} className={`border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap ${i === 0 ? 'border-l' : ''}`}>{m.label}</th>
+                  <th key={`${g.key}:${m.k}`} className={`border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground whitespace-nowrap ${i === 0 ? 'border-l' : ''}`}>{m.label}</th>
                 ))}
-                <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-gray-400 whitespace-nowrap">Spend WoW</th>
-                <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-gray-400 whitespace-nowrap">{effLabel(g)} WoW</th>
+                <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 whitespace-nowrap">Spend WoW</th>
+                <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 whitespace-nowrap">{effLabel(g)} WoW</th>
               </React.Fragment>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-border">
           {weeks.map((wk, idx) => {
             const prev = weeks[idx + 1];
             return (
-              <tr key={wk.key} className="hover:bg-gray-50/70">
-                <td className="sticky left-0 z-10 bg-white border-r px-3 py-1.5 whitespace-nowrap font-semibold text-gray-800">Week {wk.weekNo}</td>
-                <td className="border-r px-3 py-1.5 whitespace-nowrap text-gray-500 text-[12px]">{wk.label}</td>
+              <tr key={wk.key} className="hover:bg-muted/50">
+                <td className="sticky left-0 z-10 bg-card border-r px-3 py-1.5 whitespace-nowrap font-semibold text-foreground">Week {wk.weekNo}</td>
+                <td className="border-r px-3 py-1.5 whitespace-nowrap text-muted-foreground text-[12px]">{wk.label}</td>
                 {groupCols.map((g) => {
                   const c = wk.byGroup[g.key]; const pc = prev?.byGroup[g.key];
                   const spendWoW = pc && pc.spend > 0 ? (c.spend - pc.spend) / pc.spend : null;
@@ -300,7 +300,7 @@ function WeeklyTab({ groups, rows, platforms }) {
                       {g.cols.map((m, i) => {
                         const hl = roasCellClass(m.k, m.get(c));
                         return (
-                          <td key={m.k} className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap ${i === 0 ? 'border-l' : ''} ${hl || g.meta.tint} ${m.strong ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>{m.fmt(c)}</td>
+                          <td key={m.k} className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap ${i === 0 ? 'border-l' : ''} ${hl || g.meta.tint} ${m.strong ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>{m.fmt(c)}</td>
                         );
                       })}
                       <td className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap text-[12px] ${deltaCls(spendWoW)}`}>{delta(spendWoW)}</td>
@@ -313,15 +313,15 @@ function WeeklyTab({ groups, rows, platforms }) {
           })}
         </tbody>
         <tfoot>
-          <tr className="bg-gray-800 text-white">
-            <td className="sticky left-0 z-10 bg-gray-800 border-r border-gray-700 px-3 py-2 text-[11px] font-bold uppercase tracking-wider">MONTH</td>
-            <td className="border-r border-gray-700 px-3 py-2 text-[11px] text-gray-300">{weeks.length} weeks</td>
+          <tr className="bg-foreground text-background">
+            <td className="sticky left-0 z-10 bg-foreground border-r border-background/20 px-3 py-2 text-[11px] font-bold uppercase tracking-wider">MONTH</td>
+            <td className="border-r border-background/20 px-3 py-2 text-[11px] text-background/80">{weeks.length} weeks</td>
             {groupCols.map((g) => (
               <React.Fragment key={g.key}>
                 {g.cols.map((m, i) => {
                   const hlDark = roasCellClassDark(m.k, m.get(monthTot[g.key]));
                   return (
-                    <td key={m.k} className={`px-2.5 py-2 text-right tabular-nums whitespace-nowrap text-[12px] ${i === 0 ? 'border-l border-gray-700' : ''} ${hlDark || (m.strong ? 'font-bold text-white' : 'text-gray-200')} ${hlDark && m.strong ? 'font-bold' : ''}`}>{m.fmt(monthTot[g.key])}</td>
+                    <td key={m.k} className={`px-2.5 py-2 text-right tabular-nums whitespace-nowrap text-[12px] ${i === 0 ? 'border-l border-background/20' : ''} ${hlDark || (m.strong ? 'font-bold text-background' : 'text-background/80')} ${hlDark && m.strong ? 'font-bold' : ''}`}>{m.fmt(monthTot[g.key])}</td>
                   );
                 })}
                 <td className="px-2.5 py-2" /><td className="px-2.5 py-2" />
@@ -344,22 +344,22 @@ function MonthlyTab({ groups, rows, platforms }) {
       {groups.map((g) => {
         const metricRows = monthlyRowsForGroup(g.key);
         return (
-        <div key={g.key} className="bg-white rounded-lg border overflow-x-auto">
+        <div key={g.key} className="bg-card rounded-lg border border-border overflow-x-auto">
           <div className={`px-4 py-2 text-[12px] font-bold uppercase tracking-wider text-white ${g.meta.head}`}>
             {g.meta.label} — Month on Month
           </div>
           <table className="min-w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="border-b px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Metric</th>
+              <tr className="bg-muted">
+                <th className="border-b px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Metric</th>
                 {monthsAsc.map((m) => (
-                  <th key={m.key} className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">{m.label}</th>
+                  <th key={m.key} className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">{m.label}</th>
                 ))}
-                <th className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-400 whitespace-nowrap">Δ last</th>
-                <th className="border-b border-l px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400 whitespace-nowrap">Best</th>
+                <th className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 whitespace-nowrap">Δ last</th>
+                <th className="border-b border-l px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 whitespace-nowrap">Best</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {metricRows.map((mr) => {
                 const vals = monthsAsc.map((mo) => mr.get(mo.byGroup[g.key]));
                 const last = vals[vals.length - 1]; const prev = vals[vals.length - 2];
@@ -367,16 +367,16 @@ function MonthlyTab({ groups, rows, platforms }) {
                 let bi = -1, bv = -Infinity;
                 vals.forEach((v, i) => { if (v != null && v > bv) { bv = v; bi = i; } });
                 return (
-                  <tr key={mr.k} className="hover:bg-gray-50/70">
-                    <td className={`px-3 py-1.5 whitespace-nowrap ${mr.strong ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>{mr.label}</td>
+                  <tr key={mr.k} className="hover:bg-muted/50">
+                    <td className={`px-3 py-1.5 whitespace-nowrap ${mr.strong ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>{mr.label}</td>
                     {vals.map((v, i) => {
                       const hl = roasCellClass(mr.k, v);
                       return (
-                        <td key={i} className={`border-l px-3 py-1.5 text-right tabular-nums whitespace-nowrap ${hl || ''} ${mr.strong ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>{v == null ? dash : mr.fmt(v)}</td>
+                        <td key={i} className={`border-l px-3 py-1.5 text-right tabular-nums whitespace-nowrap ${hl || ''} ${mr.strong ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>{v == null ? dash : mr.fmt(v)}</td>
                       );
                     })}
                     <td className={`border-l px-3 py-1.5 text-right tabular-nums whitespace-nowrap text-[12px] ${deltaCls(d)}`}>{delta(d)}</td>
-                    <td className="border-l px-3 py-1.5 text-left whitespace-nowrap text-[12px] text-gray-500">{bi >= 0 ? monthsAsc[bi].label : dash}</td>
+                    <td className="border-l px-3 py-1.5 text-left whitespace-nowrap text-[12px] text-muted-foreground">{bi >= 0 ? monthsAsc[bi].label : dash}</td>
                   </tr>
                 );
               })}
@@ -391,7 +391,7 @@ function MonthlyTab({ groups, rows, platforms }) {
 
 // ── Placement tabs (Weekly Placement / Placement MoM) ────────────────────────
 const emptyPlacement = (
-  <div className="py-12 text-center text-gray-400 text-sm bg-white rounded-lg border">
+  <div className="py-12 text-center text-muted-foreground/70 text-sm bg-card rounded-lg border border-border">
     No placement data for this window. Placement breakdowns come from Meta, Amazon &amp; Flipkart
     (Google Ads has no placement report). Sync those platforms&apos; placement reports to populate this tab.
   </div>
@@ -413,37 +413,37 @@ function PlacementRoasHeadline({ grid }) {
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        <span className="rounded bg-emerald-600 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">A</span>
-        <span className="text-sm font-semibold text-gray-800">ROAS by placement</span>
+        <span className="rounded bg-success px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">A</span>
+        <span className="text-sm font-semibold text-foreground">ROAS by placement</span>
       </div>
-      <div className="bg-white rounded-lg border overflow-x-auto">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto">
         <table className="min-w-full border-collapse text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-muted">
             <tr>
-              <th className="border-b px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Platform</th>
-              <th className="border-b border-l px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Placement</th>
+              <th className="border-b px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Platform</th>
+              <th className="border-b border-l px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Placement</th>
               {periods.map((p) => (
-                <th key={p} className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">{periodLabel(p)}</th>
+                <th key={p} className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">{periodLabel(p)}</th>
               ))}
-              <th className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-400 whitespace-nowrap">Δ last</th>
+              <th className="border-b border-l px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 whitespace-nowrap">Δ last</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {rows.map((pr, i) => {
               const pm = PLATFORM_META[pr.platform] || metaFor(pr.platform);
               const vals = periods.map((p) => roas(pr.byPeriod[p]));
               const last = vals[vals.length - 1]; const prev = vals[vals.length - 2];
               const d = last != null && prev != null && prev !== 0 ? (last - prev) / prev : null;
               return (
-                <tr key={`${pr.platform}:${pr.placement}:${i}`} className="hover:bg-gray-50/70">
+                <tr key={`${pr.platform}:${pr.placement}:${i}`} className="hover:bg-muted/50">
                   <td className="px-3 py-1.5 whitespace-nowrap">
                     <span className={`inline-flex items-center rounded px-2 py-0.5 text-[11px] font-semibold text-white ${pm.head}`}>{pm.label}</span>
                   </td>
-                  <td className="border-l px-3 py-1.5 whitespace-nowrap text-gray-700 text-[12px]">{pr.placement}</td>
+                  <td className="border-l px-3 py-1.5 whitespace-nowrap text-foreground text-[12px]">{pr.placement}</td>
                   {vals.map((v, j) => {
                     const hl = roasCellClass('roas', v);
                     return (
-                      <td key={j} className={`border-l px-3 py-1.5 text-right tabular-nums whitespace-nowrap font-semibold ${hl || 'text-gray-900'}`}>{mult(v)}</td>
+                      <td key={j} className={`border-l px-3 py-1.5 text-right tabular-nums whitespace-nowrap font-semibold ${hl || 'text-foreground'}`}>{mult(v)}</td>
                     );
                   })}
                   <td className={`border-l px-3 py-1.5 text-right tabular-nums whitespace-nowrap text-[12px] ${deltaCls(d)}`}>{delta(d)}</td>
@@ -465,43 +465,43 @@ function PlacementDetail({ grid, mode }) {
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        {mode === 'month' && <span className="rounded bg-emerald-600 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">B</span>}
-        <span className="text-sm font-semibold text-gray-800">
+        {mode === 'month' && <span className="rounded bg-success px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">B</span>}
+        <span className="text-sm font-semibold text-foreground">
           {mode === 'month' ? 'Full detail — by month & placement' : 'Placement performance by week'}
         </span>
-        <span className="text-xs text-gray-400">· Meta / Amazon / Flipkart only (Google Ads has no placement report)</span>
+        <span className="text-xs text-muted-foreground/70">· Meta / Amazon / Flipkart only (Google Ads has no placement report)</span>
       </div>
-      <div className="bg-white rounded-lg border overflow-x-auto">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto">
         <table className="min-w-full border-collapse text-sm">
           <thead>
             <tr>
-              <th rowSpan={2} className="sticky left-0 z-20 bg-gray-50 border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Platform</th>
-              <th rowSpan={2} className="sticky left-[92px] z-20 bg-gray-50 border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500">Placement</th>
+              <th rowSpan={2} className="sticky left-0 z-20 bg-muted border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Platform</th>
+              <th rowSpan={2} className="sticky left-[92px] z-20 bg-muted border-b border-r px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Placement</th>
               {periods.map((p, i) => (
-                <th key={p} colSpan={perBlock} className={`border-b border-l px-3 py-1.5 text-center text-[12px] font-bold uppercase tracking-wider text-white ${i % 2 === 0 ? 'bg-emerald-700' : 'bg-emerald-800'}`}>{periodLabel(p)}</th>
+                <th key={p} colSpan={perBlock} className={`border-b border-l px-3 py-1.5 text-center text-[12px] font-bold uppercase tracking-wider text-white ${i % 2 === 0 ? 'bg-success' : 'bg-success/80'}`}>{periodLabel(p)}</th>
               ))}
             </tr>
-            <tr className="bg-gray-50">
+            <tr className="bg-muted">
               {periods.map((p) => (
                 <React.Fragment key={p}>
                   {cols.map((m, i) => (
-                    <th key={`${p}:${m.k}`} className={`border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap ${i === 0 ? 'border-l' : ''}`}>{m.label}</th>
+                    <th key={`${p}:${m.k}`} className={`border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground whitespace-nowrap ${i === 0 ? 'border-l' : ''}`}>{m.label}</th>
                   ))}
-                  <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-gray-400 whitespace-nowrap">% spend</th>
-                  <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-gray-400 whitespace-nowrap">ROAS {mode === 'month' ? 'MoM' : 'WoW'}</th>
+                  <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 whitespace-nowrap">% spend</th>
+                  <th className="border-b px-2.5 py-1.5 text-right text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 whitespace-nowrap">ROAS {mode === 'month' ? 'MoM' : 'WoW'}</th>
                 </React.Fragment>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {rows.map((pr, ri) => {
               const pm = PLATFORM_META[pr.platform] || metaFor(pr.platform);
               return (
-                <tr key={`${pr.platform}:${pr.placement}:${ri}`} className="hover:bg-gray-50/70">
-                  <td className="sticky left-0 z-10 bg-white border-r px-3 py-1.5 whitespace-nowrap">
+                <tr key={`${pr.platform}:${pr.placement}:${ri}`} className="hover:bg-muted/50">
+                  <td className="sticky left-0 z-10 bg-card border-r px-3 py-1.5 whitespace-nowrap">
                     <span className={`inline-flex items-center rounded px-2 py-0.5 text-[11px] font-semibold text-white ${pm.head}`}>{pm.label}</span>
                   </td>
-                  <td className="sticky left-[92px] z-10 bg-white border-r px-3 py-1.5 whitespace-nowrap text-gray-700 text-[12px]">{pr.placement}</td>
+                  <td className="sticky left-[92px] z-10 bg-card border-r px-3 py-1.5 whitespace-nowrap text-foreground text-[12px]">{pr.placement}</td>
                   {periods.map((p, pi) => {
                     const c = pr.byPeriod[p];
                     const prevC = pi > 0 ? pr.byPeriod[periods[pi - 1]] : null;
@@ -513,10 +513,10 @@ function PlacementDetail({ grid, mode }) {
                         {cols.map((m, i) => {
                           const hl = roasCellClass(m.k, m.get(c));
                           return (
-                            <td key={m.k} className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap ${i === 0 ? 'border-l' : ''} ${hl || ''} ${m.strong ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>{m.fmt(c)}</td>
+                            <td key={m.k} className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap ${i === 0 ? 'border-l' : ''} ${hl || ''} ${m.strong ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>{m.fmt(c)}</td>
                           );
                         })}
-                        <td className="px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap text-[12px] text-gray-500">{pct(share)}</td>
+                        <td className="px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap text-[12px] text-muted-foreground">{pct(share)}</td>
                         <td className={`px-2.5 py-1.5 text-right tabular-nums whitespace-nowrap text-[12px] ${deltaCls(roasChg)}`}>{delta(roasChg)}</td>
                       </React.Fragment>
                     );

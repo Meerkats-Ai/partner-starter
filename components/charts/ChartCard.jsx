@@ -26,15 +26,22 @@ function HideChartButton({ chartId, title }) {
             type="button"
             onClick={() => hideDefault(chartId)}
             title={`Remove "${title || 'this chart'}" from my dashboard`}
-            className="inline-flex shrink-0 items-center rounded-lg border border-gray-200 p-1 text-gray-400 transition hover:border-rose-300 hover:text-rose-600"
+            className="inline-flex shrink-0 items-center rounded-lg border border-border p-1 text-muted-foreground/70 transition hover:border-destructive/40 hover:text-destructive"
         >
             <X className="h-3.5 w-3.5" />
         </button>
     )
 }
 
-// Funnel stage fills — dark→teal, matching the reference D2C funnel gradient.
-const FUNNEL_FILLS = ['#1e293b', '#334155', '#475569', '#64748b', '#0f766e', '#0d9488']
+// Funnel stage fills — token-driven so the funnel re-themes with agency branding.
+const FUNNEL_FILLS = [
+    'hsl(var(--chart-1))',
+    'hsl(var(--chart-2))',
+    'hsl(var(--chart-3))',
+    'hsl(var(--chart-4))',
+    'hsl(var(--chart-5))',
+    'hsl(var(--success))',
+]
 
 // ── "Ask about this chart" — opens an agent chat seeded with this chart's data ─
 // Opt-in: only renders when the caller passes `ask` (the chart's rows + meta).
@@ -63,7 +70,7 @@ function AskAboutChart({ ask, title, subtitle }) {
             onClick={onClick}
             disabled={launching}
             title="Ask the AI to explain this chart in plain language"
-            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 px-2 py-1 text-[11px] font-medium text-gray-500 transition hover:border-orange-300 hover:text-orange-700 disabled:opacity-50"
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-border px-2 py-1 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
         >
             <MessageCircleQuestion className="h-3.5 w-3.5" />
             {launching ? 'Opening…' : 'Ask about this'}
@@ -90,11 +97,11 @@ export function ChartCard({ title, subtitle, loading, error, empty, children, ri
     if (hideId && hidden) return null
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
             <div className="flex items-start justify-between gap-2 mb-4">
                 <div>
-                    <h3 className="text-sm font-semibold text-gray-800">{title}</h3>
-                    {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+                    <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+                    {subtitle && <p className="text-xs text-muted-foreground/70 mt-1">{subtitle}</p>}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                     {right}
@@ -105,16 +112,16 @@ export function ChartCard({ title, subtitle, loading, error, empty, children, ri
             <div className="relative" style={{ minHeight: 220 }}>
                 {loading ? (
                     <div className="absolute inset-0 animate-pulse space-y-3 pt-1" aria-label="Loading">
-                        <div className="h-4 w-3/4 rounded bg-gray-100" />
-                        <div className="h-4 w-1/2 rounded bg-gray-100" />
-                        <div className="h-4 w-5/6 rounded bg-gray-100" />
-                        <div className="h-4 w-2/3 rounded bg-gray-100" />
-                        <div className="h-4 w-1/3 rounded bg-gray-100" />
+                        <div className="h-4 w-3/4 rounded bg-muted" />
+                        <div className="h-4 w-1/2 rounded bg-muted" />
+                        <div className="h-4 w-5/6 rounded bg-muted" />
+                        <div className="h-4 w-2/3 rounded bg-muted" />
+                        <div className="h-4 w-1/3 rounded bg-muted" />
                     </div>
                 ) : error ? (
-                    <div className="absolute inset-0 flex items-center justify-center text-xs text-rose-500">{error}</div>
+                    <div className="absolute inset-0 flex items-center justify-center text-xs text-destructive">{error}</div>
                 ) : empty ? (
-                    <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-300">No data</div>
+                    <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground/60">No data</div>
                 ) : (
                     children
                 )}
@@ -126,11 +133,11 @@ export function ChartCard({ title, subtitle, loading, error, empty, children, ri
 // ── KPI card — one headline number (+ optional trend-delta node) ────────────
 export function KpiCard({ label, value, sub, accent = COLORS.primary, delta }) {
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <div className="text-xs font-medium uppercase tracking-wide text-gray-400">{label}</div>
+        <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground/70">{label}</div>
             <div className="mt-1 text-2xl font-bold tabular-nums" style={{ color: accent }}>{value}</div>
             {delta && <div className="mt-0.5">{delta}</div>}
-            {sub && <div className="mt-0.5 text-xs text-gray-400">{sub}</div>}
+            {sub && <div className="mt-0.5 text-xs text-muted-foreground/70">{sub}</div>}
         </div>
     )
 }
@@ -280,12 +287,12 @@ export function FunnelCard({ title, subtitle, loading, error, stages, right, ask
                     <FunnelChart>
                         <RTooltip
                             formatter={(value, name) => [fmtNum(value), name]}
-                            contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #e2e8f0' }}
+                            contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid hsl(var(--border))' }}
                         />
                         <Funnel dataKey="value" data={data} isAnimationActive>
-                            <LabelList position="right" dataKey="name" fill="#0f172a" stroke="none" fontSize={12} />
+                            <LabelList position="right" dataKey="name" fill="hsl(var(--foreground))" stroke="none" fontSize={12} />
                             <LabelList position="center" dataKey="value" formatter={(v) => fmtNum(v)}
-                                fill="#fff" stroke="none" fontSize={12} fontWeight={600} />
+                                fill="hsl(var(--primary-foreground))" stroke="none" fontSize={12} fontWeight={600} />
                             {data.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                         </Funnel>
                     </FunnelChart>
@@ -293,13 +300,13 @@ export function FunnelCard({ title, subtitle, loading, error, stages, right, ask
             </div>
             {/* Stage-to-stage drop-off, like the reference. */}
             {data.length > 1 && (
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-500">
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
                     {data.slice(1).map((stage, i) => {
                         const prev = data[i].value
                         const drop = prev ? Math.round(((prev - stage.value) / prev) * 100) : 0
                         return (
                             <span key={stage.name}>
-                                {data[i].name} → {stage.name}: <strong className="text-gray-800">-{drop}%</strong>
+                                {data[i].name} → {stage.name}: <strong className="text-foreground">-{drop}%</strong>
                             </span>
                         )
                     })}

@@ -46,7 +46,7 @@ export default function AgentSpecCard({ spec, onPinChange }) {
                 <Link
                     to={`/dashboard/agent-chat?thread=${encodeURIComponent(threadId)}`}
                     title="Open the chat that generated this"
-                    className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] font-medium text-gray-500 transition hover:border-indigo-300 hover:text-indigo-700"
+                    className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-border bg-card px-2 py-1 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-primary"
                 >
                     <MessageSquare className="h-3.5 w-3.5" />
                     Chat
@@ -56,7 +56,7 @@ export default function AgentSpecCard({ spec, onPinChange }) {
                 type="button"
                 onClick={() => setConfirmOpen(true)}
                 title="Unpin from Cockpit (stays in Explore → Chat charts)"
-                className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-orange-300 bg-orange-50 px-2 py-1 text-[11px] font-medium text-orange-700 transition hover:bg-orange-100"
+                className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary transition hover:bg-primary/20"
             >
                 <PinOff className="h-3.5 w-3.5" />
                 Pinned
@@ -67,7 +67,7 @@ export default function AgentSpecCard({ spec, onPinChange }) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Remove “{label}” from your Cockpit?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            It won’t be deleted — it stays in <span className="font-medium text-gray-700">Explore → Chat charts</span>,
+                            It won’t be deleted — it stays in <span className="font-medium text-foreground">Explore → Chat charts</span>,
                             where you can re-pin it to the Cockpit anytime.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
@@ -75,7 +75,7 @@ export default function AgentSpecCard({ spec, onPinChange }) {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={doUnpin}
-                            className="bg-orange-600 hover:bg-orange-700 focus-visible:ring-orange-600"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary"
                         >
                             Remove from Cockpit
                         </AlertDialogAction>

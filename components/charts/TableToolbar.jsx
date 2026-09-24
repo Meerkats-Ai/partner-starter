@@ -159,8 +159,8 @@ export function TableToolbar({
     return (
         <div className="mb-2 flex items-start justify-between gap-3">
             <div className="min-w-0">
-                {title && <h4 className="truncate text-sm font-semibold text-gray-800" title={title}>{title}</h4>}
-                {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
+                {title && <h4 className="truncate text-sm font-semibold text-foreground" title={title}>{title}</h4>}
+                {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
             </div>
             <div className="flex shrink-0 items-center gap-2">
                 {leadingAction}
@@ -172,7 +172,7 @@ export function TableToolbar({
                 {onRefresh && (
                     <Tooltip2 description="Refresh this table">
                         <button type="button" onClick={onRefresh} disabled={refreshing}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50">
                             <ArrowPathIcon className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                         </button>
                     </Tooltip2>
@@ -180,7 +180,7 @@ export function TableToolbar({
                 {showAsk && (
                     <Tooltip2 description="Ask about this table (AI)">
                         <button type="button" onClick={onAsk} disabled={asking}
-                            className="flex h-8 items-center gap-1 rounded-lg border border-gray-200 px-2 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50">
+                            className="flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50">
                             <ChatBubbleLeftRightIcon className="h-4 w-4" />
                             <span className="hidden sm:inline">{asking ? 'Opening…' : 'Ask about this'}</span>
                         </button>
@@ -189,21 +189,21 @@ export function TableToolbar({
                 {onDownloadCsv && (
                     <Tooltip2 description="Download CSV (opens in Excel)">
                         <button type="button" onClick={onDownloadCsv}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted">
                             <ArrowDownTrayIcon className="h-4 w-4" />
                         </button>
                     </Tooltip2>
                 )}
                 <Tooltip2 description={fullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen'}>
                     <button type="button" onClick={() => setFullscreen((f) => !f)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted">
                         {fullscreen ? <ArrowsPointingInIcon className="h-4 w-4" /> : <ArrowsPointingOutIcon className="h-4 w-4" />}
                     </button>
                 </Tooltip2>
                 {fullscreen && (
                     <Tooltip2 description="Close">
                         <button type="button" onClick={() => setFullscreen(false)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted">
                             <XMarkIcon className="h-4 w-4" />
                         </button>
                     </Tooltip2>
@@ -237,18 +237,18 @@ export function useCampaignFilter(cardId, dim) {
 
     const control = (
         <div className="relative flex items-center">
-            <MagnifyingGlassIcon className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+            <MagnifyingGlassIcon className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <input
                 value={q}
                 onChange={(e) => setFilter({ ...filter, q: e.target.value })}
                 placeholder={mode === 'startsWith' ? 'Starts with… (DT_)' : 'Filter campaigns…'}
-                className="h-8 w-40 rounded-l-lg border border-r-0 border-gray-200 pl-7 pr-2 text-xs focus:border-gray-300 focus:outline-none"
+                className="h-8 w-40 rounded-l-lg border border-r-0 border-border pl-7 pr-2 text-xs focus:border-border focus:outline-none"
             />
             <Tooltip2 description={mode === 'startsWith' ? 'Matching: name starts with — click for contains' : 'Matching: contains — click for starts-with'}>
                 <button
                     type="button"
                     onClick={() => setFilter({ ...filter, mode: mode === 'startsWith' ? 'contains' : 'startsWith' })}
-                    className={`flex h-8 w-8 items-center justify-center rounded-r-lg border border-gray-200 text-xs font-semibold ${mode === 'startsWith' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-400 hover:bg-gray-50'}`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-r-lg border border-border text-xs font-semibold ${mode === 'startsWith' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted'}`}
                     aria-label="Toggle filter match mode"
                 >
                     {mode === 'startsWith' ? '^' : '≈'}
@@ -266,12 +266,12 @@ export function SortableHeaders({ columns, sort, toggleSort }) {
         const alignRight = isNumericCol(c)
         return (
             <th key={c.key} onClick={() => toggleSort(c.key)}
-                className={`cursor-pointer select-none whitespace-nowrap px-4 py-2 text-[11px] font-medium uppercase tracking-wider hover:text-gray-700 ${alignRight ? 'text-right' : 'text-left'} ${active ? 'text-gray-900' : 'text-gray-500'}`}>
+                className={`cursor-pointer select-none whitespace-nowrap px-4 py-2 text-[11px] font-medium uppercase tracking-wider hover:text-foreground ${alignRight ? 'text-right' : 'text-left'} ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
                 <span className={`inline-flex items-center gap-1 ${alignRight ? 'flex-row-reverse' : ''}`}>
                     {c.header || c.label}
                     {active
                         ? (sort.dir === 'asc' ? <ChevronUpIcon className="h-3 w-3" /> : <ChevronDownIcon className="h-3 w-3" />)
-                        : <ChevronUpDownIcon className="h-3 w-3 text-gray-300" />}
+                        : <ChevronUpDownIcon className="h-3 w-3 text-muted-foreground/60" />}
                 </span>
             </th>
         )

@@ -367,19 +367,19 @@ export default function SpecTable({ spec, admin = false, workspaceId, platform =
     const empty = !q.loading && shaped.body.length === 0
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
             <div className="mb-3 flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <h3 className="truncate text-sm font-semibold text-gray-800" title={spec.title}>{spec.title}</h3>
-                    {spec.subtitle && <p className="mt-0.5 truncate text-xs text-gray-400" title={spec.subtitle}>{spec.subtitle}</p>}
+                    <h3 className="truncate text-sm font-semibold text-foreground" title={spec.title}>{spec.title}</h3>
+                    {spec.subtitle && <p className="mt-0.5 truncate text-xs text-muted-foreground/70" title={spec.subtitle}>{spec.subtitle}</p>}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                     {dateChip}
                     <button type="button" onClick={onToggle}
                         title={pinned ? 'Unpin from Cockpit' : 'Pin to Cockpit'}
                         className={`inline-flex shrink-0 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-medium transition ${
-                            pinned ? 'border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100'
-                                : 'border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-700'}`}>
+                            pinned ? 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20'
+                                : 'border-border text-muted-foreground hover:border-primary/40 hover:text-primary'}`}>
                         {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
                         {pinned ? 'Pinned' : 'Pin'}
                     </button>
@@ -387,25 +387,25 @@ export default function SpecTable({ spec, admin = false, workspaceId, platform =
             </div>
             {q.loading ? (
                 <div className="animate-pulse space-y-2 py-2">
-                    {[...Array(5)].map((_, i) => <div key={i} className="h-5 w-full rounded bg-gray-100" />)}
+                    {[...Array(5)].map((_, i) => <div key={i} className="h-5 w-full rounded bg-muted" />)}
                 </div>
             ) : empty ? (
-                <div className="flex h-28 items-center justify-center text-xs text-gray-300">No data for this window</div>
+                <div className="flex h-28 items-center justify-center text-xs text-muted-foreground/60">No data for this window</div>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-gray-100 text-left text-[11px] uppercase tracking-wide text-gray-400">
+                            <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground/70">
                                 {shaped.head.map((h, i) => (
                                     <th key={h} className={`py-2 font-medium ${shaped.align?.[i] === 'right' ? 'text-right' : 'text-left'}`}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-border">
                             {shaped.body.map((row, ri) => (
-                                <tr key={ri} className="text-gray-700">
+                                <tr key={ri} className="text-foreground">
                                     {row.map((cell, ci) => (
-                                        <td key={ci} className={`py-2 tabular-nums ${shaped.align?.[ci] === 'right' ? 'text-right' : 'text-left'} ${ci === 0 ? 'max-w-[220px] truncate font-medium text-gray-800' : ''}`}
+                                        <td key={ci} className={`py-2 tabular-nums ${shaped.align?.[ci] === 'right' ? 'text-right' : 'text-left'} ${ci === 0 ? 'max-w-[220px] truncate font-medium text-foreground' : ''}`}
                                             title={ci === 0 ? String(cell) : undefined}>
                                             {cell}
                                         </td>

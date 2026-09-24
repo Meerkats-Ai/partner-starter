@@ -16,6 +16,8 @@
  *   3. brand accent (applyBrandColor)  — legacy primary_color, still wins if set
  */
 
+import { reassertBrandFont } from "@/lib/theme";
+
 export type ThemeConfig = {
   base?: string;    // neutral scale id  (BASE_COLORS)
   accent?: string;  // accent hue id     (ACCENT_COLORS)
@@ -190,4 +192,8 @@ export function applyThemeConfig(cfg: ThemeConfig | null | undefined, mode: "lig
     injectFont(heading);
     setv("--font-heading", heading.stack);
   }
+
+  // An explicit agency font_family (applyBrandFont) still wins over theme_config's
+  // bodyFont, so re-assert it as the last step (mirrors the brand-color precedence).
+  reassertBrandFont();
 }

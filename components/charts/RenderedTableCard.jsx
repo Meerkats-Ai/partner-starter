@@ -74,7 +74,7 @@ const isTimeKey = (key) => typeof key === 'string' && key.startsWith('metric_tim
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}[T ]/
 const fmtDateCell = (v) => { const d = new Date(v); return isNaN(d) ? String(v) : d.toLocaleDateString() }
 function fmtCell(v, fmt, key) {
-    if (v == null || v === '') return <span className="text-gray-300">—</span>
+    if (v == null || v === '') return <span className="text-muted-foreground/60">—</span>
     // Time columns / ISO-datetime strings → formatted date, whatever the stored fmt.
     if (fmt === 'date' || isTimeKey(key) || (typeof v === 'string' && ISO_DATE_RE.test(v))) {
         return fmtDateCell(v)
@@ -230,12 +230,12 @@ export function RenderedTableCard({
     )
 
     const grid = (
-        <div ref={scrollRef} style={scrollStyle} className="relative overflow-auto rounded-lg border border-gray-100">
+        <div ref={scrollRef} style={scrollStyle} className="relative overflow-auto rounded-lg border border-border">
             {loading && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 text-xs text-gray-400">Updating…</div>
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-card/60 text-xs text-muted-foreground/70">Updating…</div>
             )}
             <table className="min-w-full text-sm">
-                <thead className="sticky top-0 z-10 bg-gray-50">
+                <thead className="sticky top-0 z-10 bg-muted">
                     <tr>
                         {columns.map((c) => {
                             const active = sort?.key === c.key
@@ -244,28 +244,28 @@ export function RenderedTableCard({
                                 <th
                                     key={c.key}
                                     onClick={() => toggleSort(c.key)}
-                                    className={`cursor-pointer select-none whitespace-nowrap border-b border-gray-100 bg-gray-50 px-3 py-2 text-[11px] font-medium uppercase tracking-wider hover:text-gray-700 ${alignRight ? 'text-right' : 'text-left'} ${active ? 'text-gray-900' : 'text-gray-500'}`}
+                                    className={`cursor-pointer select-none whitespace-nowrap border-b border-border bg-muted px-3 py-2 text-[11px] font-medium uppercase tracking-wider hover:text-foreground ${alignRight ? 'text-right' : 'text-left'} ${active ? 'text-foreground' : 'text-muted-foreground'}`}
                                 >
                                     <span className={`inline-flex items-center gap-1 ${alignRight ? 'flex-row-reverse' : ''}`}>
                                         {c.label}
                                         {active
                                             ? (sort.dir === 'asc' ? <ChevronUpIcon className="h-3 w-3" /> : <ChevronDownIcon className="h-3 w-3" />)
-                                            : <ChevronUpDownIcon className="h-3 w-3 text-gray-300" />}
+                                            : <ChevronUpDownIcon className="h-3 w-3 text-muted-foreground/60" />}
                                     </span>
                                 </th>
                             )
                         })}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border">
                     {view.length === 0 ? (
-                        <tr><td colSpan={columns.length || 1} className="px-3 py-6 text-center text-xs text-gray-400">
+                        <tr><td colSpan={columns.length || 1} className="px-3 py-6 text-center text-xs text-muted-foreground/70">
                             {q.trim() ? `No rows match "${q.trim()}".` : 'No data'}
                         </td></tr>
                     ) : view.map((r, i) => (
-                        <tr key={i} className="hover:bg-gray-50">
+                        <tr key={i} className="hover:bg-accent">
                             {columns.map((c) => (
-                                <td key={c.key} className={`whitespace-nowrap px-3 py-2 text-[12px] text-gray-700 ${isNumericFmt(c.fmt) ? 'text-right tabular-nums' : 'text-left'}`}>
+                                <td key={c.key} className={`whitespace-nowrap px-3 py-2 text-[12px] text-foreground ${isNumericFmt(c.fmt) ? 'text-right tabular-nums' : 'text-left'}`}>
                                     {fmtCell(r[c.key], c.fmt, c.key)}
                                 </td>
                             ))}
@@ -277,15 +277,15 @@ export function RenderedTableCard({
     )
 
     const footer = (
-        <div className="mt-1.5 flex items-center justify-between gap-2 text-[11px] text-gray-400">
+        <div className="mt-1.5 flex items-center justify-between gap-2 text-[11px] text-muted-foreground/70">
             <span className="flex items-center gap-1.5">
                 {view.length > 0 && <span>{view.length}{view.length !== rows.length ? ` of ${rows.length}` : ''} rows</span>}
                 {syncedText && (
-                    <span className="text-gray-300">
+                    <span className="text-muted-foreground/60">
                         {view.length > 0 ? '· ' : ''}
                         {spineUrl ? (
                             <a href={spineUrl} target="_blank" rel="noopener noreferrer"
-                                className="underline decoration-dotted underline-offset-2 hover:text-gray-500" title="View this platform's data (Data Spine)">
+                                className="underline decoration-dotted underline-offset-2 hover:text-muted-foreground" title="View this platform's data (Data Spine)">
                                 {syncedText}
                             </a>
                         ) : syncedText}
@@ -297,7 +297,7 @@ export function RenderedTableCard({
                 <button
                     type="button"
                     onClick={() => setExpanded((e) => !e)}
-                    className="inline-flex items-center gap-1 font-medium text-gray-500 hover:text-gray-700"
+                    className="inline-flex items-center gap-1 font-medium text-muted-foreground hover:text-foreground"
                 >
                     {expanded ? <><ChevronUpIcon className="h-3.5 w-3.5" /> Collapse</> : <><ChevronDownIcon className="h-3.5 w-3.5" /> Show all ({view.length})</>}
                 </button>
@@ -309,7 +309,7 @@ export function RenderedTableCard({
     if (fullscreen) {
         return createPortal(
             <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 sm:p-8" onMouseDown={(e) => { if (e.target === e.currentTarget) setFullscreen(false) }}>
-                <div className="flex max-h-full w-full max-w-6xl flex-col rounded-xl border border-gray-200 bg-white p-4 shadow-2xl">
+                <div className="flex max-h-full w-full max-w-6xl flex-col rounded-xl border border-border bg-card p-4 shadow-2xl">
                     {header}
                     {grid}
                     {footer}
@@ -320,7 +320,7 @@ export function RenderedTableCard({
     }
 
     return (
-        <div className="mb-2 w-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="mb-2 w-full rounded-xl border border-border bg-card p-4 shadow-sm">
             {header}
             {grid}
             {footer}

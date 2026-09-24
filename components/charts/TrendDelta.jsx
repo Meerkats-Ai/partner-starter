@@ -13,9 +13,9 @@ import React from 'react'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 
 const colorFor = (good, tone) => {
-    if (good == null) return 'text-gray-400'
-    if (good) return 'text-green-600'
-    return tone === 'caution' ? 'text-amber-600' : 'text-red-600'
+    if (good == null) return 'text-muted-foreground/70'
+    if (good) return 'text-success'
+    return tone === 'caution' ? 'text-warning' : 'text-destructive'
 }
 
 // Trend glyph: lucide trending arrows (direction is also in the signed number,
@@ -30,7 +30,7 @@ export default function TrendDelta({ current, previous, invert = false, tone = '
     const cur = current == null ? NaN : Number(current)
     const prev = previous == null ? NaN : Number(previous)
     if (!isFinite(cur) || !isFinite(prev) || prev === 0) {
-        return <span className="text-xs text-gray-300">no comparison data</span>
+        return <span className="text-xs text-muted-foreground/60">no comparison data</span>
     }
     const pct = (cur - prev) / Math.abs(prev)
     const up = pct > 0.0005
@@ -53,7 +53,7 @@ export function TrendDeltaPoints({ current, previous, invert = false, tone = 'ba
     const cur = current == null ? NaN : Number(current)
     const prev = previous == null ? NaN : Number(previous)
     if (!isFinite(cur) || !isFinite(prev)) {
-        return <span className="text-xs text-gray-300">no comparison data</span>
+        return <span className="text-xs text-muted-foreground/60">no comparison data</span>
     }
     const pp = (cur - prev) * 100
     const up = pp > 0.05

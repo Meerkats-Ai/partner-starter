@@ -80,8 +80,8 @@ function PinBtn({ spec, onPinChange }) {
         <button type="button" onClick={onToggle}
             title={pinned ? 'Unpin from Cockpit' : 'Pin to Cockpit'}
             className={`inline-flex shrink-0 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-medium transition ${
-                pinned ? 'border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
-                    : 'border-gray-200 text-gray-500 hover:border-indigo-300 hover:text-indigo-700'}`}>
+                pinned ? 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20'
+                    : 'border-border text-muted-foreground hover:border-primary/40 hover:text-primary'}`}>
             {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
             {pinned ? 'Pinned' : 'Pin'}
         </button>
@@ -92,8 +92,8 @@ function PinBtn({ spec, onPinChange }) {
 // (Marketing Overview is faint-violet in the reference; the rest are white).
 function Panel({ children, tone = 'white', className = '' }) {
     const bg = tone === 'violet'
-        ? 'bg-gradient-to-b from-[#f5f3ff] to-[#faf9ff] border-[#e9e5ff]'
-        : 'bg-white border-gray-200'
+        ? 'bg-primary/5 border-primary/20'
+        : 'bg-card border-border'
     return <div className={`rounded-2xl border ${bg} p-6 shadow-sm ${className}`}>{children}</div>
 }
 
@@ -104,10 +104,10 @@ function CardHead({ spec, onPinChange, tone, dateChip = null }) {
         <div className="mb-5 flex items-start justify-between gap-3">
             <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                    <h3 className={`text-lg font-bold tracking-tight ${tone === 'violet' ? 'text-gray-900' : 'text-gray-900'}`}>{spec.title}</h3>
+                    <h3 className="text-lg font-bold tracking-tight text-foreground">{spec.title}</h3>
                     {spec.source && <SourceGlyph source={spec.source} />}
                 </div>
-                {spec.subtitle && <p className="mt-1 text-[13px] text-gray-400">{spec.subtitle}</p>}
+                {spec.subtitle && <p className="mt-1 text-[13px] text-muted-foreground/70">{spec.subtitle}</p>}
             </div>
             <div className="flex shrink-0 items-center gap-2">
                 {dateChip}
@@ -119,10 +119,10 @@ function CardHead({ spec, onPinChange, tone, dateChip = null }) {
 
 function SourceGlyph({ source }) {
     if (source === 'meta') {
-        return <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#eef2ff]"><span className="text-[13px] font-bold text-[#1877f2]">∞</span></span>
+        return <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-info/10"><span className="text-[13px] font-bold text-info">∞</span></span>
     }
     // shopify — green bag chip
-    return <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#e7f5ec] text-[11px]">🛍️</span>
+    return <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-success/10 text-[11px]">🛍️</span>
 }
 
 // ── Delta line: "▲ +1593.16% vs last month" (green up / red down) ────────────
@@ -136,7 +136,7 @@ function Delta({ cur, prev, invert = false, suffix = 'vs last month' }) {
         <div className="mt-2 flex items-center gap-1 text-xs font-semibold" style={{ color }}>
             <Icon className="h-3.5 w-3.5" strokeWidth={2.5} />
             <span>{pc >= 0 ? '+' : ''}{rounded}%</span>
-            <span className="font-normal text-gray-400">{suffix}</span>
+            <span className="font-normal text-muted-foreground/70">{suffix}</span>
         </div>
     )
 }
@@ -145,9 +145,9 @@ function Delta({ cur, prev, invert = false, suffix = 'vs last month' }) {
 function KpiSkeleton() {
     return (
         <div className="animate-pulse space-y-2.5">
-            <div className="h-3 w-20 rounded bg-gray-100" />
-            <div className="h-8 w-28 rounded-md bg-gray-200" />
-            <div className="h-3 w-24 rounded bg-gray-100" />
+            <div className="h-3 w-20 rounded bg-muted" />
+            <div className="h-8 w-28 rounded-md bg-muted" />
+            <div className="h-3 w-24 rounded bg-muted" />
         </div>
     )
 }
@@ -196,15 +196,15 @@ export function KpiGridCard({ spec, admin, workspaceId, platform, windowOverride
                         <div key={t.label} className={i === 0 ? 'relative' : ''}>
                             {q.loading ? <KpiSkeleton /> : (
                                 <>
-                                    <div className="text-[13px] text-gray-500">{t.label}</div>
+                                    <div className="text-[13px] text-muted-foreground">{t.label}</div>
                                     {isPlaceholder ? (
                                         <>
-                                            <div className="mt-1 text-[32px] font-extrabold leading-none tracking-tight text-gray-300">—</div>
-                                            <div className="mt-2 text-xs text-gray-400">{placeholderNote || 'not modelled yet'}</div>
+                                            <div className="mt-1 text-[32px] font-extrabold leading-none tracking-tight text-muted-foreground/60">—</div>
+                                            <div className="mt-2 text-xs text-muted-foreground/70">{placeholderNote || 'not modelled yet'}</div>
                                         </>
                                     ) : (
                                         <>
-                                            <div className="mt-1 text-[32px] font-extrabold leading-none tracking-tight tabular-nums text-gray-900">
+                                            <div className="mt-1 text-[32px] font-extrabold leading-none tracking-tight tabular-nums text-foreground">
                                                 {fmt(raw)}
                                             </div>
                                             {!t.noDelta && <Delta cur={raw} prev={prevRaw} invert={t.invertDelta} suffix={spec.deltaSuffix || 'vs last month'} />}
@@ -259,7 +259,7 @@ export function DonutCard({ spec, admin, workspaceId, platform, windowOverride, 
         <Panel tone={spec.tone}>
             <CardHead spec={spec} onPinChange={onPinChange} tone={spec.tone} dateChip={dateChip} />
             {q.loading ? (
-                <div className="h-64 animate-pulse rounded-xl bg-gray-50" />
+                <div className="h-64 animate-pulse rounded-xl bg-muted" />
             ) : empty ? (
                 <EmptyBox platformScoped={spec.platformScoped} note={spec.emptyNote} />
             ) : (
@@ -271,7 +271,7 @@ export function DonutCard({ spec, admin, workspaceId, platform, windowOverride, 
                                 datasets: [{
                                     data: merged.map((r) => r.value),
                                     backgroundColor: merged.map((r, i) => colorOf(r.label, i)),
-                                    borderWidth: 4, borderColor: '#fff', hoverOffset: 6,
+                                    borderWidth: 4, borderColor: 'hsl(var(--card))', hoverOffset: 6,
                                 }],
                             }}
                             options={{
@@ -285,31 +285,31 @@ export function DonutCard({ spec, admin, workspaceId, platform, windowOverride, 
                         {/* Center label (reference's "Total Ad Spend ₹66.78k" in the hole) */}
                         {spec.centerLabel && (
                             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-                                <div className="text-xs text-gray-400">{spec.centerLabel}</div>
-                                <div className="mt-0.5 text-xl font-bold tabular-nums text-gray-900">
+                                <div className="text-xs text-muted-foreground/70">{spec.centerLabel}</div>
+                                <div className="mt-0.5 text-xl font-bold tabular-nums text-foreground">
                                     {spec.valueFmt === 'money' ? money(total) : bigNum(total)}
                                 </div>
                             </div>
                         )}
                     </div>
-                    <div className="overflow-hidden rounded-xl border border-gray-100">
+                    <div className="overflow-hidden rounded-xl border border-border">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="bg-[#f5f4fb] text-left text-gray-600">
+                                <tr className="bg-muted text-left text-muted-foreground">
                                     <th className="px-4 py-2.5 font-semibold">{spec.dimLabel || 'Data Source'}</th>
                                     <th className="px-4 py-2.5 text-right font-semibold">{spec.pctLabel || 'Percentage'}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {merged.map((r, i) => (
-                                    <tr key={r.label} className={i % 2 ? 'bg-gray-50/60' : ''}>
+                                    <tr key={r.label} className={i % 2 ? 'bg-muted/40' : ''}>
                                         <td className="px-4 py-2.5">
-                                            <span className="inline-flex items-center gap-2 text-gray-700">
+                                            <span className="inline-flex items-center gap-2 text-foreground">
                                                 <span className="h-2.5 w-2.5 rounded-full" style={{ background: colorOf(r.label, i) }} />
                                                 {r.label}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-2.5 text-right tabular-nums text-gray-700">
+                                        <td className="px-4 py-2.5 text-right tabular-nums text-foreground">
                                             {total ? ((r.value / total) * 100).toFixed(isGoal ? 2 : 0) : 0}%
                                         </td>
                                     </tr>
@@ -354,24 +354,24 @@ export function FunnelCard({ spec, admin, workspaceId, platform, windowOverride,
         <Panel tone={spec.tone}>
             <CardHead spec={spec} onPinChange={onPinChange} tone={spec.tone} dateChip={dateChip} />
             {q.loading ? (
-                <div className="h-56 animate-pulse rounded-xl bg-gray-50" />
+                <div className="h-56 animate-pulse rounded-xl bg-muted" />
             ) : empty ? (
                 <EmptyBox platformScoped={spec.platformScoped} />
             ) : (
-                <div className="overflow-hidden rounded-xl border border-gray-100">
+                <div className="overflow-hidden rounded-xl border border-border">
                     {/* Stage headers (value + drop badge), one column each */}
                     <div className="grid" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
                         {spec.stages.map((s, i) => {
                             const prev = i > 0 ? vals[i - 1] : null
                             const drop = prev != null && prev > 0 ? ((vals[i] - prev) / prev) * 100 : null
                             return (
-                                <div key={s.label} className="border-r border-gray-100 px-3 pt-4 pb-2 text-center last:border-r-0">
-                                    <div className="text-[13px] text-gray-500">{s.label}</div>
-                                    <div className="mt-1 text-2xl font-bold tabular-nums text-gray-900">{vals[i].toLocaleString('en-IN')}</div>
+                                <div key={s.label} className="border-r border-border px-3 pt-4 pb-2 text-center last:border-r-0">
+                                    <div className="text-[13px] text-muted-foreground">{s.label}</div>
+                                    <div className="mt-1 text-2xl font-bold tabular-nums text-foreground">{vals[i].toLocaleString('en-IN')}</div>
                                     {drop != null && (
                                         <div className="mt-2 flex justify-center">
                                             <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                                                drop >= 0 ? 'bg-green-50 text-green-600' : Math.abs(drop) > 90 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-600'}`}>
+                                                drop >= 0 ? 'bg-success/10 text-success' : Math.abs(drop) > 90 ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'}`}>
                                                 {drop >= 0 ? '+' : ''}{drop.toFixed(1)}%
                                             </span>
                                         </div>
@@ -423,7 +423,7 @@ export function StatCards({ spec, admin, workspaceId, platform, windowOverride, 
     return (
         <div>
             <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-700">{spec.title}</h3>
+                <h3 className="text-sm font-semibold text-foreground">{spec.title}</h3>
                 <div className="flex shrink-0 items-center gap-2">{dateChip}<PinBtn spec={spec} onPinChange={onPinChange} /></div>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -432,10 +432,10 @@ export function StatCards({ spec, admin, workspaceId, platform, windowOverride, 
                     const prevRaw = t.derive ? t.derive(p) : p[t.metric]
                     const fmt = FMT_BY_KIND[t.fmt] || FMT_BY_KIND.ratio
                     return (
-                        <div key={t.label} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-                            <div className="flex items-center gap-1.5 text-xs text-gray-500">{t.label}{spec.source && <SourceGlyph source={spec.source} />}</div>
-                            {q.loading ? <div className="mt-2 h-7 w-16 animate-pulse rounded bg-gray-100" /> : (
-                                <div className="mt-1 text-2xl font-bold tabular-nums text-gray-900">{fmt(raw)}</div>
+                        <div key={t.label} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">{t.label}{spec.source && <SourceGlyph source={spec.source} />}</div>
+                            {q.loading ? <div className="mt-2 h-7 w-16 animate-pulse rounded bg-muted" /> : (
+                                <div className="mt-1 text-2xl font-bold tabular-nums text-foreground">{fmt(raw)}</div>
                             )}
                             {!t.noDelta && !q.loading && <Delta cur={raw} prev={prevRaw} invert={t.invertDelta} suffix="vs last month" />}
                         </div>
@@ -478,7 +478,7 @@ export function DataTableCard({ spec, admin, workspaceId, platform, windowOverri
     const body = (
         <>
             {q.loading ? (
-                <div className="animate-pulse space-y-2 py-2">{[...Array(6)].map((_, i) => <div key={i} className="h-9 w-full rounded bg-gray-50" />)}</div>
+                <div className="animate-pulse space-y-2 py-2">{[...Array(6)].map((_, i) => <div key={i} className="h-9 w-full rounded bg-muted" />)}</div>
             ) : empty ? (
                 <EmptyBox platformScoped={spec.platformScoped} />
             ) : (
@@ -486,7 +486,7 @@ export function DataTableCard({ spec, admin, workspaceId, platform, windowOverri
             )}
             {/* Optional footnote (e.g. "these columns need the line-item mart"). */}
             {spec.footnote && !empty && (
-                <div className="mt-3 flex items-start gap-2 text-xs text-gray-400">
+                <div className="mt-3 flex items-start gap-2 text-xs text-muted-foreground/70">
                     <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span>{spec.footnote}</span>
                 </div>
@@ -518,7 +518,7 @@ export function DataTableCard({ spec, admin, workspaceId, platform, windowOverri
         return createPortal(
             <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 sm:p-8"
                 onMouseDown={(e) => { if (e.target === e.currentTarget) tb.setFullscreen(false) }}>
-                <div className="flex max-h-full w-full max-w-6xl flex-col overflow-auto rounded-xl border border-gray-200 bg-white p-4 shadow-2xl">
+                <div className="flex max-h-full w-full max-w-6xl flex-col overflow-auto rounded-xl border border-border bg-card p-4 shadow-2xl">
                     <CardHead spec={spec} onPinChange={onPinChange} tone={spec.tone} />
                     {toolbar}
                     {body}
@@ -541,10 +541,10 @@ export function DataTableCard({ spec, admin, workspaceId, platform, windowOverri
 // `sortState` (useTableToolbar) is passed, headers become sortable.
 function Table({ columns, rows, sortState = null }) {
     return (
-        <div className="overflow-x-auto rounded-xl border border-gray-100">
+        <div className="overflow-x-auto rounded-xl border border-border">
             <table className="w-full text-sm">
                 <thead>
-                    <tr className="bg-[#f5f4fb] text-left text-gray-600">
+                    <tr className="bg-muted text-left text-muted-foreground">
                         {sortState ? (
                             <SortableHeaders columns={columns} sort={sortState.sort} toggleSort={sortState.toggleSort} />
                         ) : columns.map((c) => (
@@ -552,7 +552,7 @@ function Table({ columns, rows, sortState = null }) {
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-border">
                     {rows.map((r, ri) => (
                         <tr key={ri}>
                             {columns.map((c) => {
@@ -562,7 +562,7 @@ function Table({ columns, rows, sortState = null }) {
                                     : heat === 'bad' ? { background: CELL_BAD_BG, color: CELL_BAD_TX } : undefined
                                 return (
                                     <td key={c.key} style={style}
-                                        className={`px-4 py-3 tabular-nums ${c.align === 'right' ? 'text-right' : 'text-left'} ${c.strong ? 'font-medium text-gray-800' : 'text-gray-600'}`}>
+                                        className={`px-4 py-3 tabular-nums ${c.align === 'right' ? 'text-right' : 'text-left'} ${c.strong ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>
                                         {c.pair ? (
                                             // A product-pair cell: two stacked thumbnails + names
                                             // (Market Basket "Product Name" column).
@@ -570,17 +570,17 @@ function Table({ columns, rows, sortState = null }) {
                                                 {[['imgA', 'a'], ['imgB', 'b']].map(([imgK, nameK]) => (
                                                     <span key={imgK} className="inline-flex items-center gap-2">
                                                         {r[imgK]
-                                                            ? <img src={r[imgK]} alt="" loading="lazy" className="h-7 w-7 shrink-0 rounded-md bg-gray-50 object-cover" onError={(e) => { e.currentTarget.style.visibility = 'hidden' }} />
-                                                            : <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-gray-100 text-xs">📦</span>}
-                                                        <span className="truncate text-gray-700">{r[nameK]}</span>
+                                                            ? <img src={r[imgK]} alt="" loading="lazy" className="h-7 w-7 shrink-0 rounded-md bg-muted object-cover" onError={(e) => { e.currentTarget.style.visibility = 'hidden' }} />
+                                                            : <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-muted text-xs">📦</span>}
+                                                        <span className="truncate text-foreground">{r[nameK]}</span>
                                                     </span>
                                                 ))}
                                             </div>
                                         ) : c.img ? (
                                             <span className="inline-flex items-center gap-2.5">
                                                 {c.img(r)
-                                                    ? <img src={c.img(r)} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded-md bg-gray-50 object-cover" onError={(e) => { e.currentTarget.style.visibility = 'hidden' }} />
-                                                    : <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-gray-100 text-sm">📦</span>}
+                                                    ? <img src={c.img(r)} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded-md bg-muted object-cover" onError={(e) => { e.currentTarget.style.visibility = 'hidden' }} />
+                                                    : <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-muted text-sm">📦</span>}
                                                 <span className="truncate">{cell}</span>
                                             </span>
                                         ) : c.dot ? (
@@ -642,7 +642,7 @@ function ChannelTrend({ spec, admin, workspaceId, platform, windowOverride }) {
         return { labels, series }
     }, [q.rows, timeDim, t.dim, t.metric])
 
-    if (q.loading) return <div className="mt-6 h-56 animate-pulse rounded-xl bg-gray-50" />
+    if (q.loading) return <div className="mt-6 h-56 animate-pulse rounded-xl bg-muted" />
     if (!series.length) return null
     return (
         <div className="mt-6" style={{ height: 260 }}>
@@ -676,9 +676,9 @@ function ChannelTrend({ spec, admin, workspaceId, platform, windowOverride }) {
 // hint (e.g. a "needs modelling" explanation for a not-yet-modelled dimension).
 function EmptyBox({ platformScoped, note }) {
     return (
-        <div className="flex h-40 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-gray-200 px-6 text-center">
-            <div className="text-sm font-medium text-gray-400">No data in this window</div>
-            <div className="max-w-md text-xs text-gray-300">
+        <div className="flex h-40 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border px-6 text-center">
+            <div className="text-sm font-medium text-muted-foreground/70">No data in this window</div>
+            <div className="max-w-md text-xs text-muted-foreground/60">
                 {note || (platformScoped ? 'Check the platform toggle matches this workspace’s ads.' : 'This workspace has no rows for these metrics yet.')}
             </div>
         </div>
@@ -691,19 +691,19 @@ function EmptyBox({ platformScoped, note }) {
  * ══════════════════════════════════════════════════════════════════════════ */
 export function SetupCard({ spec, onPinChange }) {
     return (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50/60 p-6">
+        <div className="rounded-2xl border border-dashed border-border bg-muted/60 p-6">
             <div className="mb-3 flex items-start justify-between gap-3">
                 <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-bold tracking-tight text-gray-700">{spec.title}</h3>
+                        <h3 className="text-lg font-bold tracking-tight text-foreground">{spec.title}</h3>
                         {spec.source && <SourceGlyph source={spec.source} />}
                     </div>
-                    {spec.subtitle && <p className="mt-1 text-[13px] text-gray-400">{spec.subtitle}</p>}
+                    {spec.subtitle && <p className="mt-1 text-[13px] text-muted-foreground/70">{spec.subtitle}</p>}
                 </div>
                 <PinBtn spec={spec} onPinChange={onPinChange} />
             </div>
-            <div className="flex items-start gap-2.5 rounded-xl bg-white/70 px-4 py-4 text-sm text-gray-500">
-                <Wrench className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+            <div className="flex items-start gap-2.5 rounded-xl bg-card/70 px-4 py-4 text-sm text-muted-foreground">
+                <Wrench className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                 <span>{spec.setupNote || 'This view needs its segmentation modelled in the metrics layer before it can show numbers.'}</span>
             </div>
         </div>
@@ -799,34 +799,34 @@ export function AdCampaignTable({ spec, admin, workspaceId, platform, windowOver
             <CardHead spec={spec} onPinChange={onPinChange} tone={spec.tone} />
             {toolbar}
             {/* Platform sub-filter */}
-            <div className="mb-3 inline-flex overflow-hidden rounded-full border border-gray-200 text-sm">
+            <div className="mb-3 inline-flex overflow-hidden rounded-full border border-border text-sm">
                 {AD_PLATFORM_TABS.map((t) => (
                     <button key={t.key} onClick={() => setPlat(t.key)}
-                        className={`px-3.5 py-1.5 font-medium transition ${plat === t.key ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
+                        className={`px-3.5 py-1.5 font-medium transition ${plat === t.key ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:bg-muted'}`}>
                         {t.label}
                     </button>
                 ))}
             </div>
             {/* View tabs */}
-            <div className="mb-4 flex items-center gap-5 border-b border-gray-100">
+            <div className="mb-4 flex items-center gap-5 border-b border-border">
                 {AD_VIEW_TABS.map((t) => (
                     <button key={t.key} onClick={() => setView(t.key)}
-                        className={`relative -mb-px py-2 text-sm font-medium transition ${view === t.key ? 'text-indigo-700' : 'text-gray-500 hover:text-gray-800'}`}>
+                        className={`relative -mb-px py-2 text-sm font-medium transition ${view === t.key ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
                         {t.label}
-                        {view === t.key && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-indigo-600" />}
+                        {view === t.key && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-primary" />}
                     </button>
                 ))}
             </div>
 
             {isLive ? (
                 q.loading ? (
-                    <div className="animate-pulse space-y-2 py-2">{[...Array(6)].map((_, i) => <div key={i} className="h-9 w-full rounded bg-gray-50" />)}</div>
+                    <div className="animate-pulse space-y-2 py-2">{[...Array(6)].map((_, i) => <div key={i} className="h-9 w-full rounded bg-muted" />)}</div>
                 ) : empty ? (
                     <EmptyBox platformScoped />
                 ) : (
                     <>
                         <Table columns={CAMPAIGN_COLUMNS} rows={rows} sortState={tb} />
-                        <div className="mt-3 text-xs text-gray-400">
+                        <div className="mt-3 text-xs text-muted-foreground/70">
                             Showing {rows.length}{rows.length !== baseRows.length ? ` of ${baseRows.length}` : ''} campaign{baseRows.length === 1 ? '' : 's'}
                             {tb.q.trim() && rows.length === 0 ? ` — none match "${tb.q.trim()}"` : ''}
                         </div>
@@ -834,12 +834,12 @@ export function AdCampaignTable({ spec, admin, workspaceId, platform, windowOver
                 )
             ) : (
                 // Nested / Ad sets / Ads — need adset/ad-grain marts (E:\etl backlog A2).
-                <div className="flex h-40 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-gray-200 px-6 text-center">
-                    <Wrench className="h-4 w-4 text-gray-400" />
-                    <div className="text-sm font-medium text-gray-500">
+                <div className="flex h-40 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border px-6 text-center">
+                    <Wrench className="h-4 w-4 text-muted-foreground/70" />
+                    <div className="text-sm font-medium text-muted-foreground">
                         {view === 'nested' ? 'Nested Campaign → Ad set → Ad view' : view === 'adsets' ? 'Ad-set breakdown' : 'Ad breakdown'} coming soon
                     </div>
-                    <div className="max-w-md text-xs text-gray-400">
+                    <div className="max-w-md text-xs text-muted-foreground/70">
                         The raw ad-set / ad data is ingested — this view turns on once the ad-set &amp; ad-grain
                         models are added in the metrics layer. Use the Campaigns tab for now.
                     </div>
@@ -852,7 +852,7 @@ export function AdCampaignTable({ spec, admin, workspaceId, platform, windowOver
         return createPortal(
             <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 sm:p-8"
                 onMouseDown={(e) => { if (e.target === e.currentTarget) tb.setFullscreen(false) }}>
-                <div className="flex max-h-full w-full max-w-6xl flex-col overflow-auto rounded-xl border border-gray-200 bg-white p-6 shadow-2xl">
+                <div className="flex max-h-full w-full max-w-6xl flex-col overflow-auto rounded-xl border border-border bg-card p-6 shadow-2xl">
                     {inner}
                 </div>
             </div>,
@@ -906,7 +906,7 @@ export function ProductOverviewCards({ spec, admin, workspaceId, platform, windo
         <Panel tone="violet">
             <div className="mb-4 flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold tracking-tight text-gray-900">{spec.title}</h3>
+                    <h3 className="text-lg font-bold tracking-tight text-foreground">{spec.title}</h3>
                     <SourceGlyph source="shopify" />
                 </div>
                 <PinBtn spec={spec} onPinChange={onPinChange} />
@@ -916,37 +916,37 @@ export function ProductOverviewCards({ spec, admin, workspaceId, platform, windo
                     {PRODUCT_SORTS.map((s) => (
                         <button key={s.key} onClick={() => { setSort(s.key); setPage(0) }}
                             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                                sort === s.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'}`}>
+                                sort === s.key ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:bg-muted border border-border'}`}>
                             {s.label}
                         </button>
                     ))}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>Page {page + 1} of {pages}</span>
                     <button disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}
-                        className="grid h-7 w-7 place-items-center rounded-full border border-gray-200 disabled:opacity-40">‹</button>
+                        className="grid h-7 w-7 place-items-center rounded-full border border-border disabled:opacity-40">‹</button>
                     <button disabled={page >= pages - 1} onClick={() => setPage((p) => Math.min(pages - 1, p + 1))}
-                        className="grid h-7 w-7 place-items-center rounded-full border border-gray-200 disabled:opacity-40">›</button>
+                        className="grid h-7 w-7 place-items-center rounded-full border border-border disabled:opacity-40">›</button>
                 </div>
             </div>
             {q.loading ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">{[...Array(4)].map((_, i) => <div key={i} className="h-64 animate-pulse rounded-2xl bg-gray-100" />)}</div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">{[...Array(4)].map((_, i) => <div key={i} className="h-64 animate-pulse rounded-2xl bg-muted" />)}</div>
             ) : shown.length === 0 ? (
                 <EmptyBox />
             ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {shown.map((it) => (
-                        <div key={it.name} className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                        <div key={it.name} className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                             {/* Real product image (from Shopify _raw, surfaced via A4b) */}
                             {it.image ? (
                                 <img src={it.image} alt={it.name} loading="lazy"
-                                    className="h-36 w-full bg-gray-50 object-contain p-2"
+                                    className="h-36 w-full bg-muted object-contain p-2"
                                     onError={(e) => { e.currentTarget.style.display = 'none' }} />
                             ) : (
-                                <div className="flex h-36 items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50 text-3xl">📦</div>
+                                <div className="flex h-36 items-center justify-center bg-muted text-3xl">📦</div>
                             )}
                             <div className="p-4">
-                                <div className="truncate text-sm font-semibold text-gray-900" title={it.name}>{it.name}</div>
+                                <div className="truncate text-sm font-semibold text-foreground" title={it.name}>{it.name}</div>
                                 <dl className="mt-3 space-y-1.5 text-sm">
                                     <Row k="Total Sales" v={money(it.sales)} />
                                     <Row k="Order Count" v={it.orders.toLocaleString('en-IN')} />
@@ -961,8 +961,8 @@ export function ProductOverviewCards({ spec, admin, workspaceId, platform, windo
                 </div>
             )}
             {active.pending && (
-                <div className="mt-4 flex items-start gap-2 rounded-lg bg-white/70 px-3 py-2 text-xs text-gray-500">
-                    <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
+                <div className="mt-4 flex items-start gap-2 rounded-lg bg-card/70 px-3 py-2 text-xs text-muted-foreground">
+                    <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
                     <span>Sales, profit &amp; margin per product need the line-item revenue mart (+ COGS import). Sorted by units sold for now — see EXPLORE_BACKLOG A4/A8.</span>
                 </div>
             )}
@@ -973,8 +973,8 @@ export function ProductOverviewCards({ spec, admin, workspaceId, platform, windo
 function Row({ k, v, pending }) {
     return (
         <div className="flex items-center justify-between">
-            <dt className="text-gray-500">{k}</dt>
-            <dd className={`tabular-nums ${pending ? 'text-gray-300' : 'font-medium text-gray-800'}`}>{pending ? '—' : v}</dd>
+            <dt className="text-muted-foreground">{k}</dt>
+            <dd className={`tabular-nums ${pending ? 'text-muted-foreground/60' : 'font-medium text-foreground'}`}>{pending ? '—' : v}</dd>
         </div>
     )
 }
@@ -1033,18 +1033,18 @@ export function RfmCard({ spec, admin, workspaceId, onPinChange }) {
         <Panel tone={spec.tone}>
             <div className="mb-1 flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold tracking-tight text-gray-900">{spec.title}</h3>
+                    <h3 className="text-lg font-bold tracking-tight text-foreground">{spec.title}</h3>
                     <SourceGlyph source="shopify" />
                 </div>
                 <PinBtn spec={spec} onPinChange={onPinChange} />
             </div>
-            <p className="mb-2 text-[13px] text-gray-400">{spec.subtitle}</p>
-            {modelled && <div className="mb-4"><span className="text-xs text-gray-400">Total Customers</span><div className="text-2xl font-bold text-gray-900">{total.toLocaleString('en-IN')}</div></div>}
+            <p className="mb-2 text-[13px] text-muted-foreground/70">{spec.subtitle}</p>
+            {modelled && <div className="mb-4"><span className="text-xs text-muted-foreground/70">Total Customers</span><div className="text-2xl font-bold text-foreground">{total.toLocaleString('en-IN')}</div></div>}
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
                 {/* Mekko grid — tile shows the segment's customer count + % of base */}
                 <div>
-                    <div className="mb-1 text-xs text-gray-400">Frequency + Monetary (Orders + Revenue) ↑</div>
+                    <div className="mb-1 text-xs text-muted-foreground/70">Frequency + Monetary (Orders + Revenue) ↑</div>
                     <div className="grid h-72 gap-1.5" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gridTemplateRows: 'repeat(3, 1fr)' }}>
                         {RFM_TILES.map((t) => {
                             const s = bySeg.get(t.seg)
@@ -1059,13 +1059,13 @@ export function RfmCard({ spec, admin, workspaceId, onPinChange }) {
                             )
                         })}
                     </div>
-                    <div className="mt-1 text-center text-xs text-gray-400">Recency ↓</div>
+                    <div className="mt-1 text-center text-xs text-muted-foreground/70">Recency ↓</div>
                 </div>
                 {/* Segment table with real customer counts + avg M/F/R */}
-                <div className="overflow-hidden rounded-xl border border-gray-100">
+                <div className="overflow-hidden rounded-xl border border-border">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-[#f5f4fb] text-left text-gray-600">
+                            <tr className="bg-muted text-left text-muted-foreground">
                                 <th className="px-3 py-2 font-semibold">Audience Type</th>
                                 <th className="px-3 py-2 text-right font-semibold">Customers</th>
                                 <th className="px-2 py-2 text-right font-semibold">M</th>
@@ -1073,12 +1073,12 @@ export function RfmCard({ spec, admin, workspaceId, onPinChange }) {
                                 <th className="px-2 py-2 text-right font-semibold">R</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-border">
                             {RFM_SEGMENTS.map((seg) => {
                                 const s = bySeg.get(seg)
                                 const cell = (v) => (!modelled || !s ? '—' : Math.round(v))
                                 return (
-                                    <tr key={seg} className="text-gray-600">
+                                    <tr key={seg} className="text-muted-foreground">
                                         <td className="px-3 py-2">
                                             <span className="inline-flex items-center gap-2">
                                                 <span className="h-2.5 w-2.5 rounded-full" style={{ background: RFM_COLORS[seg] }} />{seg}
@@ -1121,14 +1121,14 @@ export function GrowthCard({ spec, admin, workspaceId, windowOverride, onPinChan
     return (
         <Panel tone={spec.tone}>
             <CardHead spec={spec} onPinChange={onPinChange} tone={spec.tone} dateChip={dateChip} />
-            {q.loading ? <div className="h-56 animate-pulse rounded-xl bg-gray-50" />
+            {q.loading ? <div className="h-56 animate-pulse rounded-xl bg-muted" />
              : empty ? <EmptyBox />
              : (
                 <div style={{ height: 260 }}>
                     <Line
                         data={{ labels, datasets: [{
                             label: 'New customers', data,
-                            borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,0.12)',
+                            borderColor: 'hsl(var(--chart-3))', backgroundColor: 'hsl(var(--chart-3) / 0.12)',
                             pointRadius: 2, borderWidth: 2, tension: 0.4, fill: true,
                         }] }}
                         options={{

@@ -57,9 +57,9 @@ function retentionColor(v, target) {
   return `hsl(${hue}, 55%, ${lightness}%)`
 }
 function retentionText(v, target) {
-  if (v == null) return '#0f172a'
+  if (v == null) return 'hsl(var(--foreground))'
   const capped = Math.min(1, Math.abs(v - target) / 15)
-  return capped > 0.55 ? '#f8fafc' : '#0f172a'
+  return capped > 0.55 ? 'hsl(var(--card))' : 'hsl(var(--foreground))'
 }
 
 // Sequential scale for money/count metrics: relative to the max in the table.
@@ -70,8 +70,8 @@ function sequentialColor(v, max) {
   return `hsl(178, 42%, ${lightness}%)`
 }
 function sequentialText(v, max) {
-  if (v == null || max <= 0) return '#0f172a'
-  return v / max > 0.6 ? '#f8fafc' : '#0f172a'
+  if (v == null || max <= 0) return 'hsl(var(--foreground))'
+  return v / max > 0.6 ? 'hsl(var(--card))' : 'hsl(var(--foreground))'
 }
 
 // Tiny inline sparkline of a cohort's completed cells (trend at a glance).
@@ -131,13 +131,13 @@ export default function CohortCard({ rows, loading, error, ask, grain = 'month',
     <div className="flex items-center gap-2">
       {/* Weekly / Monthly grain toggle — re-fetches via onGrainChange. */}
       {onGrainChange && (
-        <div className="flex overflow-hidden rounded-full bg-gray-100">
+        <div className="flex overflow-hidden rounded-full bg-muted">
           {[['month', 'Monthly'], ['week', 'Weekly']].map(([g, label]) => (
             <button
               key={g}
               onClick={() => onGrainChange(g)}
               className={`px-2.5 py-1 text-xs font-medium transition ${
-                grain === g ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-200'
+                grain === g ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent'
               }`}
             >
               {label}
@@ -149,7 +149,7 @@ export default function CohortCard({ rows, loading, error, ask, grain = 'month',
       <select
         value={metricKey}
         onChange={(e) => setMetricKey(e.target.value)}
-        className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700"
+        className="rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
       >
         {METRICS.map((m) => (
           <option key={m.key} value={m.key}>{m.label}</option>
@@ -187,20 +187,20 @@ export default function CohortCard({ rows, loading, error, ask, grain = 'month',
         <table className="w-full border-collapse text-xs">
           <thead>
             <tr>
-              <th className="px-2.5 py-1.5 text-left font-medium text-gray-500">Cohort</th>
-              <th className="px-2.5 py-1.5 text-right font-medium text-gray-500">Size</th>
+              <th className="px-2.5 py-1.5 text-left font-medium text-muted-foreground">Cohort</th>
+              <th className="px-2.5 py-1.5 text-right font-medium text-muted-foreground">Size</th>
               {offsets.map((off) => (
-                <th key={off} className="px-2.5 py-1.5 text-center font-medium text-gray-500">
+                <th key={off} className="px-2.5 py-1.5 text-center font-medium text-muted-foreground">
                   {isWeekly ? 'W' : 'M'}{off}
                   {/* Target curve is monthly-only; weekly has no per-week benchmark. */}
                   {metric.kind === 'pct' && !isWeekly && (
-                    <div className="text-[10px] font-normal text-gray-300">
+                    <div className="text-[10px] font-normal text-muted-foreground/60">
                       tgt {MONTHLY_TARGETS[off] ?? MONTHLY_TARGETS[MONTHLY_TARGETS.length - 1]}%
                     </div>
                   )}
                 </th>
               ))}
-              <th className="px-2.5 py-1.5 text-center font-medium text-gray-500">Trend</th>
+              <th className="px-2.5 py-1.5 text-center font-medium text-muted-foreground">Trend</th>
             </tr>
           </thead>
           <tbody>
@@ -210,18 +210,18 @@ export default function CohortCard({ rows, loading, error, ask, grain = 'month',
               const pts = sparklinePoints(series)
               return (
                 <tr key={c.cohort_month} style={{ opacity: small ? 0.5 : 1 }}>
-                  <td className="whitespace-nowrap px-2.5 py-1.5 font-medium text-gray-700">
+                  <td className="whitespace-nowrap px-2.5 py-1.5 font-medium text-foreground">
                     {fmtCohortLabel(c.cohort_month, isWeekly)}
                     {small && (
                       <span
                         title={`Below ${SIZE_THRESHOLD} customers — % is noisy`}
-                        className="ml-1 cursor-default text-gray-400"
+                        className="ml-1 cursor-default text-muted-foreground/70"
                       >
                         *
                       </span>
                     )}
                   </td>
-                  <td className="px-2.5 py-1.5 text-right tabular-nums text-gray-500">
+                  <td className="px-2.5 py-1.5 text-right tabular-nums text-muted-foreground">
                     {fmtNum(c.cohort_size)}
                   </td>
                   {offsets.map((off) => {
@@ -243,10 +243,10 @@ export default function CohortCard({ rows, loading, error, ask, grain = 'month',
                   <td className="px-2.5 py-1.5 text-center">
                     {pts ? (
                       <svg width="60" height="20" style={{ overflow: 'visible' }}>
-                        <polyline points={pts} fill="none" stroke="#0f766e" strokeWidth="1.5" />
+                        <polyline points={pts} fill="none" stroke="hsl(var(--chart-1))" strokeWidth="1.5" />
                       </svg>
                     ) : (
-                      <span className="text-gray-300">—</span>
+                      <span className="text-muted-foreground/60">—</span>
                     )}
                   </td>
                 </tr>
@@ -255,7 +255,7 @@ export default function CohortCard({ rows, loading, error, ask, grain = 'month',
           </tbody>
         </table>
       </div>
-      <p className="mt-2.5 px-0.5 text-[11px] text-gray-400">
+      <p className="mt-2.5 px-0.5 text-[11px] text-muted-foreground/70">
         {retentionScaled
           ? 'Color is relative to the target retention curve per month — green outperforms, red underperforms.'
           : 'Color intensity is relative to the highest value in the table.'}

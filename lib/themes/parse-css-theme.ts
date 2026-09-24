@@ -136,6 +136,30 @@ export function toHslTriplet(value: string): string | null {
   return null;
 }
 
+/**
+ * Rewrite an ENTIRE uploaded theme file so its `--token: <color>` VALUES become the
+ * "H S% L%" triplet the app's Tailwind expects (it reads every color as
+ * `hsl(var(--token))`, so a raw `oklch(...)`/`#hex` value would produce an invalid
+ * `hsl(oklch(...))`). Unlike parseCssTheme (which extracts only 19 known tokens),
+ * this KEEPS every selector and every declaration — extra tokens (--chart-*,
+ * --sidebar-*, --radius), @font-face, comments, non-color props all pass through
+ * untouched. Only a `--x: <parseable-color>;` value is converted; anything
+ * toHslTriplet() can't parse (lengths, font stacks, gradients, var() refs) is left
+ * as-is. This is what enables "inject the whole file" instead of cherry-picking.
+ */
+export function normalizeCssColors(cssRaw: string): string {
+  const css = String(cssRaw || "");
+  // Match `--name: value` up to the terminating ; or } (last decl in a block may
+  // omit the semicolon). Capture the value so we can try to convert just the color.
+  return css.replace(
+    /(--[\w-]+\s*:\s*)([^;}]+)(\s*[;}])/g,
+    (full, head: string, value: string, tail: string) => {
+      const triplet = toHslTriplet(value.trim());
+      return triplet ? `${head}${triplet}${tail}` : full;
+    },
+  );
+}
+
 /** Pull the `--token: value;` declarations out of one CSS rule body. */
 function declsFromBlock(body: string): Record<string, string> {
   const out: Record<string, string> = {};

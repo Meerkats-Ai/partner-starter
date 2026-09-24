@@ -61,13 +61,13 @@ const SM_BTN = { height: 24, padding: '0 10px', fontSize: 12, lineHeight: '24px'
 // Compact square icon button for the row actions (View/Edit/Delete/Test).
 const ICON_BTN = {
   width: 30, height: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-  border: '1px solid #e5e7eb', borderRadius: 8, background: '#fff', color: '#4b5563', cursor: 'pointer',
+  border: '1px solid hsl(var(--border))', borderRadius: 8, background: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))', cursor: 'pointer',
 };
 
 function Sel({ value, onChange, options }) {
   return (
     <select value={value} onChange={onChange}
-      style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border,#e5e7eb)', fontSize: 13, background: '#fff' }}>
+      style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid hsl(var(--border))', fontSize: 13, background: 'hsl(var(--card))' }}>
       {options.map((o) => <option key={o.v} value={o.v}>{o.t}</option>)}
     </select>
   );
@@ -88,7 +88,7 @@ const PLAT_BADGE = {
   demo: { t: '·', bg: '#f3f4f6', fg: '#6b7280' },
 };
 function PlatBadge({ platform }) {
-  const b = PLAT_BADGE[platform] || { t: (platform || '?')[0]?.toUpperCase(), bg: '#f3f4f6', fg: '#6b7280' };
+  const b = PLAT_BADGE[platform] || { t: (platform || '?')[0]?.toUpperCase(), bg: 'hsl(var(--muted))', fg: 'hsl(var(--muted-foreground))' };
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -125,28 +125,28 @@ function AgentRow({ agent, onToggle, onRun, onConnect, onView, onEdit, onDelete,
 
   return (
     <>
-      <tr style={{ borderTop: '1px solid #f1f3f5', background: dim ? '#fcfcfc' : 'transparent' }}>
+      <tr style={{ borderTop: '1px solid hsl(var(--border))', background: dim ? 'hsl(var(--muted))' : 'transparent' }}>
         {/* Agent name — clicking it opens the read-only viewer (what it does).
             The small "Connect" chip on greyed rows still routes to the connect flow. */}
         <td style={{ padding: '12px 14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: dim ? 0.6 : 1 }}>
             <button onClick={() => onEdit(agent)} title="Open this agent to edit"
-              style={{ fontWeight: 600, color: '#111827', textAlign: 'left', cursor: 'pointer', background: 'none', border: 0, padding: 0 }}>
+              style={{ fontWeight: 600, color: 'hsl(var(--foreground))', textAlign: 'left', cursor: 'pointer', background: 'none', border: 0, padding: 0 }}>
               {agent.name}
             </button>
             {isCustom && (
-              <span style={{ fontSize: 10.5, fontWeight: 600, color: '#4338ca', background: '#e0e7ff', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase', letterSpacing: '.03em' }}>
+              <span style={{ fontSize: 10.5, fontWeight: 600, color: 'hsl(var(--primary))', background: 'hsl(var(--muted))', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase', letterSpacing: '.03em' }}>
                 Custom
               </span>
             )}
             {dim && (
               <button onClick={() => onConnect(agent)}
-                style={{ fontSize: 10.5, fontWeight: 600, color: '#b45309', background: '#fef3c7', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase', letterSpacing: '.03em', border: 0, cursor: 'pointer' }}>
+                style={{ fontSize: 10.5, fontWeight: 600, color: 'hsl(var(--warning))', background: 'hsl(var(--warning) / 0.15)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase', letterSpacing: '.03em', border: 0, cursor: 'pointer' }}>
                 Connect
               </button>
             )}
           </div>
-          <div style={{ fontSize: 12.5, color: '#9ca3af', marginTop: 2, opacity: dim ? 0.6 : 1 }}>{agent.description || '—'}</div>
+          <div style={{ fontSize: 12.5, color: 'hsl(var(--muted-foreground))', marginTop: 2, opacity: dim ? 0.6 : 1 }}>{agent.description || '—'}</div>
         </td>
 
         {/* Status: an ENABLED toggle switch (enables/disables the schedule) */}
@@ -158,11 +158,11 @@ function AgentRow({ agent, onToggle, onRun, onConnect, onView, onEdit, onDelete,
               style={{
                 position: 'relative', width: 34, height: 20, borderRadius: 999, border: 0, padding: 0,
                 cursor: busy ? 'default' : 'pointer', transition: 'background .15s',
-                background: enabled ? '#16a34a' : '#d1d5db', opacity: busy ? 0.6 : 1,
+                background: enabled ? 'hsl(var(--success))' : 'hsl(var(--border))', opacity: busy ? 0.6 : 1,
               }}>
               <span style={{
                 position: 'absolute', top: 2, left: enabled ? 16 : 2, width: 16, height: 16,
-                borderRadius: '50%', background: '#fff', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.2)',
+                borderRadius: '50%', background: 'hsl(var(--card))', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.2)',
               }} />
             </button>
           </Tooltip2>
@@ -172,10 +172,10 @@ function AgentRow({ agent, onToggle, onRun, onConnect, onView, onEdit, onDelete,
         <td style={{ padding: '12px 14px', opacity: dim ? 0.55 : 1 }}><PlatBadge platform={agent.platform} /></td>
 
         {/* Cadence */}
-        <td style={{ padding: '12px 14px', color: '#374151', opacity: dim ? 0.55 : 1 }}>{cadenceLabel(agent.cadence)}</td>
+        <td style={{ padding: '12px 14px', color: 'hsl(var(--foreground))', opacity: dim ? 0.55 : 1 }}>{cadenceLabel(agent.cadence)}</td>
 
         {/* Last run */}
-        <td style={{ padding: '12px 14px', color: agent.last_run_at ? '#374151' : '#9ca3af', opacity: dim ? 0.55 : 1 }}>{relTime(agent.last_run_at)}</td>
+        <td style={{ padding: '12px 14px', color: agent.last_run_at ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))', opacity: dim ? 0.55 : 1 }}>{relTime(agent.last_run_at)}</td>
 
         {/* Icon actions: View · Edit/Customize · Delete(custom) · Test */}
         <td style={{ padding: '12px 14px', textAlign: 'right' }}>
@@ -198,7 +198,7 @@ function AgentRow({ agent, onToggle, onRun, onConnect, onView, onEdit, onDelete,
             )}
             {isCustom && (
               <Tooltip2 description="Delete this custom agent">
-                <button style={{ ...ICON_BTN, color: '#b91c1c' }} onClick={() => onDelete(agent)}><Trash2 size={15} /></button>
+                <button style={{ ...ICON_BTN, color: 'hsl(var(--destructive))' }} onClick={() => onDelete(agent)}><Trash2 size={15} /></button>
               </Tooltip2>
             )}
             {connected ? (
@@ -216,11 +216,11 @@ function AgentRow({ agent, onToggle, onRun, onConnect, onView, onEdit, onDelete,
       {result && (
         <tr>
           <td colSpan={6} style={{ padding: '0 14px 10px 14px' }}>
-            <div style={{ position: 'relative', fontSize: 12.5, color: result.status === 'error' ? '#b91c1c' : '#374151', background: '#f9fafb', borderRadius: 8, padding: '8px 28px 8px 10px' }}>
+            <div style={{ position: 'relative', fontSize: 12.5, color: result.status === 'error' ? 'hsl(var(--destructive))' : 'hsl(var(--foreground))', background: 'hsl(var(--muted))', borderRadius: 8, padding: '8px 28px 8px 10px' }}>
               {/* Dismiss the test output */}
               <Tooltip2 description="Close output">
                 <button onClick={() => onClearResult(agent)}
-                  style={{ position: 'absolute', top: 6, right: 6, width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 0, borderRadius: 6, background: 'transparent', color: '#9ca3af', cursor: 'pointer' }}>
+                  style={{ position: 'absolute', top: 6, right: 6, width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 0, borderRadius: 6, background: 'transparent', color: 'hsl(var(--muted-foreground))', cursor: 'pointer' }}>
                   <X size={14} />
                 </button>
               </Tooltip2>
@@ -232,7 +232,7 @@ function AgentRow({ agent, onToggle, onRun, onConnect, onView, onEdit, onDelete,
               <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginTop: 6 }}>
                 {isLong && (
                   <button className="mini" onClick={() => setExpanded((v) => !v)}
-                    style={{ fontSize: 11.5, color: '#4f46e5', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                    style={{ fontSize: 11.5, color: 'hsl(var(--primary))', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                     {expanded ? 'Show less' : 'Show more'}
                   </button>
                 )}
@@ -260,7 +260,7 @@ function AgentRow({ agent, onToggle, onRun, onConnect, onView, onEdit, onDelete,
                             output: result.output_summary || resultText,
                           },
                     )}
-                    style={{ fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                    style={{ fontSize: 11.5, fontWeight: 600, color: 'hsl(var(--primary))', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                     View full run →
                   </button>
                 )}
@@ -280,13 +280,13 @@ function AgentTable({ title, agents, onToggle, onRun, onConnect, onView, onEdit,
   return (
     <div style={{ marginBottom: 4 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '0 2px 10px' }}>
-        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#374151' }}>{title}</h3>
-        <span style={{ fontSize: 12, color: '#9ca3af' }}>{agents.length}</span>
+        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'hsl(var(--foreground))' }}>{title}</h3>
+        <span style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))' }}>{agents.length}</span>
       </div>
-      <div style={{ overflowX: 'auto', border: '1px solid #eceff1', borderRadius: 12, background: '#fff' }}>
+      <div style={{ overflowX: 'auto', border: '1px solid hsl(var(--border))', borderRadius: 12, background: 'hsl(var(--card))' }}>
         <table style={{ width: '100%', minWidth: 820, borderCollapse: 'collapse', fontSize: 13.5 }}>
           <thead>
-            <tr style={{ textAlign: 'left', color: '#9ca3af', fontSize: 11.5, textTransform: 'uppercase', letterSpacing: '.04em' }}>
+            <tr style={{ textAlign: 'left', color: 'hsl(var(--muted-foreground))', fontSize: 11.5, textTransform: 'uppercase', letterSpacing: '.04em' }}>
               <th style={{ padding: '10px 14px', fontWeight: 600 }}>Agent</th>
               <th style={{ padding: '10px 14px', fontWeight: 600 }}>Status</th>
               <th style={{ padding: '10px 14px', fontWeight: 600 }}>Platform</th>
@@ -318,9 +318,9 @@ function ConnectModal({ platform, onClose, onGo }) {
     <div onClick={onClose}
       style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
       <div onClick={(e) => e.stopPropagation()}
-        style={{ background: '#fff', borderRadius: 16, padding: 24, width: '100%', maxWidth: 420, boxShadow: '0 20px 50px rgba(0,0,0,.25)' }}>
+        style={{ background: 'hsl(var(--card))', borderRadius: 16, padding: 24, width: '100%', maxWidth: 420, boxShadow: '0 20px 50px rgba(0,0,0,.25)' }}>
         <h3 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 600 }}>Connect {label}</h3>
-        <p style={{ margin: '0 0 18px', fontSize: 14, color: '#4b5563', lineHeight: 1.5 }}>
+        <p style={{ margin: '0 0 18px', fontSize: 14, color: 'hsl(var(--muted-foreground))', lineHeight: 1.5 }}>
           This agent runs on <b>{label}</b>. Connect your {label} account in Integrations so it can read
           your campaigns and act on them.
         </p>
@@ -388,14 +388,14 @@ function AgentDetailDrawer({ agentKey, onClose, justCreated = false, highlightTe
     <div onClick={onClose}
       style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,.3)', display: 'flex', justifyContent: 'flex-end' }}>
       <div onClick={(e) => e.stopPropagation()}
-        style={{ width: '100%', maxWidth: 620, height: '100%', overflowY: 'auto', background: '#fff', padding: 24 }}>
+        style={{ width: '100%', maxWidth: 620, height: '100%', overflowY: 'auto', background: 'hsl(var(--card))', padding: 24 }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))' }}>
               {agent?.icon ? `${agent.icon} ` : ''}{agent?.name || (loading ? 'Loading…' : 'Agent')}
             </div>
-            {agent?.description && <div style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>{agent.description}</div>}
+            {agent?.description && <div style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', marginTop: 4 }}>{agent.description}</div>}
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 12 }}>
             {onEdit && agent && (
@@ -407,7 +407,7 @@ function AgentDetailDrawer({ agentKey, onClose, justCreated = false, highlightTe
 
         {/* Just-created banner */}
         {justCreated && (
-          <div style={{ margin: '12px 0 4px', padding: '10px 12px', borderRadius: 8, background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', fontSize: 13 }}>
+          <div style={{ margin: '12px 0 4px', padding: '10px 12px', borderRadius: 8, background: 'hsl(var(--success) / 0.12)', border: '1px solid hsl(var(--success) / 0.4)', color: 'hsl(var(--success))', fontSize: 13 }}>
             ✓ Agent created. It’s not enabled yet — <b>Test run</b> it below to see its output, then enable it from the list to run on schedule.
           </div>
         )}
@@ -422,25 +422,25 @@ function AgentDetailDrawer({ agentKey, onClose, justCreated = false, highlightTe
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 16px',
                 borderRadius: 9, border: 0, fontSize: 13.5, fontWeight: 600, cursor: running ? 'default' : 'pointer',
-                background: '#f97316', color: '#fff', opacity: running ? 0.7 : 1,
-                boxShadow: highlightTest ? '0 0 0 3px rgba(249,115,22,.25)' : 'none',
+                background: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', opacity: running ? 0.7 : 1,
+                boxShadow: highlightTest ? '0 0 0 3px hsl(var(--primary) / 0.25)' : 'none',
               }}>
               {running ? <Loader2 size={15} className="animate-spin" /> : <FlaskConical size={15} />}
               {running ? 'Testing…' : 'Test run now'}
             </button>
-            <span style={{ fontSize: 12, color: '#9ca3af' }}>Runs once now — doesn’t change the schedule.</span>
+            <span style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))' }}>Runs once now — doesn’t change the schedule.</span>
           </div>
         )}
 
         {/* Test run output */}
         {runResult && (
-          <div style={{ position: 'relative', margin: '10px 0 4px', fontSize: 12.5, color: runResult.status === 'error' ? '#b91c1c' : '#374151', background: '#f9fafb', borderRadius: 8, padding: '10px 28px 10px 12px' }}>
+          <div style={{ position: 'relative', margin: '10px 0 4px', fontSize: 12.5, color: runResult.status === 'error' ? 'hsl(var(--destructive))' : 'hsl(var(--foreground))', background: 'hsl(var(--muted))', borderRadius: 8, padding: '10px 28px 10px 12px' }}>
             <button onClick={() => setRunResult(null)}
-              style={{ position: 'absolute', top: 6, right: 6, width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 0, borderRadius: 6, background: 'transparent', color: '#9ca3af', cursor: 'pointer' }}>
+              style={{ position: 'absolute', top: 6, right: 6, width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 0, borderRadius: 6, background: 'transparent', color: 'hsl(var(--muted-foreground))', cursor: 'pointer' }}>
               <X size={14} />
             </button>
             {runResult.status === 'error' ? (
-              <div className="mk-streamdown" style={{ color: '#b91c1c' }}>
+              <div className="mk-streamdown" style={{ color: 'hsl(var(--destructive))' }}>
                 <Streamdown>{runResult.error_message || 'Run failed'}</Streamdown>
               </div>
             ) : (
@@ -474,7 +474,7 @@ function AgentDetailDrawer({ agentKey, onClose, justCreated = false, highlightTe
                         output: runResult.output_summary,
                       },
                 )}
-                style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: '#4f46e5', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: 'hsl(var(--primary))', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                 View full run →
               </button>
             )}
@@ -487,18 +487,18 @@ function AgentDetailDrawer({ agentKey, onClose, justCreated = false, highlightTe
         )}
 
         {error && (
-          <div style={{ margin: '14px 0', padding: 12, borderRadius: 8, background: '#fef2f2', color: '#b91c1c', fontSize: 13 }}>{error}</div>
+          <div style={{ margin: '14px 0', padding: 12, borderRadius: 8, background: 'hsl(var(--destructive) / 0.1)', color: 'hsl(var(--destructive))', fontSize: 13 }}>{error}</div>
         )}
 
         {loading ? (
-          <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>Loading agent…</div>
+          <div style={{ padding: 40, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 14 }}>Loading agent…</div>
         ) : agent && (
           <>
             {/* Meta chips */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, margin: '14px 0 18px' }}>
               {meta.map(([k, v]) => (
-                <span key={k} style={{ fontSize: 12, color: '#374151', background: '#f9fafb', border: '1px solid #eceff1', borderRadius: 8, padding: '4px 10px' }}>
-                  <span style={{ color: '#9ca3af' }}>{k}: </span><b style={{ fontWeight: 600, textTransform: k === 'Cadence' || k === 'Plan' ? 'capitalize' : 'none' }}>{v}</b>
+                <span key={k} style={{ fontSize: 12, color: 'hsl(var(--foreground))', background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))', borderRadius: 8, padding: '4px 10px' }}>
+                  <span style={{ color: 'hsl(var(--muted-foreground))' }}>{k}: </span><b style={{ fontWeight: 600, textTransform: k === 'Cadence' || k === 'Plan' ? 'capitalize' : 'none' }}>{v}</b>
                 </span>
               ))}
             </div>
@@ -506,18 +506,18 @@ function AgentDetailDrawer({ agentKey, onClose, justCreated = false, highlightTe
             {/* Connectors (read-only) */}
             {connectors.length > 0 && (
               <div style={{ margin: '0 0 18px' }}>
-                <div style={{ fontSize: 11.5, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 8 }}>Connectors</div>
+                <div style={{ fontSize: 11.5, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 8 }}>Connectors</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {connectors.map((c) => (
-                    <span key={c} style={{ fontSize: 11.5, color: '#374151', background: '#f3f4f6', borderRadius: 999, padding: '3px 9px' }}>{c}</span>
+                    <span key={c} style={{ fontSize: 11.5, color: 'hsl(var(--foreground))', background: 'hsl(var(--muted))', borderRadius: 999, padding: '3px 9px' }}>{c}</span>
                   ))}
                 </div>
               </div>
             )}
 
             {/* System prompt (markdown) */}
-            <div style={{ fontSize: 11.5, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid #e5e7eb' }}>System prompt</div>
-            <div className="mk-streamdown" style={{ fontSize: 13.5, color: '#374151', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 11.5, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid hsl(var(--border))' }}>System prompt</div>
+            <div className="mk-streamdown" style={{ fontSize: 13.5, color: 'hsl(var(--foreground))', lineHeight: 1.6 }}>
               <Streamdown>{agent.system_prompt || '_No system prompt._'}</Streamdown>
             </div>
           </>
@@ -532,7 +532,7 @@ function AgentDetailDrawer({ agentKey, onClose, justCreated = false, highlightTe
 // output summary) like the "Agents run history" tab — NOT a single run's step
 // trace. Each run drills into its own full trace via onOpenRun. Data comes from
 // the shared run-history endpoint, filtered to this agent.
-const HIST_RUN_COLOR = { success: '#16a34a', error: '#b91c1c', no_action: '#6b7280', running: '#0284c7', skipped: '#9ca3af', interrupted: '#d97706' };
+const HIST_RUN_COLOR = { success: 'hsl(var(--success))', error: 'hsl(var(--destructive))', no_action: 'hsl(var(--muted-foreground))', running: 'hsl(var(--info))', skipped: 'hsl(var(--muted-foreground))', interrupted: 'hsl(var(--warning))' };
 
 function AgentRunHistoryDrawer({ agent, onClose, onOpenRun }) {
   const [loading, setLoading] = useState(true);
@@ -561,44 +561,44 @@ function AgentRunHistoryDrawer({ agent, onClose, onOpenRun }) {
     <div onClick={onClose}
       style={{ position: 'fixed', inset: 0, zIndex: 65, background: 'rgba(0,0,0,.3)', display: 'flex', justifyContent: 'flex-end' }}>
       <div onClick={(e) => e.stopPropagation()}
-        style={{ width: '100%', maxWidth: 620, height: '100%', overflowY: 'auto', background: '#fff', padding: 24 }}>
+        style={{ width: '100%', maxWidth: 620, height: '100%', overflowY: 'auto', background: 'hsl(var(--card))', padding: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 12, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '.04em' }}>Run history</div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: '#111827', marginTop: 2 }}>{agent.name || task?.insight || 'Agent'}</div>
+            <div style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '.04em' }}>Run history</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'hsl(var(--foreground))', marginTop: 2 }}>{agent.name || task?.insight || 'Agent'}</div>
           </div>
           <button className="mini" onClick={onClose}>Close</button>
         </div>
 
         {loading ? (
-          <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>Loading run history…</div>
+          <div style={{ padding: 40, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 14 }}>Loading run history…</div>
         ) : error ? (
-          <div style={{ margin: '14px 0', padding: 12, borderRadius: 8, background: '#fef2f2', color: '#b91c1c', fontSize: 13 }}>{error}</div>
+          <div style={{ margin: '14px 0', padding: 12, borderRadius: 8, background: 'hsl(var(--destructive) / 0.1)', color: 'hsl(var(--destructive))', fontSize: 13 }}>{error}</div>
         ) : !runs.length ? (
-          <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>No runs recorded yet. Test run this agent to see activity here.</div>
+          <div style={{ padding: 40, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 14 }}>No runs recorded yet. Test run this agent to see activity here.</div>
         ) : (
-          <div style={{ marginTop: 16, border: '1px solid #eceff1', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ marginTop: 16, border: '1px solid hsl(var(--border))', borderRadius: 12, overflow: 'hidden' }}>
             {runs.map((r, i) => (
               <div key={r.id || i}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', borderTop: i ? '1px solid #f1f3f5' : 0 }}>
-                <span style={{ marginTop: 6, width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: HIST_RUN_COLOR[r.status] || '#6b7280' }} />
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', borderTop: i ? '1px solid hsl(var(--border))' : 0 }}>
+                <span style={{ marginTop: 6, width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: HIST_RUN_COLOR[r.status] || 'hsl(var(--muted-foreground))' }} />
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: 11.5, color: '#9ca3af' }}>
+                  <div style={{ fontSize: 11.5, color: 'hsl(var(--muted-foreground))' }}>
                     {r.started_at ? new Date(r.started_at).toLocaleString() : '—'}
                     {r.duration_s != null ? ` · ${r.duration_s}s` : ''}
                   </div>
-                  <div className="mk-streamdown" style={{ fontSize: 13, color: r.status === 'error' ? '#b91c1c' : '#374151', marginTop: 2, overflowX: 'auto' }}>
+                  <div className="mk-streamdown" style={{ fontSize: 13, color: r.status === 'error' ? 'hsl(var(--destructive))' : 'hsl(var(--foreground))', marginTop: 2, overflowX: 'auto' }}>
                     <Streamdown>{r.output || r.error_message || '—'}</Streamdown>
                   </div>
                   {(r.is_compiled || r.thread_id) && onOpenRun && (
                     <button
                       onClick={() => onOpenRun({ ...r, insight: agent.name || task?.insight, agent_id: agent.agent_key })}
-                      style={{ marginTop: 6, fontSize: 11.5, fontWeight: 600, color: '#4f46e5', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                      style={{ marginTop: 6, fontSize: 11.5, fontWeight: 600, color: 'hsl(var(--primary))', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                       View full run →
                     </button>
                   )}
                 </div>
-                <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: HIST_RUN_COLOR[r.status] || '#6b7280' }}>{r.status}</span>
+                <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: HIST_RUN_COLOR[r.status] || 'hsl(var(--muted-foreground))' }}>{r.status}</span>
               </div>
             ))}
           </div>
@@ -834,7 +834,7 @@ function AgentsCatalog() {
         {/* Filters */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, margin: '16px 0', alignItems: 'center' }}>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search agents…"
-            style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, minWidth: 200 }} />
+            style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid hsl(var(--border))', fontSize: 13, minWidth: 200 }} />
           <Sel value={platform} onChange={(e) => onPlatformChange(e.target.value)} options={PLATFORMS} />
           <Sel value={cadence} onChange={(e) => setCadence(e.target.value)} options={CADENCES} />
           <Sel value={plan} onChange={(e) => setPlan(e.target.value)} options={PLANS} />
@@ -843,7 +843,7 @@ function AgentsCatalog() {
           )}
           {/* Create a fresh workspace small agent */}
           <button onClick={() => navigate('/dashboard/agents/new')}
-            style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: 0, background: '#f97316', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: 0, background: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
             + New Agent
           </button>
         </div>
@@ -863,7 +863,7 @@ function AgentsCatalog() {
             )}
             {/* Separator between custom and system-default agents (only when both show). */}
             {customAgents.length > 0 && defaultAgents.length > 0 && (
-              <div style={{ height: 1, background: '#eceff1', margin: '28px 0' }} />
+              <div style={{ height: 1, background: 'hsl(var(--border))', margin: '28px 0' }} />
             )}
             {defaultAgents.length > 0 && (
               <AgentTable title="TEMPLATE AGENTS" agents={defaultAgents}
@@ -879,8 +879,8 @@ function AgentsCatalog() {
         {total > PAGE && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            gap: 12, marginTop: 24, paddingTop: 16, borderTop: '1px solid #eceff1',
-            fontSize: 13, color: '#6b7280', flexWrap: 'wrap',
+            gap: 12, marginTop: 24, paddingTop: 16, borderTop: '1px solid hsl(var(--border))',
+            fontSize: 13, color: 'hsl(var(--muted-foreground))', flexWrap: 'wrap',
           }}>
             <span style={{ whiteSpace: 'nowrap' }}>
               {(page - 1) * PAGE + 1}–{Math.min(page * PAGE, total)} of {total} agents
@@ -959,14 +959,14 @@ function AgentsCatalog() {
 const RUN_PAGE = 25;
 const fmt = (iso) => (iso ? new Date(iso).toLocaleString() : '—');
 const fmtCost = (n) => `$${Number(n || 0).toFixed(4)}`;
-const RUN_COLOR = { success: '#16a34a', error: '#b91c1c', no_action: '#6b7280', running: '#0284c7', skipped: '#9ca3af', interrupted: '#d97706' };
+const RUN_COLOR = { success: 'hsl(var(--success))', error: 'hsl(var(--destructive))', no_action: 'hsl(var(--muted-foreground))', running: 'hsl(var(--info))', skipped: 'hsl(var(--muted-foreground))', interrupted: 'hsl(var(--warning))' };
 
 /** A labelled JSON value in a compiled run's step trace (input / output / trace). */
 function RunKV({ label, value }) {
   return (
     <div>
-      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: '#9ca3af', marginBottom: 2 }}>{label}</div>
-      <pre style={{ margin: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: '#f3f4f6', borderRadius: 6, padding: 6, fontSize: 11, color: '#374151' }}>
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}>{label}</div>
+      <pre style={{ margin: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: 'hsl(var(--muted))', borderRadius: 6, padding: 6, fontSize: 11, color: 'hsl(var(--foreground))' }}>
         {typeof value === 'string' ? value : JSON.stringify(value, null, 1)}
       </pre>
     </div>
@@ -1082,9 +1082,9 @@ function UserMonitor() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 12, margin: '16px 0' }}>
         {[['runs (24h)', s.total ?? 0], ['success', s.success ?? 0], ['errors', s.error ?? 0],
           ['no action', s.no_action ?? 0], ['tokens', s.total_tokens ?? 0], ['cost', fmtCost(s.total_cost_usd)]].map(([k, v]) => (
-          <div key={k} style={{ border: '1px solid #eceff1', borderRadius: 12, padding: 14, background: '#fbfbfa' }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>{v}</div>
-            <div style={{ fontSize: 11, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '.04em' }}>{k}</div>
+          <div key={k} style={{ border: '1px solid hsl(var(--border))', borderRadius: 12, padding: 14, background: 'hsl(var(--muted))' }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'hsl(var(--foreground))' }}>{v}</div>
+            <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '.04em' }}>{k}</div>
           </div>
         ))}
       </div>
@@ -1101,10 +1101,10 @@ function UserMonitor() {
       ) : runs.length === 0 ? (
         <div className="desc" style={{ padding: 40, textAlign: 'center' }}>No runs yet. Enable or Run an agent to see activity here.</div>
       ) : (
-        <div style={{ overflowX: 'auto', border: '1px solid #e5e7eb', borderRadius: 12 }}>
+        <div style={{ overflowX: 'auto', border: '1px solid hsl(var(--border))', borderRadius: 12 }}>
           <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: '#f9fafb', textAlign: 'left', fontSize: 11, textTransform: 'uppercase', color: '#9ca3af' }}>
+              <tr style={{ background: 'hsl(var(--muted))', textAlign: 'left', fontSize: 11, textTransform: 'uppercase', color: 'hsl(var(--muted-foreground))' }}>
                 <th style={{ padding: '8px 12px' }}>Status</th><th style={{ padding: '8px 12px' }}>Insight</th>
                 <th style={{ padding: '8px 12px' }}>Started</th><th style={{ padding: '8px 12px' }}>Output</th>
                 <th style={{ padding: '8px 12px', textAlign: 'right' }}>Tokens</th><th style={{ padding: '8px 12px', textAlign: 'right' }}>Cost</th>
@@ -1112,21 +1112,21 @@ function UserMonitor() {
             </thead>
             <tbody>
               {runs.map((r) => (
-                <tr key={r.id} onClick={() => setOpenRun(r)} style={{ borderTop: '1px solid #f1f3f5', cursor: 'pointer' }}>
+                <tr key={r.id} onClick={() => setOpenRun(r)} style={{ borderTop: '1px solid hsl(var(--border))', cursor: 'pointer' }}>
                   <td style={{ padding: '8px 12px' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: RUN_COLOR[r.status] || '#6b7280' }}>{r.status}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: RUN_COLOR[r.status] || 'hsl(var(--muted-foreground))' }}>{r.status}</span>
                   </td>
                   <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 12 }}>{r.insight_key}</td>
-                  <td style={{ padding: '8px 12px', color: '#6b7280', whiteSpace: 'nowrap' }}>{fmt(r.started_at)}</td>
-                  <td style={{ padding: '8px 12px', color: r.status === 'error' ? '#b91c1c' : '#374151', maxWidth: 340, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '8px 12px', color: 'hsl(var(--muted-foreground))', whiteSpace: 'nowrap' }}>{fmt(r.started_at)}</td>
+                  <td style={{ padding: '8px 12px', color: r.status === 'error' ? 'hsl(var(--destructive))' : 'hsl(var(--foreground))', maxWidth: 340, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {r.status === 'error'
                       ? (r.error_message || r.error_code || 'error')
                       : r.status === 'interrupted'
                       ? '⏸ Waiting for your approval in the Inbox'
                       : (stripMd(r.output_summary) || '—')}
                   </td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6b7280' }}>{r.total_tokens || 0}</td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6b7280' }}>{fmtCost(r.cost_usd)}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', color: 'hsl(var(--muted-foreground))' }}>{r.total_tokens || 0}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', color: 'hsl(var(--muted-foreground))' }}>{fmtCost(r.cost_usd)}</td>
                 </tr>
               ))}
             </tbody>
@@ -1135,7 +1135,7 @@ function UserMonitor() {
       )}
 
       {total > RUN_PAGE && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, fontSize: 13, color: '#6b7280' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, fontSize: 13, color: 'hsl(var(--muted-foreground))' }}>
           <span>{(page - 1) * RUN_PAGE + 1}–{Math.min(page * RUN_PAGE, total)} of {total}</span>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <button className="mini" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Prev</button>
@@ -1147,7 +1147,7 @@ function UserMonitor() {
 
       {openRun && (
         <div onClick={() => setOpenRun(null)} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,.3)', display: 'flex', justifyContent: 'flex-end' }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 560, height: '100%', overflowY: 'auto', background: '#fff', padding: 24 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 560, height: '100%', overflowY: 'auto', background: 'hsl(var(--card))', padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <span style={{ fontFamily: 'monospace', fontSize: 13 }}>{openRun.insight_key}</span>
               <button className="mini" onClick={() => setOpenRun(null)}>Close</button>
@@ -1160,12 +1160,12 @@ function UserMonitor() {
                   return (
                     <>
                       {act?.tool && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 20px', fontSize: 12.5, color: '#6b7280', marginBottom: 10 }}>
-                          <span>tool <b style={{ fontFamily: 'monospace', fontSize: 11.5, color: '#374151' }}>{act.tool}</b></span>
-                          {act.params && <span>params <b style={{ color: '#374151' }}>{act.params}</b></span>}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 20px', fontSize: 12.5, color: 'hsl(var(--muted-foreground))', marginBottom: 10 }}>
+                          <span>tool <b style={{ fontFamily: 'monospace', fontSize: 11.5, color: 'hsl(var(--foreground))' }}>{act.tool}</b></span>
+                          {act.params && <span>params <b style={{ color: 'hsl(var(--foreground))' }}>{act.params}</b></span>}
                         </div>
                       )}
-                      <div style={{ borderRadius: 8, background: '#fffbeb', border: '1px solid #fef3c7', padding: '10px 12px', fontSize: 13, color: '#78350f' }}>
+                      <div style={{ borderRadius: 8, background: 'hsl(var(--warning) / 0.12)', border: '1px solid hsl(var(--warning) / 0.4)', padding: '10px 12px', fontSize: 13, color: 'hsl(var(--warning))' }}>
                         {interruptExplain(openRun) || 'Waiting for your approval.'}
                       </div>
                     </>
@@ -1173,11 +1173,11 @@ function UserMonitor() {
                 })()}
               </div>
             ) : openRun.status === 'error' ? (
-              <div style={{ whiteSpace: 'pre-wrap', padding: 12, borderRadius: 8, background: '#fef2f2', color: '#b91c1c', fontSize: 14, marginBottom: 16 }}>
+              <div style={{ whiteSpace: 'pre-wrap', padding: 12, borderRadius: 8, background: 'hsl(var(--destructive) / 0.1)', color: 'hsl(var(--destructive))', fontSize: 14, marginBottom: 16 }}>
                 {openRun.error_message || openRun.error_code || 'error'}
               </div>
             ) : (
-              <div className="mk-streamdown" style={{ padding: 12, borderRadius: 8, background: '#f9fafb', color: '#374151', fontSize: 14, marginBottom: 16 }}>
+              <div className="mk-streamdown" style={{ padding: 12, borderRadius: 8, background: 'hsl(var(--muted))', color: 'hsl(var(--foreground))', fontSize: 14, marginBottom: 16 }}>
                 {openRun.output_summary
                   ? <Streamdown>{openRun.output_summary}</Streamdown>
                   : '— no output —'}
@@ -1188,13 +1188,13 @@ function UserMonitor() {
                 raw JSON logs. Fetched on drawer open from compiled_agent_run. */}
             {openRun.is_compiled && (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: '#6b7280', marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'hsl(var(--muted-foreground))', marginBottom: 8 }}>
                   Execution trace
                 </div>
                 {detailLoading ? (
-                  <div style={{ fontSize: 13, color: '#9ca3af' }}>Loading run logs…</div>
+                  <div style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))' }}>Loading run logs…</div>
                 ) : !runDetail ? (
-                  <div style={{ fontSize: 13, color: '#9ca3af' }}>No step logs found for this run.</div>
+                  <div style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))' }}>No step logs found for this run.</div>
                 ) : (
                   <>
                     {/* Per-step input/output */}
@@ -1202,34 +1202,34 @@ function UserMonitor() {
                       {Object.entries(runDetail.step_results || {}).map(([stepId, log]) => {
                         const failed = log?.error || log?.stopped;
                         return (
-                          <div key={stepId} style={{ border: `1px solid ${failed ? '#fecaca' : '#e5e7eb'}`, borderRadius: 8, overflow: 'hidden' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: failed ? '#fef2f2' : '#f9fafb', fontSize: 12.5 }}>
-                              <span style={{ fontFamily: 'monospace', fontWeight: 600, color: failed ? '#b91c1c' : '#374151' }}>{stepId}</span>
-                              {failed && <span style={{ fontSize: 11, color: '#b91c1c' }}>failed</span>}
+                          <div key={stepId} style={{ border: `1px solid ${failed ? 'hsl(var(--destructive) / 0.4)' : 'hsl(var(--border))'}`, borderRadius: 8, overflow: 'hidden' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: failed ? 'hsl(var(--destructive) / 0.1)' : 'hsl(var(--muted))', fontSize: 12.5 }}>
+                              <span style={{ fontFamily: 'monospace', fontWeight: 600, color: failed ? 'hsl(var(--destructive))' : 'hsl(var(--foreground))' }}>{stepId}</span>
+                              {failed && <span style={{ fontSize: 11, color: 'hsl(var(--destructive))' }}>failed</span>}
                             </div>
                             <div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
                               {log?.input !== undefined && <RunKV label="input" value={log.input} />}
                               {log?.output !== undefined && <RunKV label="output" value={log.output} />}
                               {log?.trace !== undefined && <RunKV label="trace" value={log.trace} />}
-                              {log?.error && <div style={{ fontSize: 12, color: '#b91c1c' }}>error: {log.error}</div>}
+                              {log?.error && <div style={{ fontSize: 12, color: 'hsl(var(--destructive))' }}>error: {log.error}</div>}
                             </div>
                           </div>
                         );
                       })}
                       {!Object.keys(runDetail.step_results || {}).length && (
-                        <div style={{ fontSize: 13, color: '#9ca3af' }}>No step results recorded.</div>
+                        <div style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))' }}>No step results recorded.</div>
                       )}
                     </div>
 
                     {/* Raw JSON logs — the whole run record, collapsible. */}
                     <button
                       onClick={() => setShowRawLogs((v) => !v)}
-                      style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                      style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: 'hsl(var(--muted-foreground))', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                     >
                       {showRawLogs ? '▾' : '▸'} Raw logs (JSON)
                     </button>
                     {showRawLogs && (
-                      <pre style={{ marginTop: 6, maxHeight: 360, overflow: 'auto', background: '#0f172a', color: '#e2e8f0', borderRadius: 8, padding: 12, fontSize: 11.5, lineHeight: 1.5 }}>
+                      <pre style={{ marginTop: 6, maxHeight: 360, overflow: 'auto', background: 'hsl(var(--foreground))', color: 'hsl(var(--background))', borderRadius: 8, padding: 12, fontSize: 11.5, lineHeight: 1.5 }}>
                         {JSON.stringify(runDetail, null, 2)}
                       </pre>
                     )}
@@ -1245,26 +1245,26 @@ function UserMonitor() {
                   <button
                     onClick={() => decide('approve')}
                     disabled={!!decideBusy}
-                    style={{ padding: '7px 14px', borderRadius: 6, border: 'none', background: '#dc2626', color: '#fff', fontWeight: 600, fontSize: 13, cursor: decideBusy ? 'default' : 'pointer', opacity: decideBusy ? 0.6 : 1 }}>
+                    style={{ padding: '7px 14px', borderRadius: 6, border: 'none', background: 'hsl(var(--destructive))', color: 'hsl(var(--primary-foreground))', fontWeight: 600, fontSize: 13, cursor: decideBusy ? 'default' : 'pointer', opacity: decideBusy ? 0.6 : 1 }}>
                     {decideBusy === 'approve' ? 'Approving…' : 'Approve'}
                   </button>
                   <button
                     onClick={() => decide('reject')}
                     disabled={!!decideBusy}
-                    style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: '#fff', color: '#374151', fontWeight: 500, fontSize: 13, cursor: decideBusy ? 'default' : 'pointer', opacity: decideBusy ? 0.6 : 1 }}>
+                    style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))', color: 'hsl(var(--foreground))', fontWeight: 500, fontSize: 13, cursor: decideBusy ? 'default' : 'pointer', opacity: decideBusy ? 0.6 : 1 }}>
                     {decideBusy === 'reject' ? 'Rejecting…' : 'Reject'}
                   </button>
                 </div>
-                {decideErr && <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 8 }}>{decideErr}</div>}
+                {decideErr && <div style={{ color: 'hsl(var(--destructive))', fontSize: 12, marginTop: 8 }}>{decideErr}</div>}
               </div>
             )}
             {/* The human's recorded response (audit), if this run was already decided. */}
             {openRun.action_taken && (
-              <div style={{ fontSize: 13, color: '#374151', marginBottom: 12 }}>
+              <div style={{ fontSize: 13, color: 'hsl(var(--foreground))', marginBottom: 12 }}>
                 <strong>Your response:</strong> {openRun.action_taken}
               </div>
             )}
-            <div style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.9 }}>
+            <div style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', lineHeight: 1.9 }}>
               <div>Trigger: {openRun.trigger}</div>
               <div>Started: {fmt(openRun.started_at)}</div>
               <div>Finished: {fmt(openRun.finished_at)}</div>
@@ -1284,7 +1284,7 @@ function UserMonitor() {
               {openRun.langgraph_run_id && (
                 <div>Run: <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{openRun.langgraph_run_id}</span></div>
               )}
-              {openRun.langsmith_url && <div><a href={openRun.langsmith_url} target="_blank" rel="noreferrer" style={{ color: '#4f46e5' }}>LangSmith trace →</a></div>}
+              {openRun.langsmith_url && <div><a href={openRun.langsmith_url} target="_blank" rel="noreferrer" style={{ color: 'hsl(var(--primary))' }}>LangSmith trace →</a></div>}
             </div>
           </div>
         </div>
@@ -1336,38 +1336,38 @@ function PendingApprovals() {
   }, [load]);
 
   if (loading) {
-    return <div style={{ padding: 24, textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>Loading pending approvals…</div>;
+    return <div style={{ padding: 24, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 14 }}>Loading pending approvals…</div>;
   }
   if (!items.length) return null; // nothing pending → show only the activity feed below
 
   return (
     <div style={{ marginBottom: 20 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: '#b45309', margin: '0 0 8px' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'hsl(var(--warning))', margin: '0 0 8px' }}>
         Needs your approval ({items.length})
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {items.map((it) => (
           <div key={it.id}
-            style={{ border: '1px solid #fed7aa', background: '#fffbeb', borderRadius: 12, padding: '14px 16px' }}>
+            style={{ border: '1px solid hsl(var(--warning) / 0.4)', background: 'hsl(var(--warning) / 0.12)', borderRadius: 12, padding: '14px 16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{ fontSize: 14, color: '#111827', lineHeight: 1.5 }}>{it.title}</div>
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#9a3412', background: '#ffedd5', padding: '2px 8px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 14, color: 'hsl(var(--foreground))', lineHeight: 1.5 }}>{it.title}</div>
+              <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--warning))', background: 'hsl(var(--warning) / 0.2)', padding: '2px 8px', borderRadius: 999, whiteSpace: 'nowrap' }}>
                 {it.risk === 'high' ? 'HIGH RISK' : it.risk === 'med' ? 'MED RISK' : 'LOW RISK'}
               </span>
             </div>
-            {it.origin && <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>{it.origin}</div>}
-            {it.params && <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2, fontFamily: 'monospace' }}>{it.params}</div>}
+            {it.origin && <div style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', marginTop: 4 }}>{it.origin}</div>}
+            {it.params && <div style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', marginTop: 2, fontFamily: 'monospace' }}>{it.params}</div>}
             <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
               <button
                 disabled={busy === it.id}
                 onClick={() => decide(it.id, 'approve')}
-                style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#fff', background: busy === it.id ? '#9ca3af' : '#16a34a', border: 'none', borderRadius: 8, cursor: busy === it.id ? 'default' : 'pointer' }}>
+                style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'hsl(var(--primary-foreground))', background: busy === it.id ? 'hsl(var(--muted-foreground))' : 'hsl(var(--success))', border: 'none', borderRadius: 8, cursor: busy === it.id ? 'default' : 'pointer' }}>
                 {busy === it.id ? 'Working…' : 'Approve & continue'}
               </button>
               <button
                 disabled={busy === it.id}
                 onClick={() => decide(it.id, 'reject')}
-                style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#374151', background: '#fff', border: '1px solid #d1d5db', borderRadius: 8, cursor: busy === it.id ? 'default' : 'pointer' }}>
+                style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, cursor: busy === it.id ? 'default' : 'pointer' }}>
                 Reject
               </button>
             </div>
@@ -1386,14 +1386,14 @@ export default function AgentsPage() {
       {/* Left-aligned, full-width (override the centered max-width in ag-wrap). */}
       <div className="ag-wrap" style={{ maxWidth: 'none', margin: 0, padding: '26px 30px 48px' }}>
         <div className="ag-head"><h1>Agents</h1></div>
-        <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid #e5e7eb', margin: '12px 0 4px' }}>
+        <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid hsl(var(--border))', margin: '12px 0 4px' }}>
           {[{ v: 'agents', label: 'Agents' }, { v: 'monitor', label: 'Agents run history' }, { v: 'activity', label: 'Inbox Activity' }].map((t) => (
             <button key={t.v} onClick={() => setTab(t.v)}
               style={{
                 padding: '8px 16px', fontSize: 14, fontWeight: tab === t.v ? 600 : 500,
-                borderBottom: tab === t.v ? '2px solid #f97316' : '2px solid transparent',
-                color: tab === t.v ? '#f97316' : '#6b7280', marginBottom: -1,
-                background: tab === t.v ? '#fff7ed' : 'transparent',
+                borderBottom: tab === t.v ? '2px solid hsl(var(--primary))' : '2px solid transparent',
+                color: tab === t.v ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))', marginBottom: -1,
+                background: tab === t.v ? 'hsl(var(--primary) / 0.1)' : 'transparent',
                 borderTopLeftRadius: 6, borderTopRightRadius: 6,
               }}>{t.label}</button>
           ))}

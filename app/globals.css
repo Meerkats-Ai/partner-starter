@@ -30,6 +30,26 @@
     --input: 240 5.9% 90%;
     --ring: 244 75% 59%;
     --radius: 0.6rem;
+
+    /* Data-viz categorical (light). Charts read these via hsl(var(--chart-N)).
+       An agency skin/custom_css can override; defaults are a colorblind-safe set. */
+    --chart-1: 244 75% 59%;   /* primary-ish */
+    --chart-2: 160 84% 39%;   /* emerald */
+    --chart-3: 38 92% 50%;    /* amber */
+    --chart-4: 347 77% 60%;   /* rose */
+    --chart-5: 189 94% 43%;   /* cyan */
+    /* Status (light) — each with a readable foreground for solid fills */
+    --success: 142 71% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 45%;
+    --warning-foreground: 0 0% 100%;
+    --info: 210 90% 50%;
+    --info-foreground: 0 0% 100%;
+
+    /* Fonts. Runtime (theme_config.bodyFont) overrides --font-sans; this default
+       is the first-paint fallback. --font-heading falls back to --font-sans. */
+    --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-heading: var(--font-sans);
   }
 
   .dark {
@@ -52,10 +72,24 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 244 75% 66%;
+
+    /* Data-viz categorical (dark) */
+    --chart-1: 244 75% 66%;
+    --chart-2: 160 84% 45%;
+    --chart-3: 38 92% 55%;
+    --chart-4: 347 77% 66%;
+    --chart-5: 189 94% 50%;
+    /* Status (dark) */
+    --success: 142 66% 52%;
+    --success-foreground: 142 30% 8%;
+    --warning: 38 92% 58%;
+    --warning-foreground: 38 40% 10%;
+    --info: 210 90% 62%;
+    --info-foreground: 210 40% 10%;
   }
 }
 
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground; }
+  body { @apply bg-background text-foreground font-sans; }
 }

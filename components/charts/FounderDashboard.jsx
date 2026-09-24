@@ -69,10 +69,10 @@ function Kpi({ label, value, delta, sub, loading }) {
     if (loading) {
         return (
             <div>
-                <div className="text-sm text-gray-500">{label}</div>
+                <div className="text-sm text-muted-foreground">{label}</div>
                 <div className="mt-2 animate-pulse space-y-2.5" aria-label="Loading">
-                    <div className="h-7 w-24 rounded-md bg-gray-200" />
-                    <div className="h-3 w-32 rounded bg-gray-100" />
+                    <div className="h-7 w-24 rounded-md bg-muted" />
+                    <div className="h-3 w-32 rounded bg-muted" />
                 </div>
             </div>
         )
@@ -80,10 +80,10 @@ function Kpi({ label, value, delta, sub, loading }) {
     const noData = value === 'No data'
     return (
         <div>
-            <div className="text-sm text-gray-500">{label}</div>
-            <div className={`mt-1.5 leading-9 tracking-tight tabular-nums ${noData ? 'text-xl font-semibold text-gray-300' : 'text-[28px] font-bold text-gray-900'}`}>{value}</div>
+            <div className="text-sm text-muted-foreground">{label}</div>
+            <div className={`mt-1.5 leading-9 tracking-tight tabular-nums ${noData ? 'text-xl font-semibold text-muted-foreground/60' : 'text-[28px] font-bold text-foreground'}`}>{value}</div>
             {!noData && delta && <div className="mt-2">{delta}</div>}
-            {sub && <div className="mt-1 text-xs text-gray-400">{sub}</div>}
+            {sub && <div className="mt-1 text-xs text-muted-foreground/70">{sub}</div>}
         </div>
     )
 }
@@ -279,9 +279,9 @@ export default function FounderDashboard({ admin = false, workspaceId, platform 
         mOpts,
     )
     const BAND = {
-        at_risk: { label: 'At risk', rank: 0, cls: 'bg-red-100 text-red-700' },
-        slow: { label: 'Slow', rank: 1, cls: 'bg-amber-100 text-amber-700' },
-        healthy: { label: 'Healthy', rank: 2, cls: 'bg-green-100 text-green-700' },
+        at_risk: { label: 'At risk', rank: 0, cls: 'bg-destructive/10 text-destructive' },
+        slow: { label: 'Slow', rank: 1, cls: 'bg-warning/10 text-warning' },
+        healthy: { label: 'Healthy', rank: 2, cls: 'bg-success/10 text-success' },
     }
     const invProducts = useMemo(() => (
         (invProductsQ.rows || [])
@@ -445,8 +445,8 @@ export default function FounderDashboard({ admin = false, workspaceId, platform 
                                 {
                                     label: revLabel,
                                     data: (trendQ.rows || []).map((r) => num(r[revKey])),
-                                    borderColor: '#2563eb', backgroundColor: '#2563eb',
-                                    pointRadius: 3, pointBackgroundColor: '#2563eb',
+                                    borderColor: 'hsl(var(--chart-2))', backgroundColor: 'hsl(var(--chart-2))',
+                                    pointRadius: 3, pointBackgroundColor: 'hsl(var(--chart-2))',
                                     tension: 0.35, fill: false,
                                 },
                                 {
@@ -534,20 +534,20 @@ export default function FounderDashboard({ admin = false, workspaceId, platform 
                         // (canonical-vs-UTM name mismatch), NOT zero performance — show it
                         // as unknown ("—", neutral bar) rather than a red 0.00×.
                         const realKnown = roasVal > 0
-                        const barColor = realKnown ? roasColor(roasVal) : '#e5e7eb' // gray-200
+                        const barColor = realKnown ? roasColor(roasVal) : 'hsl(var(--border))'
                         return (
                             <div key={c.campaign_row__campaign_name || i}>
                                 <div className="flex items-baseline justify-between gap-3">
-                                    <div className="truncate text-xs font-medium text-gray-700" title={c.campaign_row__campaign_name}>
+                                    <div className="truncate text-xs font-medium text-foreground" title={c.campaign_row__campaign_name}>
                                         {c.campaign_row__campaign_name || '(unknown)'}
                                     </div>
-                                    <div className="shrink-0 text-xs tabular-nums text-gray-500">
+                                    <div className="shrink-0 text-xs tabular-nums text-muted-foreground">
                                         {fmtPct(share)} · {realKnown
                                             ? <span className="font-semibold" style={{ color: roasColor(roasVal) }}>{fmtRoas(roasVal)}</span>
-                                            : <span className="font-semibold text-gray-300" title="No CDP-attributed revenue for this campaign — real ROAS can’t be computed">—</span>}
+                                            : <span className="font-semibold text-muted-foreground/60" title="No CDP-attributed revenue for this campaign — real ROAS can’t be computed">—</span>}
                                     </div>
                                 </div>
-                                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                                     <div className="h-full rounded-full" style={{ width: `${Math.max(share * 100, 2)}%`, background: barColor }} />
                                 </div>
                             </div>
@@ -569,16 +569,16 @@ export default function FounderDashboard({ admin = false, workspaceId, platform 
                 ask={{ rows: invProducts.length > 0 ? invProducts : invBands, meta: { chartId: 'inventory_at_risk', window: 'current stock snapshot', persona: 'Founder / CEO' } }}
             >
                 {invProducts.length > 0 ? (
-                    <div className="flex flex-col divide-y divide-gray-100 pt-1">
+                    <div className="flex flex-col divide-y divide-border pt-1">
                         {invProducts.map((r) => {
                             const band = BAND[r.product__risk_band] || BAND.healthy
                             return (
                                 <div key={r.product__product_title} className="flex items-center justify-between gap-3 py-2.5">
-                                    <div className="truncate text-sm text-gray-700" title={r.product__product_title}>
+                                    <div className="truncate text-sm text-foreground" title={r.product__product_title}>
                                         {r.product__product_title}
                                     </div>
                                     <div className="flex shrink-0 items-center gap-3">
-                                        <span className="text-xs tabular-nums text-gray-400">
+                                        <span className="text-xs tabular-nums text-muted-foreground/70">
                                             {fmtNumCompact(r.total_inventory_units)} in stock · {fmtNumCompact(r.units_sold_30d)}/30d
                                         </span>
                                         <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${band.cls}`}>{band.label}</span>
@@ -595,7 +595,7 @@ export default function FounderDashboard({ admin = false, workspaceId, platform 
                             return (
                                 <div key={r.product__risk_band} className="flex items-center justify-between gap-3 py-1.5">
                                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${band.cls}`}>{band.label}</span>
-                                    <span className="text-xs tabular-nums text-gray-500">
+                                    <span className="text-xs tabular-nums text-muted-foreground">
                                         {fmtNum(r.product_count)} products · {fmtNumCompact(r.total_inventory_units)} units · {fmtNumCompact(r.units_sold_30d)} sold/30d
                                     </span>
                                 </div>

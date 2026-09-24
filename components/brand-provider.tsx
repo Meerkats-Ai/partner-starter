@@ -5,7 +5,7 @@
  * the app via context so auth screens + the sidebar render the agency's brand.
  */
 import { createContext, useContext, useEffect, useState } from "react";
-import { applyBrandColor, applyFavicon, type Branding } from "@/lib/theme";
+import { applyBrandColor, applyBrandFont, applyFavicon, type Branding } from "@/lib/theme";
 import { useSkin } from "@/components/skin-provider";
 
 const BrandContext = createContext<Branding | null>(null);
@@ -34,9 +34,17 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
         setAgencyThemeConfig(b.theme_config);
         // Uploaded custom CSS theme — overrides the skin when present.
         setAgencyCustomCss(b.custom_css);
-        // Stores the hex + applies it now. applySkin() also re-applies it as its
-        // last step on any later skin/mode swap, so the brand color always wins.
-        applyBrandColor(b.primary_color);
+        // When the agency uploaded a custom CSS theme, that file OWNS the colors
+        // (its own --primary). Applying primary_color on top would clobber the
+        // upload's accent (inline style beats the injected <style>), making the
+        // upload look like it did nothing — so suppress the brand color in that
+        // case. Passing null also clears any stuck inline --primary.
+        const hasCustomCss = !!(b.custom_css && b.custom_css.trim());
+        applyBrandColor(hasCustomCss ? null : b.primary_color);
+        // Same for the agency's body font — stored + applied, and re-asserted after
+        // any later skin/theme swap so the brand font always wins (fixes fonts not
+        // matching across pages when only theme_config carried the font before).
+        applyBrandFont(b.font_family, b.font_family_url);
         // Agency favicon + tab title (client-side; generateMetadata also sets these
         // server-side for the first paint / SEO — this covers SPA nav + freshness).
         applyFavicon(b.favicon_url);

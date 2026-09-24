@@ -27,17 +27,17 @@ const ACTOR_LABEL = {
 }
 // Action → short colored tag.
 const ACTION_TAG = {
-  'rule.created': ['Created', 'bg-blue-50 text-blue-700 border-blue-200'],
-  'rule.updated': ['Updated', 'bg-blue-50 text-blue-700 border-blue-200'],
-  'rule.deleted': ['Deleted', 'bg-gray-100 text-gray-500 border-gray-200'],
-  'rule.toggled': ['Toggled', 'bg-gray-100 text-gray-600 border-gray-200'],
-  'rule.test_run': ['Test & run', 'bg-purple-50 text-purple-700 border-purple-200'],
-  'rule.fired': ['Fired', 'bg-amber-50 text-amber-700 border-amber-200'],
-  'rule.executed': ['Auto-applied', 'bg-orange-50 text-orange-700 border-orange-200'],
-  'staged.approved': ['User approved', 'bg-green-50 text-green-700 border-green-200'],
+  'rule.created': ['Created', 'bg-info/10 text-info border-info/20'],
+  'rule.updated': ['Updated', 'bg-info/10 text-info border-info/20'],
+  'rule.deleted': ['Deleted', 'bg-muted text-muted-foreground border-border'],
+  'rule.toggled': ['Toggled', 'bg-muted text-muted-foreground border-border'],
+  'rule.test_run': ['Test & run', 'bg-chart-4/10 text-chart-4 border-chart-4/20'],
+  'rule.fired': ['Fired', 'bg-warning/10 text-warning border-warning/20'],
+  'rule.executed': ['Auto-applied', 'bg-primary/10 text-primary border-primary/20'],
+  'staged.approved': ['User approved', 'bg-success/10 text-success border-success/20'],
   // Approved by the user but the resume/execute FAILED — must NOT read as a clean green.
-  'staged.approve_failed': ['Approve failed', 'bg-red-50 text-red-700 border-red-200'],
-  'staged.rejected': ['User rejected', 'bg-red-50 text-red-700 border-red-200'],
+  'staged.approve_failed': ['Approve failed', 'bg-destructive/10 text-destructive border-destructive/20'],
+  'staged.rejected': ['User rejected', 'bg-destructive/10 text-destructive border-destructive/20'],
 }
 
 function timeAgo(iso) {
@@ -51,21 +51,21 @@ function timeAgo(iso) {
 
 function ActivityRow({ a }) {
   const Icon = ACTOR_ICON[a.actor_type] || Bot
-  const [tag, tagCls] = ACTION_TAG[a.action] || [a.action, 'bg-gray-100 text-gray-600 border-gray-200']
+  const [tag, tagCls] = ACTION_TAG[a.action] || [a.action, 'bg-muted text-muted-foreground border-border']
   // The colored badge (User approved / User rejected / Approve failed) fully carries the
   // outcome — a separate check/cross icon was redundant (and read as contradictory on a
   // green "approved" badge next to a red cross), so it's intentionally omitted.
   return (
     <div className="flex items-start gap-2.5 py-2">
-      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500">
+      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
         <Icon className="h-3.5 w-3.5" />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className={`rounded-full border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${tagCls}`}>{tag}</span>
-          <span className="text-[13px] text-gray-800">{a.summary || a.action}</span>
+          <span className="text-[13px] text-foreground">{a.summary || a.action}</span>
         </div>
-        <div className="mt-0.5 text-[11px] text-gray-400">
+        <div className="mt-0.5 text-[11px] text-muted-foreground">
           {ACTOR_LABEL[a.actor_type] || a.actor_type}
           {a.actor_name ? ` · ${a.actor_name}` : ''} · {timeAgo(a.created_at)}
         </div>
@@ -77,10 +77,10 @@ function ActivityRow({ a }) {
 /** Presentational: render a given list (used inside the run log). */
 export function ActivityList({ items }) {
   if (!items || items.length === 0) {
-    return <div className="py-2 text-[12px] text-gray-400">No activity yet.</div>
+    return <div className="py-2 text-[12px] text-muted-foreground">No activity yet.</div>
   }
   return (
-    <div className="divide-y divide-gray-100">
+    <div className="divide-y divide-border">
       {items.map((a) => <ActivityRow key={a.id} a={a} />)}
     </div>
   )
@@ -88,21 +88,21 @@ export function ActivityList({ items }) {
 
 // ── Platform-history row (native Google/Meta change) ───────────────────────────
 const PLATFORM_CLS = {
-  google: 'bg-blue-50 text-blue-700 border-blue-200',
-  meta: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  google: 'bg-info/10 text-info border-info/20',
+  meta: 'bg-chart-2/10 text-chart-2 border-chart-2/20',
 }
 export function PlatformRow({ e }) {
   return (
     <div className="flex items-start gap-2.5 py-2">
-      <span className={`mt-0.5 shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${PLATFORM_CLS[e.platform] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+      <span className={`mt-0.5 shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${PLATFORM_CLS[e.platform] || 'bg-muted text-muted-foreground border-border'}`}>
         {e.platform}
       </span>
       <div className="min-w-0 flex-1">
-        <div className="text-[13px] text-gray-800">
+        <div className="text-[13px] text-foreground">
           <span className="font-medium">{e.action || 'change'}</span>
-          {e.object ? <span className="text-gray-500"> · {e.object}</span> : null}
+          {e.object ? <span className="text-muted-foreground"> · {e.object}</span> : null}
         </div>
-        <div className="mt-0.5 text-[11px] text-gray-400">
+        <div className="mt-0.5 text-[11px] text-muted-foreground">
           {e.user ? `${e.user} · ` : ''}{e.source ? `${e.source} · ` : ''}{e.when ? timeAgo(e.when) : ''}
           {e.changed_fields ? ` · ${e.changed_fields}` : ''}
         </div>
@@ -146,7 +146,7 @@ export default function ActivityFeed({ refreshKey, meerkatsOnly = false }) {
 
   const TabBtn = ({ id, label }) => (
     <button onClick={() => switchTab(id)}
-      className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${tab === id ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
+      className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${tab === id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
       {label}
     </button>
   )
@@ -156,22 +156,22 @@ export default function ActivityFeed({ refreshKey, meerkatsOnly = false }) {
       <div className="mb-3 flex items-center gap-2">
         {!meerkatsOnly && (
           <>
-            <h2 className="text-sm font-semibold text-gray-900">Activity</h2>
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">{count}</span>
-            <div className="ml-2 flex items-center gap-1 rounded-lg bg-gray-100 p-0.5">
+            <h2 className="text-sm font-semibold text-foreground">Activity</h2>
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{count}</span>
+            <div className="ml-2 flex items-center gap-1 rounded-lg bg-muted p-0.5">
               <TabBtn id="meerkats" label="Meerkats" />
               <TabBtn id="platform" label="Platform history" />
             </div>
           </>
         )}
-        <button onClick={refresh} className="ml-auto inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600">
+        <button onClick={refresh} className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
           <RefreshCw className="h-3.5 w-3.5" /> Refresh
         </button>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white px-4 py-1 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card px-4 py-1 shadow-sm">
         {loading ? (
-          <div className="flex items-center gap-2 py-4 text-sm text-gray-400">
+          <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading {tab === 'platform' ? 'platform history' : 'activity'}…
           </div>
         ) : tab === 'meerkats' ? (
@@ -180,24 +180,24 @@ export default function ActivityFeed({ refreshKey, meerkatsOnly = false }) {
           <>
             {/* Per-platform source status */}
             {platform?.sources && (
-              <div className="flex flex-wrap gap-3 py-2 text-[11px] text-gray-400">
+              <div className="flex flex-wrap gap-3 py-2 text-[11px] text-muted-foreground">
                 {['google', 'meta'].map((p) => {
                   const s = platform.sources[p]
                   if (!s) return null
                   return (
                     <span key={p}>
-                      {p}: {s.ok ? `${s.count} events` : <span className="text-red-500">{s.error || 'unavailable'}</span>}
+                      {p}: {s.ok ? `${s.count} events` : <span className="text-destructive">{s.error || 'unavailable'}</span>}
                     </span>
                   )
                 })}
               </div>
             )}
             {(platform?.items?.length ?? 0) === 0 ? (
-              <div className="py-3 text-[12px] text-gray-400">
+              <div className="py-3 text-[12px] text-muted-foreground">
                 No native platform changes in the last 14 days (or no ad account connected).
               </div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {platform.items.map((e, i) => <PlatformRow key={`${e.platform}-${e.when}-${i}`} e={e} />)}
               </div>
             )}
@@ -205,7 +205,7 @@ export default function ActivityFeed({ refreshKey, meerkatsOnly = false }) {
         )}
       </div>
       {tab === 'platform' && (
-        <p className="mt-1.5 text-[11px] text-gray-400">
+        <p className="mt-1.5 text-[11px] text-muted-foreground">
           Pulled live from Google Ads (change history) &amp; Meta (activity log) — includes changes made directly in Ads Manager, not just by Meerkats.
         </p>
       )}

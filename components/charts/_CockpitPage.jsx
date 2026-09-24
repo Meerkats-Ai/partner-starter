@@ -334,7 +334,11 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
             })
             .catch(() => {})
         return () => { alive = false }
-    }, [admin, navigate])
+        // Run ONCE on mount. `navigate` is re-created every render (a plain arrow
+        // over _router) — including it here made the effect re-fire on every render
+        // → connected-platforms fetched in an infinite loop. `admin` is stable.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [admin])
     const hasData = (p) => (adSrcQ.rows || []).some((r) => (r.ad_row__platform || '').toLowerCase().includes(p) && num(r.total_ad_spend) > 0)
     // Connected = the integration is linked OR there's spend data for it.
     const platformOn = (p) => integrationConnected.includes(p) || hasData(p)
@@ -434,19 +438,19 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
     const platformControl = (
         <div className="relative inline-block" ref={platMenuRef}>
             <button onClick={() => setPlatMenuOpen((o) => !o)}
-                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:border-gray-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-600" aria-hidden="true" />
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-muted-foreground/40">
+                <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden="true" />
                 {platform ? (FILTERABLE_PLATFORMS.find((p) => p.value === platform)?.label || platform) : 'All platforms'}
-                <ChevronDown className="h-4 w-4 text-gray-500" strokeWidth={2.5} />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" strokeWidth={2.5} />
             </button>
             {platMenuOpen && (
-                <div className="absolute left-0 z-50 mt-1 w-60 overflow-hidden rounded-lg border border-gray-200 bg-white py-1.5 shadow-lg">
+                <div className="absolute left-0 z-50 mt-1 w-60 overflow-hidden rounded-lg border border-border bg-popover py-1.5 shadow-lg">
                     <button onClick={() => onPlatformPick(null)}
-                        className={`flex w-full items-center px-3 py-2 text-left text-sm transition hover:bg-gray-50 ${!platform ? 'bg-orange-50 font-semibold text-orange-700' : 'text-gray-700'}`}>
+                        className={`flex w-full items-center px-3 py-2 text-left text-sm transition hover:bg-muted ${!platform ? 'bg-primary/10 font-semibold text-primary' : 'text-foreground'}`}>
                         All platforms
-                        {!platform && <Check className="ml-auto h-3.5 w-3.5 text-orange-600" />}
+                        {!platform && <Check className="ml-auto h-3.5 w-3.5 text-primary" />}
                     </button>
-                    <div className="my-1 h-px bg-gray-100" />
+                    <div className="my-1 h-px bg-border" />
                     {/* Connected platforms are selectable; unconnected (no data) ones are
                         greyed + disabled — like the greyed agent rows on the Agents screen. */}
                     {FILTERABLE_PLATFORMS.map((p) => {
@@ -457,17 +461,17 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
                                 title={connected ? undefined : 'Not connected — sync this integration to enable it'}
                                 className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition ${
                                     !connected ? 'cursor-not-allowed opacity-50'
-                                    : platform === p.value ? 'bg-orange-50 font-semibold text-orange-700 hover:bg-orange-50'
-                                    : 'text-gray-700 hover:bg-gray-50'}`}>
-                                <span className={`h-1.5 w-1.5 rounded-full ${connected ? 'bg-green-600' : 'bg-gray-300'}`} aria-hidden="true" />
+                                    : platform === p.value ? 'bg-primary/10 font-semibold text-primary hover:bg-primary/10'
+                                    : 'text-foreground hover:bg-muted'}`}>
+                                <span className={`h-1.5 w-1.5 rounded-full ${connected ? 'bg-success' : 'bg-muted-foreground/30'}`} aria-hidden="true" />
                                 {p.label}
                                 {platform === p.value
-                                    ? <Check className="ml-auto h-3.5 w-3.5 text-orange-600" />
-                                    : <span className={`ml-auto text-[10px] ${connected ? 'text-gray-400' : 'text-gray-300'}`}>{connected ? 'Connected' : 'no data'}</span>}
+                                    ? <Check className="ml-auto h-3.5 w-3.5 text-primary" />
+                                    : <span className={`ml-auto text-[10px] ${connected ? 'text-muted-foreground/70' : 'text-muted-foreground/60'}`}>{connected ? 'Connected' : 'no data'}</span>}
                             </button>
                         )
                     })}
-                    <div className="my-1 h-px bg-gray-100" />
+                    <div className="my-1 h-px bg-border" />
                     {/* These platforms aren't metrics-filterable yet, but if the
                         workspace has CONNECTED the integration (cookie synced /
                         OAuth) we show it as connected instead of a locked "Connect". */}
@@ -475,9 +479,9 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
                         const slug = n.toLowerCase()
                         const connected = integrationConnected.includes(slug)
                         return (
-                            <div key={n} className={`flex w-full items-center gap-2 px-3 py-2 text-sm ${connected ? 'text-gray-600' : 'text-gray-400'}`}
+                            <div key={n} className={`flex w-full items-center gap-2 px-3 py-2 text-sm ${connected ? 'text-muted-foreground' : 'text-muted-foreground/70'}`}
                                 title={connected ? 'Connected — metrics not filterable yet' : 'Not connected'}>
-                                <span aria-hidden="true">{connected ? <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-600" /> : '🔒'}</span>
+                                <span aria-hidden="true">{connected ? <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" /> : '🔒'}</span>
                                 {n}
                                 <span className="ml-auto text-[10px]">{connected ? 'Connected' : 'Connect'}</span>
                             </div>
@@ -489,23 +493,23 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
     )
 
     return (
-        <div className="flex min-h-full flex-col bg-[#FAFAF9]">
+        <div className="flex min-h-full flex-col bg-background">
             {/* SINGLE topbar — the chat has NO header of its own; when its body is
                 open this same bar becomes the chat header (title + controls). When
                 the chat is minimized we keep the normal cockpit topbar and add a
                 "Resume chat" pill so the live thread can be reopened. */}
-            <div className="sticky top-0 z-30 flex flex-none items-center gap-2.5 border-b border-gray-200 bg-white px-6 py-3">
+            <div className="sticky top-0 z-30 flex flex-none items-center gap-2.5 border-b border-border bg-card px-6 py-3">
                 {chat.open ? (
                     <>
                         {/* Chat header mode — the title replaces "Cockpit"; controls
                             (minimize / new / open-in-tab / close) live on the right. */}
-                        <span className="text-orange-600">✦</span>
-                        <h1 className="min-w-0 truncate text-[19px] font-semibold tracking-tight text-gray-900">
+                        <span className="text-primary">✦</span>
+                        <h1 className="min-w-0 truncate text-[19px] font-semibold tracking-tight text-foreground">
                             {chat.title || 'Chat'}
                         </h1>
                         <div className="ml-auto flex items-center gap-0.5">
                             <button onClick={() => chatCmd('minimize')} title="Minimize — keep this chat"
-                                className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700">
+                                className="rounded-lg p-1.5 text-muted-foreground/70 transition hover:bg-muted hover:text-foreground">
                                 <Minus className="h-4 w-4" />
                             </button>
                         </div>
@@ -513,7 +517,7 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
                 ) : (
                     <>
                         <div className="flex items-center gap-1">
-                            <h1 className="text-[19px] font-semibold tracking-tight text-gray-900">Cockpit</h1>
+                            <h1 className="text-[19px] font-semibold tracking-tight text-foreground">Cockpit</h1>
                             {/* ⓘ — sync status (CONNECTED platforms only) + glossary of the short forms. */}
                             <CockpitInfoPopover connectedPlatforms={integrationConnected} />
                         </div>
@@ -526,11 +530,11 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
                                     onClick={() => chatCmd('resume')}
                                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') chatCmd('resume') }}
                                     title="Resume chat"
-                                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-700 transition hover:bg-orange-100">
+                                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary transition hover:bg-primary/20">
                                     <MessageSquare className="h-4 w-4" />
                                     <span className="max-w-[160px] truncate">{chat.title || 'Resume chat'}</span>
                                     <button onClick={(e) => { e.stopPropagation(); chatCmd('close') }}
-                                        title="Close chat" className="-mr-1 ml-0.5 rounded p-0.5 hover:bg-orange-200">
+                                        title="Close chat" className="-mr-1 ml-0.5 rounded p-0.5 hover:bg-primary/20">
                                         <X className="h-3 w-3" />
                                     </button>
                                 </div>
@@ -539,10 +543,10 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
                             {recsAvailable && (
                                 <button onClick={() => setInboxOpen(true)}
                                     title="Inbox — fixes & recommendations"
-                                    className="relative inline-flex items-center rounded-lg border border-gray-200 p-2 text-gray-600 transition hover:border-gray-300 hover:text-gray-900">
+                                    className="relative inline-flex items-center rounded-lg border border-border p-2 text-muted-foreground transition hover:border-muted-foreground/40 hover:text-foreground">
                                     <InboxIcon className="h-4 w-4" />
                                     {inboxCount > 0 && (
-                                        <span className="absolute -right-1 -top-1 grid h-4 min-w-[16px] place-items-center rounded-full bg-orange-600 px-1 text-[9px] font-bold text-white">
+                                        <span className="absolute -right-1 -top-1 grid h-4 min-w-[16px] place-items-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
                                             {inboxCount}
                                         </span>
                                     )}
@@ -565,7 +569,7 @@ export default function CockpitPage({ admin = false, initialTab = 'founder' }) {
             {admin && (
                 <div className="mb-4 flex flex-wrap items-end gap-3">
                     <div className="flex-1 min-w-[280px]">
-                        <label className="text-xs text-gray-500">Filter by workspace ID (optional — blank = all)</label>
+                        <label className="text-xs text-muted-foreground">Filter by workspace ID (optional — blank = all)</label>
                         <Input
                             value={wsInput}
                             onChange={(e) => setWsInput(e.target.value)}

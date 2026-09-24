@@ -18,20 +18,20 @@ import { notifyStagedChanged } from "@/hooks/useInboxCount";
 
 const RISK_LABEL: Record<string, string> = { low: "Low risk", med: "Med risk", high: "High risk" };
 const RISK_CLS: Record<string, string> = {
-  low: "bg-green-50 text-green-700 border-green-200",
-  med: "bg-amber-50 text-amber-700 border-amber-200",
-  high: "bg-red-50 text-red-700 border-red-200",
+  low: "bg-success/10 text-success border-success/20",
+  med: "bg-warning/10 text-warning border-warning/20",
+  high: "bg-destructive/10 text-destructive border-destructive/20",
 };
 const STATUS_CHIP: Record<string, string> = {
-  executed: "bg-green-50 text-green-700 border-green-200",
-  rejected: "bg-gray-100 text-gray-500 border-gray-200",
-  reverted: "bg-amber-50 text-amber-700 border-amber-200",
-  failed: "bg-red-50 text-red-700 border-red-200",
+  executed: "bg-success/10 text-success border-success/20",
+  rejected: "bg-muted text-muted-foreground border-border",
+  reverted: "bg-warning/10 text-warning border-warning/20",
+  failed: "bg-destructive/10 text-destructive border-destructive/20",
 };
 const SEV: Record<string, { chip: string; label: string }> = {
-  critical: { chip: "bg-red-50 text-red-700 border-red-200", label: "Critical" },
-  watch: { chip: "bg-amber-50 text-amber-700 border-amber-200", label: "Warning" },
-  opportunity: { chip: "bg-green-50 text-green-700 border-green-200", label: "Opportunity" },
+  critical: { chip: "bg-destructive/10 text-destructive border-destructive/20", label: "Critical" },
+  watch: { chip: "bg-warning/10 text-warning border-warning/20", label: "Warning" },
+  opportunity: { chip: "bg-success/10 text-success border-success/20", label: "Opportunity" },
 };
 const SUGGESTION_PERSONA = "founder";
 
@@ -147,23 +147,23 @@ export default function ApprovalsQueuePage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6">
       <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h1 className="text-lg font-semibold text-gray-900">Inbox</h1>
+        <h1 className="text-lg font-semibold text-foreground">Inbox</h1>
       </div>
 
       {/* Agent runs — need approval */}
       <div className="mt-6 flex items-center gap-2">
-        <Zap className="h-4 w-4 text-orange-600" />
-        <h2 className="text-sm font-semibold text-gray-900">Agent runs — need approval</h2>
-        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">{stagedIds.length}</span>
+        <Zap className="h-4 w-4 text-primary" />
+        <h2 className="text-sm font-semibold text-foreground">Agent runs — need approval</h2>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{stagedIds.length}</span>
         <button onClick={approveAllLow} disabled={lowRiskStaged.length === 0}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 disabled:opacity-40">
+          className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-border disabled:opacity-40">
           Approve all low-risk ({lowRiskStaged.length})
         </button>
       </div>
 
       <div className="mt-3 flex flex-col gap-4">
         {loading && (
-          <div className="flex items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-400">
+          <div className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading staged actions…
           </div>
         )}
@@ -172,50 +172,50 @@ export default function ApprovalsQueuePage() {
           const done = !!st;
           const inFlight = !!pending[q.id];
           return (
-            <div key={q.id} className={`rounded-2xl border bg-white p-5 shadow-sm transition ${done ? "border-gray-100 opacity-70" : "border-gray-200"}`}>
+            <div key={q.id} className={`rounded-2xl border bg-card p-5 shadow-sm transition ${done ? "border-border opacity-70" : "border-border"}`}>
               <div className="flex items-start gap-3">
                 <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${RISK_CLS[q.risk]}`}>{RISK_LABEL[q.risk]}</span>
-                <b className="text-[15px] text-gray-900">{q.title}</b>
+                <b className="text-[15px] text-foreground">{q.title}</b>
                 <span className="ml-auto flex shrink-0 items-center gap-2">
                   {done ? (
                     <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${STATUS_CHIP[st]}`}>{st}</span>
                   ) : (
-                    <span className="rounded-full border border-gray-200 px-2 py-0.5 text-[10px] font-medium text-gray-400">{q.reversible ? "Reversible" : "Not reversible"}</span>
+                    <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{q.reversible ? "Reversible" : "Not reversible"}</span>
                   )}
                 </span>
               </div>
-              <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[12.5px] text-gray-500">
-                {q.tool && <span>tool <b className="font-mono text-[11.5px] text-gray-700">{q.tool}</b></span>}
-                {q.params && <span>params <b className="text-gray-700">{q.params}</b></span>}
+              <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[12.5px] text-muted-foreground">
+                {q.tool && <span>tool <b className="font-mono text-[11.5px] text-foreground">{q.tool}</b></span>}
+                {q.params && <span>params <b className="text-foreground">{q.params}</b></span>}
               </div>
               {q.explain && (
-                <div className="mt-3 rounded-lg bg-amber-50 border border-amber-100 px-3 py-2 text-[13px] text-amber-900">{q.explain}</div>
+                <div className="mt-3 rounded-lg bg-warning/10 border border-warning/20 px-3 py-2 text-[13px] text-warning">{q.explain}</div>
               )}
               {(q.metric || q.before || q.impact || q.delta) && (
-                <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-1 text-[12.5px] text-gray-500">
-                  {q.metric && <span>trigger <b className="text-gray-700">{q.metric} = {q.metric_value ?? "—"}</b></span>}
-                  {q.before && <span>before <b className="text-gray-700">{q.before}</b></span>}
-                  {q.impact && <span>projected <b className="text-gray-700">{q.impact}</b></span>}
-                  {q.delta && <span>Δ <b className="text-gray-700">{q.delta}</b></span>}
+                <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-1 text-[12.5px] text-muted-foreground">
+                  {q.metric && <span>trigger <b className="text-foreground">{q.metric} = {q.metric_value ?? "—"}</b></span>}
+                  {q.before && <span>before <b className="text-foreground">{q.before}</b></span>}
+                  {q.impact && <span>projected <b className="text-foreground">{q.impact}</b></span>}
+                  {q.delta && <span>Δ <b className="text-foreground">{q.delta}</b></span>}
                 </div>
               )}
               {done && results[q.id] && (
-                <div className={`mt-3 rounded-lg border px-3 py-2 text-[13px] ${st === "failed" ? "bg-red-50 border-red-100 text-red-800" : "bg-gray-50 border-gray-200 text-gray-700"}`}>
-                  <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-1">Agent result</div>
+                <div className={`mt-3 rounded-lg border px-3 py-2 text-[13px] ${st === "failed" ? "bg-destructive/10 border-destructive/20 text-destructive" : "bg-muted border-border text-foreground"}`}>
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">Agent result</div>
                   <div className="whitespace-pre-wrap">{results[q.id]}</div>
                 </div>
               )}
               <div className="mt-4 flex items-center gap-3">
-                <span className="text-[11px] text-gray-400">{q.origin}{q.exp ? ` · ${q.exp}` : ""}</span>
+                <span className="text-[11px] text-muted-foreground">{q.origin}{q.exp ? ` · ${q.exp}` : ""}</span>
                 <span className="ml-auto flex items-center gap-2">
                   {done ? (
-                    <span className="text-[11px] text-gray-400">no actions</span>
+                    <span className="text-[11px] text-muted-foreground">no actions</span>
                   ) : (
                     <>
                       <button onClick={() => reject(q)} disabled={inFlight}
-                        className="rounded-md border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-300 disabled:opacity-40">Reject</button>
+                        className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-border disabled:opacity-40">Reject</button>
                       <button onClick={() => approve(q)} disabled={inFlight}
-                        className="inline-flex items-center gap-1 rounded-md bg-orange-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-700 disabled:opacity-40">
+                        className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40">
                         {inFlight ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
                         {q.confirm ? "Approve (confirm)" : "Approve"}
                       </button>
@@ -227,7 +227,7 @@ export default function ApprovalsQueuePage() {
           );
         })}
         {!loading && stagedIds.length === 0 && (
-          <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-400">
+          <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
             Nothing staged — actions from your “require approval” automation rules land here.
           </div>
         )}
@@ -235,21 +235,21 @@ export default function ApprovalsQueuePage() {
 
       {/* Suggestions — need approval */}
       <div className="mt-8 flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-orange-600" />
-        <h2 className="text-sm font-semibold text-gray-900">Suggestions — need approval</h2>
-        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">{visibleRecs.length}</span>
-        {recsWhen && <span className="text-[11px] text-gray-400">generated {recsWhen}</span>}
+        <Sparkles className="h-4 w-4 text-primary" />
+        <h2 className="text-sm font-semibold text-foreground">Suggestions — need approval</h2>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{visibleRecs.length}</span>
+        {recsWhen && <span className="text-[11px] text-muted-foreground">generated {recsWhen}</span>}
         <button onClick={refreshRecs} disabled={recsRefreshing} title="Regenerate suggestions"
-          className="ml-auto inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-50">
+          className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50">
           <RefreshCw className={`h-3.5 w-3.5 ${recsRefreshing ? "animate-spin" : ""}`} /> Regenerate
         </button>
       </div>
 
-      {recsError && <div className="mt-3 rounded-lg border border-red-100 bg-red-50 px-4 py-2 text-[12.5px] text-red-600">{recsError}</div>}
+      {recsError && <div className="mt-3 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-2 text-[12.5px] text-destructive">{recsError}</div>}
 
       <div className="mt-3 flex flex-col gap-4">
         {recsLoading && (
-          <div className="flex items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-400">
+          <div className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading suggestions…
           </div>
         )}
@@ -257,33 +257,33 @@ export default function ApprovalsQueuePage() {
           const sev = SEV[r.severity] || SEV.watch;
           const body = r.detail || r.evidence || r.body || r.why || "";
           return (
-            <div key={i} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div key={i} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
               <div className="flex items-start gap-3">
                 <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${sev.chip}`}>{sev.label}</span>
-                <b className="text-[15px] text-gray-900">{r.title}</b>
+                <b className="text-[15px] text-foreground">{r.title}</b>
               </div>
-              {body && <p className="mt-2 max-w-[80ch] text-[12.5px] leading-relaxed text-gray-600">{body}</p>}
-              {r.action && <div className="mt-2 text-[12.5px] text-gray-500">suggested action <b className="text-gray-700">{r.action}</b></div>}
+              {body && <p className="mt-2 max-w-[80ch] text-[12.5px] leading-relaxed text-muted-foreground">{body}</p>}
+              {r.action && <div className="mt-2 text-[12.5px] text-muted-foreground">suggested action <b className="text-foreground">{r.action}</b></div>}
               <div className="mt-4 flex items-center gap-2">
                 <button disabled title="Agent chat is not available on the public API"
-                  className="inline-flex items-center gap-1 rounded-md bg-gray-200 px-3 py-1.5 text-xs font-medium text-gray-400 cursor-not-allowed">
+                  className="inline-flex items-center gap-1 rounded-md bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground cursor-not-allowed">
                   <ArrowRight className="h-3.5 w-3.5" /> Fix with agent
                 </button>
                 <button onClick={() => setDismissed((s) => new Set(s).add(i))}
-                  className="rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100">Dismiss</button>
+                  className="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted">Dismiss</button>
               </div>
             </div>
           );
         })}
         {!recsLoading && visibleRecs.length === 0 && !recsError && (
-          <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-400">
+          <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
             All clear — nothing waiting on you.
           </div>
         )}
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-gray-900 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-foreground px-4 py-2 text-sm text-background shadow-lg">{toast}</div>
       )}
     </div>
   );

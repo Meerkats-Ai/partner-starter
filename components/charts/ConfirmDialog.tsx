@@ -36,30 +36,30 @@ export default function ConfirmDialog({
 
   if (!open) return null;
 
-  const confirmCls = destructive ? "bg-red-600 hover:bg-red-700" : "bg-orange-600 hover:bg-orange-700";
+  const confirmCls = destructive ? "bg-destructive hover:bg-destructive/90" : "bg-primary hover:bg-primary/90";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-[1px]" onClick={() => !busy && onCancel?.()} />
-      <div role="dialog" aria-modal="true" className="relative w-full max-w-md rounded-2xl border border-gray-200 bg-white p-5 shadow-xl">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" onClick={() => !busy && onCancel?.()} />
+      <div role="dialog" aria-modal="true" className="relative w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-xl">
         <div className="flex items-start gap-3">
           {destructive && (
-            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-50">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </span>
           )}
           <div className="min-w-0">
-            <h3 className="text-[15px] font-semibold text-gray-900">{title}</h3>
-            {message && <p className="mt-1 text-[13px] leading-relaxed text-gray-500">{message}</p>}
+            <h3 className="text-[15px] font-semibold text-foreground">{title}</h3>
+            {message && <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{message}</p>}
           </div>
         </div>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button onClick={() => !busy && onCancel?.()} disabled={busy}
-            className="rounded-lg border border-gray-200 px-3.5 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-300 disabled:opacity-40">
+            className="rounded-lg border border-border px-3.5 py-2 text-sm font-medium text-foreground transition hover:border-border disabled:opacity-40">
             {cancelLabel}
           </button>
           <button onClick={() => !busy && onConfirm?.()} disabled={busy}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-white transition disabled:opacity-60 ${confirmCls}`}>
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium text-primary-foreground transition disabled:opacity-60 ${confirmCls}`}>
             {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             {confirmLabel}
           </button>

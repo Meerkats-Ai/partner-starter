@@ -24,7 +24,7 @@ import SignalCards, { deriveSignals } from './SignalCards'
 import { lastFullWeek, thisWeekToDate, lastNDays, trailingWindow, splitWindow, windowLabel, grainFor } from './dateWindows'
 import WindowSelector, { useWindow, useCardWindow, CardControls } from './WindowSelector'
 import { useCampaignFilter } from './TableToolbar'
-import { fmtMoney, fmtNum, fmtNumCompact, fmtPct, fmtDay, fmtWeek, fmtMoneyInr, roasColor, COLORS, SEMANTIC } from './chartSetup'
+import { fmtMoney, fmtNum, fmtNumCompact, fmtPct, fmtDay, fmtWeek, fmtMoneyInr, roasColor, COLORS, SEMANTIC, SERIES } from './chartSetup'
 
 const fmtRoas = (v) => (v == null || !isFinite(Number(v)) ? '—' : `${Number(v).toFixed(2)}×`)
 const fmtRoasDelta = (d) => `${d > 0 ? '+' : ''}${d.toFixed(2)}×`
@@ -43,14 +43,14 @@ const resolveWindow = (win) => {
 }
 
 // Flat prototype-style KPI tile (same as FounderDashboard's).
-function Kpi({ label, value, delta, sub, subCls = 'text-gray-400', loading }) {
+function Kpi({ label, value, delta, sub, subCls = 'text-muted-foreground/70', loading }) {
     if (loading) {
         return (
             <div>
-                <div className="text-sm text-gray-500">{label}</div>
+                <div className="text-sm text-muted-foreground">{label}</div>
                 <div className="mt-2 animate-pulse space-y-2.5" aria-label="Loading">
-                    <div className="h-7 w-24 rounded-md bg-gray-200" />
-                    <div className="h-3 w-32 rounded bg-gray-100" />
+                    <div className="h-7 w-24 rounded-md bg-muted" />
+                    <div className="h-3 w-32 rounded bg-muted" />
                 </div>
             </div>
         )
@@ -58,8 +58,8 @@ function Kpi({ label, value, delta, sub, subCls = 'text-gray-400', loading }) {
     const noData = value === 'No data'
     return (
         <div>
-            <div className="text-sm text-gray-500">{label}</div>
-            <div className={`mt-1.5 leading-9 tracking-tight tabular-nums ${noData ? 'text-xl font-semibold text-gray-300' : 'text-[28px] font-bold text-gray-900'}`}>{value}</div>
+            <div className="text-sm text-muted-foreground">{label}</div>
+            <div className={`mt-1.5 leading-9 tracking-tight tabular-nums ${noData ? 'text-xl font-semibold text-muted-foreground/60' : 'text-[28px] font-bold text-foreground'}`}>{value}</div>
             {!noData && delta && <div className="mt-2">{delta}</div>}
             {sub && <div className={`mt-1 text-xs ${subCls}`}>{sub}</div>}
         </div>
@@ -84,19 +84,19 @@ function verdictOf(c, blendedRealRoas) {
     const freq = num(c.campaign_frequency)
     // No attributed revenue → real ROAS is unknown; don't Pause/Scale on it.
     if (!hasRealRoas(c)) {
-        if (freq > 4) return { label: 'Refresh creative', cls: 'bg-amber-100 text-amber-700', kind: 'refresh' }
-        return { label: 'No attribution', cls: 'bg-gray-100 text-gray-500', kind: 'unknown' }
+        if (freq > 4) return { label: 'Refresh creative', cls: 'bg-warning/10 text-warning', kind: 'refresh' }
+        return { label: 'No attribution', cls: 'bg-muted text-muted-foreground', kind: 'unknown' }
     }
     if (real >= Math.max(blendedRealRoas * 1.2, 1.5) && (freq === 0 || freq < 3)) {
-        return { label: 'Scale now', cls: 'bg-green-100 text-green-700', kind: 'scale' }
+        return { label: 'Scale now', cls: 'bg-success/10 text-success', kind: 'scale' }
     }
-    if (real < 1) return { label: 'Pause / audit', cls: 'bg-red-100 text-red-700', kind: 'cut' }
-    if (freq > 4) return { label: 'Refresh creative', cls: 'bg-amber-100 text-amber-700', kind: 'refresh' }
-    return { label: 'Watch', cls: 'bg-amber-100 text-amber-700', kind: 'watch' }
+    if (real < 1) return { label: 'Pause / audit', cls: 'bg-destructive/10 text-destructive', kind: 'cut' }
+    if (freq > 4) return { label: 'Refresh creative', cls: 'bg-warning/10 text-warning', kind: 'refresh' }
+    return { label: 'Watch', cls: 'bg-warning/10 text-warning', kind: 'watch' }
 }
 
 // Frequency chip band: <3× fine, 3–4.5× warming, >4.5× fatigued.
-const freqChip = (f) => (f > 4.5 ? 'bg-red-100 text-red-700' : f >= 3 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700')
+const freqChip = (f) => (f > 4.5 ? 'bg-destructive/10 text-destructive' : f >= 3 ? 'bg-warning/10 text-warning' : 'bg-success/10 text-success')
 
 /**
  * BreakdownBars — a ranked list of segments, each a spend bar (width ∝ spend)
@@ -108,19 +108,19 @@ function BreakdownBars({ rows, label, spend, roas, max, note }) {
     const maxSpend = max ?? Math.max(1, ...rows.map(spend))
     return (
         <div className="flex flex-col gap-2.5 pt-1">
-            {note && <div className="text-[11px] text-gray-400">{note}</div>}
+            {note && <div className="text-[11px] text-muted-foreground/70">{note}</div>}
             {rows.map((r, i) => {
                 const s = spend(r)
                 const rv = roas(r)
                 const hasRoas = rv != null && isFinite(Number(rv))
                 return (
                     <div key={label(r) || i} className="flex items-center gap-2">
-                        <div className="w-28 shrink-0 truncate text-xs text-gray-600" title={label(r)}>{label(r)}</div>
-                        <div className="h-4 flex-1 overflow-hidden rounded bg-gray-100">
-                            <div className="h-full rounded" style={{ width: `${(s / maxSpend) * 100}%`, background: hasRoas ? roasColor(Number(rv)) : '#94a3b8' }} />
+                        <div className="w-28 shrink-0 truncate text-xs text-muted-foreground" title={label(r)}>{label(r)}</div>
+                        <div className="h-4 flex-1 overflow-hidden rounded bg-muted">
+                            <div className="h-full rounded" style={{ width: `${(s / maxSpend) * 100}%`, background: hasRoas ? roasColor(Number(rv)) : 'hsl(var(--muted-foreground))' }} />
                         </div>
-                        <div className="w-16 shrink-0 text-right text-xs tabular-nums text-gray-500">{fmtMoneyInr(s)}</div>
-                        <div className="w-12 shrink-0 text-right text-xs font-medium tabular-nums" style={{ color: hasRoas ? roasColor(Number(rv)) : '#94a3b8' }}>{fmtRoas(rv)}</div>
+                        <div className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">{fmtMoneyInr(s)}</div>
+                        <div className="w-12 shrink-0 text-right text-xs font-medium tabular-nums" style={{ color: hasRoas ? roasColor(Number(rv)) : 'hsl(var(--muted-foreground))' }}>{fmtRoas(rv)}</div>
                     </div>
                 )
             })}
@@ -410,7 +410,7 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                     delta={<TrendDelta current={k.cpm} previous={p.cpm} invert tone="caution" suffix={deltaSuffix} />} />
                 <Kpi label="Frequency" loading={adKpiQ.loading} value={freqNow ? `${freqNow.toFixed(1)}×` : 'No data'}
                     sub={freqNow > 3.5 ? '⚠ above 3.5× fatigue zone' : freqNow ? 'impressions-weighted daily avg (Meta)' : undefined}
-                    subCls={freqNow > 3.5 ? 'text-red-600 font-medium' : 'text-gray-400'}
+                    subCls={freqNow > 3.5 ? 'text-destructive font-medium' : 'text-muted-foreground/70'}
                     delta={<TrendDelta current={k.avg_frequency} previous={p.avg_frequency} invert suffix={deltaSuffix} />} />
                 </>)}
             </div>
@@ -435,8 +435,8 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                                 {
                                     label: 'MER (total rev ÷ spend)',
                                     data: (roasTrendQ.rows || []).map((r) => num(r.roas)),
-                                    borderColor: '#2563eb', backgroundColor: '#2563eb',
-                                    pointRadius: 3, pointBackgroundColor: '#2563eb',
+                                    borderColor: 'hsl(var(--chart-2))', backgroundColor: 'hsl(var(--chart-2))',
+                                    pointRadius: 3, pointBackgroundColor: 'hsl(var(--chart-2))',
                                     tension: 0.35, fill: false,
                                 },
                                 {
@@ -485,8 +485,8 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                                 {
                                     label: 'Frequency',
                                     data: (satQ.rows || []).map((r) => num(r.avg_frequency)),
-                                    borderColor: '#7c3aed', backgroundColor: '#7c3aed',
-                                    pointRadius: 2, pointBackgroundColor: '#7c3aed',
+                                    borderColor: 'hsl(var(--chart-3))', backgroundColor: 'hsl(var(--chart-3))',
+                                    pointRadius: 2, pointBackgroundColor: 'hsl(var(--chart-3))',
                                     tension: 0.35, fill: false, yAxisID: 'y1',
                                 },
                             ],
@@ -501,7 +501,7 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                             scales: {
                                 x: { grid: { display: false }, ticks: { color: COLORS.slate, font: { size: 11 } } },
                                 y: { position: 'left', grid: { color: COLORS.grid }, beginAtZero: true, ticks: { color: SEMANTIC.warn, font: { size: 11 }, callback: (v) => fmtMoney(v) } },
-                                y1: { position: 'right', grid: { display: false }, beginAtZero: true, ticks: { color: '#7c3aed', font: { size: 11 }, callback: (v) => `${v}×` } },
+                                y1: { position: 'right', grid: { display: false }, beginAtZero: true, ticks: { color: 'hsl(var(--chart-3))', font: { size: 11 }, callback: (v) => `${v}×` } },
                             },
                         }}
                     />
@@ -523,7 +523,7 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="text-left text-xs uppercase tracking-wide text-gray-400">
+                            <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground/70">
                                 <th className="py-2 pr-3">Campaign</th>
                                 <th className="py-2 px-3 text-right">Spend</th>
                                 <th className="py-2 px-3 text-right">Spend %</th>
@@ -547,26 +547,26 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                                 // meaningful when attribution resolved for this campaign.
                                 const realKnown = hasRealRoas(c)
                                 return (
-                                    <tr key={c.campaign_row__campaign_name || i} className="border-t border-gray-100">
-                                        <td className="max-w-[220px] truncate py-2 pr-3 font-medium text-gray-700" title={c.campaign_row__campaign_name}>
+                                    <tr key={c.campaign_row__campaign_name || i} className="border-t border-border">
+                                        <td className="max-w-[220px] truncate py-2 pr-3 font-medium text-foreground" title={c.campaign_row__campaign_name}>
                                             {c.campaign_row__campaign_name || '(unknown)'}
                                         </td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-700">{fmtMoneyInr(c.campaign_spend)}</td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{totalSpend ? fmtPct(num(c.campaign_spend) / totalSpend) : '—'}</td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{num(c.campaign_impressions) ? fmtNumCompact(c.campaign_impressions) : '—'}</td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{num(c.campaign_clicks) ? fmtNumCompact(c.campaign_clicks) : '—'}</td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{num(c.campaign_impressions) ? fmtPct(c.campaign_ctr) : '—'}</td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{fmtRoas(c.campaign_reported_roas)}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-foreground">{fmtMoneyInr(c.campaign_spend)}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{totalSpend ? fmtPct(num(c.campaign_spend) / totalSpend) : '—'}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{num(c.campaign_impressions) ? fmtNumCompact(c.campaign_impressions) : '—'}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{num(c.campaign_clicks) ? fmtNumCompact(c.campaign_clicks) : '—'}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{num(c.campaign_impressions) ? fmtPct(c.campaign_ctr) : '—'}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{fmtRoas(c.campaign_reported_roas)}</td>
                                         <td className="py-2 px-3 text-right tabular-nums font-semibold"
                                             style={{ color: realKnown ? roasColor(c.real_roas) : undefined }}
                                             title={realKnown ? undefined : 'No CDP-attributed revenue for this campaign — real ROAS can’t be computed'}>
-                                            {realKnown ? fmtRoas(c.real_roas) : <span className="text-gray-300">—</span>}
+                                            {realKnown ? fmtRoas(c.real_roas) : <span className="text-muted-foreground/60">—</span>}
                                         </td>
-                                        <td className={`py-2 px-3 text-right tabular-nums ${realKnown && gap > 0.3 ? 'font-medium text-red-600' : 'text-gray-500'}`}>
+                                        <td className={`py-2 px-3 text-right tabular-nums ${realKnown && gap > 0.3 ? 'font-medium text-destructive' : 'text-muted-foreground'}`}>
                                             {realKnown && gap ? `${gap > 0 ? '+' : ''}${gap.toFixed(2)}×` : '—'}
                                         </td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{freq ? `${freq.toFixed(1)}×` : '—'}</td>
-                                        <td className="py-2 px-3 text-right tabular-nums text-gray-500">{realKnown ? fmtNum(c.campaign_attributed_orders) : <span className="text-gray-300">—</span>}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{freq ? `${freq.toFixed(1)}×` : '—'}</td>
+                                        <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{realKnown ? fmtNum(c.campaign_attributed_orders) : <span className="text-muted-foreground/60">—</span>}</td>
                                         <td className="py-2 pl-3 text-right">
                                             <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ${v.cls}`}>{v.label}</span>
                                         </td>
@@ -589,16 +589,16 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                     empty={!adsetA.loading && !adsetB.loading && adsets.length === 0}
                     ask={{ rows: adsets, meta: { window: windowLabel(window_), persona: 'Growth lead' } }}
                 >
-                    <div className="flex flex-col divide-y divide-gray-100 pt-1">
+                    <div className="flex flex-col divide-y divide-border pt-1">
                         {adsets.map((f) => (
                             <div key={f.adgroup} className="flex items-center justify-between gap-3 py-2">
-                                <div className="truncate text-sm text-gray-700" title={f.adgroup}>{f.adgroup}</div>
+                                <div className="truncate text-sm text-foreground" title={f.adgroup}>{f.adgroup}</div>
                                 <div className="flex shrink-0 items-center gap-3 text-xs tabular-nums">
                                     <span className={`rounded-full px-2 py-0.5 font-semibold ${freqChip(f.freq)}`}>
                                         {f.freq ? `${f.freq.toFixed(1)}×` : '—'}
                                     </span>
-                                    <span className="text-gray-500">CTR {fmtPct(f.ctrNow)}</span>
-                                    {f.ctrDrop > 0.2 && <span className="font-medium text-red-600">↘ {fmtPct(f.ctrDrop)}</span>}
+                                    <span className="text-muted-foreground">CTR {fmtPct(f.ctrNow)}</span>
+                                    {f.ctrDrop > 0.2 && <span className="font-medium text-destructive">↘ {fmtPct(f.ctrDrop)}</span>}
                                 </div>
                             </div>
                         ))}
@@ -621,24 +621,24 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                             return (
                                 <div key={r.campaign_row__platform || i} className="space-y-1">
                                     <div className="flex items-baseline justify-between">
-                                        <span className="text-xs font-medium capitalize text-gray-600">{r.campaign_row__platform}</span>
+                                        <span className="text-xs font-medium capitalize text-muted-foreground">{r.campaign_row__platform}</span>
                                         {claimed > delivered && delivered >= 0 && (
-                                            <span className="text-[11px] font-medium text-red-600">claim +{fmtMoneyInr(claimed - delivered)}</span>
+                                            <span className="text-[11px] font-medium text-destructive">claim +{fmtMoneyInr(claimed - delivered)}</span>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-16 shrink-0 text-[11px] text-gray-400">claimed</div>
-                                        <div className="h-4 flex-1 overflow-hidden rounded bg-gray-100">
-                                            <div className="h-full rounded" style={{ width: `${(claimed / max) * 100}%`, background: '#2563eb' }} />
+                                        <div className="w-16 shrink-0 text-[11px] text-muted-foreground/70">claimed</div>
+                                        <div className="h-4 flex-1 overflow-hidden rounded bg-muted">
+                                            <div className="h-full rounded" style={{ width: `${(claimed / max) * 100}%`, background: 'hsl(var(--chart-2))' }} />
                                         </div>
-                                        <div className="w-20 shrink-0 text-right text-xs tabular-nums text-gray-500">{fmtMoneyInr(claimed)}</div>
+                                        <div className="w-20 shrink-0 text-right text-xs tabular-nums text-muted-foreground">{fmtMoneyInr(claimed)}</div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-16 shrink-0 text-[11px] text-gray-400">delivered</div>
-                                        <div className="h-4 flex-1 overflow-hidden rounded bg-gray-100">
+                                        <div className="w-16 shrink-0 text-[11px] text-muted-foreground/70">delivered</div>
+                                        <div className="h-4 flex-1 overflow-hidden rounded bg-muted">
                                             <div className="h-full rounded" style={{ width: `${(delivered / max) * 100}%`, background: SEMANTIC.good }} />
                                         </div>
-                                        <div className="w-20 shrink-0 text-right text-xs tabular-nums text-gray-700">{fmtMoneyInr(delivered)}</div>
+                                        <div className="w-20 shrink-0 text-right text-xs tabular-nums text-foreground">{fmtMoneyInr(delivered)}</div>
                                     </div>
                                 </div>
                             )
@@ -717,7 +717,7 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                             datasets: [{
                                 label: 'Spend',
                                 data: (hourlyQ.rows || []).map((r) => num(r.meta_hourly_spend)),
-                                backgroundColor: (hourlyQ.rows || []).map((r) => (num(r.meta_hourly_revenue) > 0 ? roasColor(num(r.meta_hourly_roas)) : '#cbd5e1')),
+                                backgroundColor: (hourlyQ.rows || []).map((r) => (num(r.meta_hourly_revenue) > 0 ? roasColor(num(r.meta_hourly_roas)) : 'hsl(var(--muted-foreground))')),
                                 borderRadius: 3,
                             }],
                         }}
@@ -746,7 +746,7 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                 creative fatigue + attribution gap, which Flipkart lacks → hidden. */}
             {!isMarketplace && (<>
             <div>
-                <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
                     What happened · why · what to do
                 </div>
                 <SignalCards signals={signals} loading={kpiQ.loading || adKpiQ.loading || campQ.loading} />
@@ -763,7 +763,7 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="text-left text-xs uppercase tracking-wide text-gray-400">
+                            <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground/70">
                                 <th className="py-2 pr-3 w-8">#</th>
                                 <th className="py-2 pr-3">Action</th>
                                 <th className="py-2 px-3">Where</th>
@@ -773,13 +773,13 @@ export default function MarketerDashboard({ admin = false, workspaceId, platform
                         </thead>
                         <tbody>
                             {actions.map((a, i) => (
-                                <tr key={i} className="border-t border-gray-100">
-                                    <td className="py-2 pr-3 text-gray-400">{i + 1}</td>
-                                    <td className="py-2 pr-3 font-medium text-gray-700">{a.action}</td>
-                                    <td className="py-2 px-3 text-gray-500">{a.where}</td>
-                                    <td className="py-2 px-3 text-right tabular-nums text-gray-700">{fmtMoneyInr(a.impact)}</td>
+                                <tr key={i} className="border-t border-border">
+                                    <td className="py-2 pr-3 text-muted-foreground/70">{i + 1}</td>
+                                    <td className="py-2 pr-3 font-medium text-foreground">{a.action}</td>
+                                    <td className="py-2 px-3 text-muted-foreground">{a.where}</td>
+                                    <td className="py-2 px-3 text-right tabular-nums text-foreground">{fmtMoneyInr(a.impact)}</td>
                                     <td className="py-2 pl-3 text-right">
-                                        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${a.eta === 'Today' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${a.eta === 'Today' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}>
                                             {a.eta}
                                         </span>
                                     </td>

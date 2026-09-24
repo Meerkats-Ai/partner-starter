@@ -14,9 +14,9 @@ import React from 'react'
 import { fmtMoney, fmtPct } from './chartSetup'
 
 const SEVERITY = {
-    alert: { icon: '⚠', border: 'border-red-200', bg: 'bg-red-100/70', title: 'text-red-900', iconCls: 'text-red-600' },
-    watch: { icon: '↘', border: 'border-amber-200', bg: 'bg-amber-100/70', title: 'text-amber-900', iconCls: 'text-amber-600' },
-    win: { icon: '★', border: 'border-green-200', bg: 'bg-green-100/70', title: 'text-green-900', iconCls: 'text-green-600' },
+    alert: { icon: '⚠', border: 'border-destructive/20', bg: 'bg-destructive/10', title: 'text-destructive', iconCls: 'text-destructive' },
+    watch: { icon: '↘', border: 'border-warning/20', bg: 'bg-warning/10', title: 'text-warning', iconCls: 'text-warning' },
+    win: { icon: '★', border: 'border-success/20', bg: 'bg-success/10', title: 'text-success', iconCls: 'text-success' },
 }
 
 const num = (v) => {
@@ -104,11 +104,11 @@ export default function SignalCards({ signals = [], loading = false }) {
         return (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Loading">
                 {[0, 1, 2].map((i) => (
-                    <div key={i} className="animate-pulse space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-5">
-                        <div className="h-4 w-4 rounded bg-gray-200" />
-                        <div className="h-4 w-3/4 rounded bg-gray-200" />
-                        <div className="h-3 w-full rounded bg-gray-100" />
-                        <div className="h-3 w-2/3 rounded bg-gray-100" />
+                    <div key={i} className="animate-pulse space-y-3 rounded-xl border border-border bg-muted p-5">
+                        <div className="h-4 w-4 rounded bg-muted-foreground/20" />
+                        <div className="h-4 w-3/4 rounded bg-muted-foreground/20" />
+                        <div className="h-3 w-full rounded bg-muted-foreground/10" />
+                        <div className="h-3 w-2/3 rounded bg-muted-foreground/10" />
                     </div>
                 ))}
             </div>
@@ -116,7 +116,7 @@ export default function SignalCards({ signals = [], loading = false }) {
     }
     if (!signals.length) {
         return (
-            <div className="rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-400">
+            <div className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground/70">
                 No signals this window — metrics are inside normal ranges.
             </div>
         )
@@ -129,11 +129,11 @@ export default function SignalCards({ signals = [], loading = false }) {
                     <div key={i} className={`flex flex-col rounded-xl border ${sv.border} ${sv.bg} p-5`}>
                         <div className={`mb-2 text-lg leading-none ${sv.iconCls}`} aria-hidden="true">{sv.icon}</div>
                         <div className={`mb-1.5 text-sm font-semibold leading-snug ${sv.title}`}>{s.title}</div>
-                        <div className="mb-4 text-xs leading-relaxed text-gray-700">{s.why}</div>
+                        <div className="mb-4 text-xs leading-relaxed text-foreground">{s.why}</div>
                         {(s.cta || s.action) && (
                             <div className="mt-auto">
                                 <button type="button" title={s.action}
-                                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-800 shadow-sm hover:bg-gray-50">
+                                    className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground shadow-sm hover:bg-accent">
                                     {s.cta || s.action} ↗
                                 </button>
                             </div>

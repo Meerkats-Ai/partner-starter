@@ -8,7 +8,7 @@
  */
 export const RISK_LABEL = { low: 'Low risk', med: 'Med risk', high: 'High risk' }
 export const RISK_CLS = {
-    low: 'bg-green-50 text-green-700 border-green-200',
-    med: 'bg-amber-50 text-amber-700 border-amber-200',
-    high: 'bg-red-50 text-red-700 border-red-200',
+    low: 'bg-success/10 text-success border-success/20',
+    med: 'bg-warning/10 text-warning border-warning/20',
+    high: 'bg-destructive/10 text-destructive border-destructive/20',
 }

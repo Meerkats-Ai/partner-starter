@@ -269,8 +269,8 @@ function KpiBody({ rows, spec }) {
         <div className="flex h-full flex-wrap items-center gap-x-10 gap-y-4 px-1">
             {(spec.metrics || []).map((m) => (
                 <div key={m}>
-                    <div className="text-xs text-gray-500">{m.replace(/_/g, ' ')}</div>
-                    <div className="mt-1 text-3xl font-bold tabular-nums text-gray-900">{fmt(r[m])}</div>
+                    <div className="text-xs text-muted-foreground">{m.replace(/_/g, ' ')}</div>
+                    <div className="mt-1 text-3xl font-bold tabular-nums text-foreground">{fmt(r[m])}</div>
                 </div>
             ))}
         </div>
@@ -341,11 +341,11 @@ export default function SpecChart({ spec, admin = false, workspaceId, platform =
         : specWindowLabel(spec.window)
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
             <div className="mb-3 flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <h3 className="truncate text-sm font-semibold text-gray-800" title={spec.title}>{spec.title}</h3>
-                    {spec.subtitle && <p className="mt-0.5 truncate text-xs text-gray-400" title={spec.subtitle}>{spec.subtitle}</p>}
+                    <h3 className="truncate text-sm font-semibold text-foreground" title={spec.title}>{spec.title}</h3>
+                    {spec.subtitle && <p className="mt-0.5 truncate text-xs text-muted-foreground/70" title={spec.subtitle}>{spec.subtitle}</p>}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                     {dateChip}
@@ -355,8 +355,8 @@ export default function SpecChart({ spec, admin = false, workspaceId, platform =
                         title={pinned ? 'Unpin from Cockpit' : 'Pin to Cockpit'}
                         className={`inline-flex shrink-0 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-medium transition ${
                             pinned
-                                ? 'border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100'
-                                : 'border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-700'
+                                ? 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20'
+                                : 'border-border text-muted-foreground hover:border-primary/40 hover:text-primary'
                         }`}
                     >
                         {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
@@ -367,15 +367,15 @@ export default function SpecChart({ spec, admin = false, workspaceId, platform =
             <div className="relative" style={{ height }}>
                 {q.loading ? (
                     <div className="absolute inset-0 animate-pulse space-y-3 pt-1" aria-label="Loading">
-                        <div className="h-4 w-3/4 rounded bg-gray-100" />
-                        <div className="h-4 w-1/2 rounded bg-gray-100" />
-                        <div className="h-4 w-5/6 rounded bg-gray-100" />
-                        <div className="h-4 w-2/3 rounded bg-gray-100" />
+                        <div className="h-4 w-3/4 rounded bg-muted" />
+                        <div className="h-4 w-1/2 rounded bg-muted" />
+                        <div className="h-4 w-5/6 rounded bg-muted" />
+                        <div className="h-4 w-2/3 rounded bg-muted" />
                     </div>
                 ) : empty ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-4 text-center">
-                        <div className="text-xs font-medium text-gray-400">No data in {winLabel}</div>
-                        <div className="text-[11px] text-gray-300">
+                        <div className="text-xs font-medium text-muted-foreground/70">No data in {winLabel}</div>
+                        <div className="text-[11px] text-muted-foreground/60">
                             {spec.platformScoped
                                 ? 'Check the platform toggle above matches this workspace’s ads.'
                                 : 'This workspace has no rows for these metrics yet.'}

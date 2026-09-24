@@ -231,20 +231,20 @@ function RangeCalendarPanel({
         const cells = monthGrid(base)
         return (
             <div className="w-[212px] p-2">
-                <div className="mb-2 flex items-center justify-center gap-1.5 text-[13px] font-medium text-gray-700">
-                    <span className="rounded-md bg-gray-100 px-2.5 py-1">{MONTHS[base.getMonth()]}</span>
-                    <span className="rounded-md bg-gray-100 px-2.5 py-1">{base.getFullYear()}</span>
+                <div className="mb-2 flex items-center justify-center gap-1.5 text-[13px] font-medium text-foreground">
+                    <span className="rounded-md bg-muted px-2.5 py-1">{MONTHS[base.getMonth()]}</span>
+                    <span className="rounded-md bg-muted px-2.5 py-1">{base.getFullYear()}</span>
                 </div>
-                <div className="grid grid-cols-7 text-center text-[10px] font-medium text-gray-400">
+                <div className="grid grid-cols-7 text-center text-[10px] font-medium text-muted-foreground/70">
                     {DOW.map((d, i) => <span key={i} className="py-1">{d}</span>)}
                 </div>
                 <div className="grid grid-cols-7 text-center">
                     {cells.map((d, i) => d == null ? <span key={i} className="h-8" /> : (
                         <button key={d} onClick={() => onPickDay(d)}
                             className={`relative mx-auto grid h-8 w-8 place-items-center text-[12px] tabular-nums transition ${
-                                isEdge(d) ? 'rounded-md bg-blue-600 font-semibold text-white'
-                                : inRange(d) ? 'bg-blue-50 text-gray-800'
-                                : 'rounded-md text-gray-700 hover:bg-gray-100'}`}>
+                                isEdge(d) ? 'rounded-md bg-primary font-semibold text-primary-foreground'
+                                : inRange(d) ? 'bg-primary/10 text-foreground'
+                                : 'rounded-md text-foreground hover:bg-muted'}`}>
                             {Number(d.slice(-2))}
                         </button>
                     ))}
@@ -259,17 +259,17 @@ function RangeCalendarPanel({
             <div className="flex">
                 {/* Preset rail (optional) */}
                 {presets && (
-                    <div className="flex w-36 shrink-0 flex-col border-r border-gray-100 py-2">
+                    <div className="flex w-36 shrink-0 flex-col border-r border-border py-2">
                         {presets.map((p) => (
                             <button key={p.id} onClick={p.onClick}
                                 className={`px-4 py-2 text-left text-sm transition ${
-                                    p.active ? 'bg-blue-50 font-medium text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                                    p.active ? 'bg-primary/10 font-medium text-primary' : 'text-foreground hover:bg-muted'}`}>
                                 {p.label}
                             </button>
                         ))}
                         <button
                             className={`px-4 py-2 text-left text-sm transition ${
-                                activeCustom ? 'font-medium text-blue-600' : 'text-blue-600 hover:bg-gray-50'}`}>
+                                activeCustom ? 'font-medium text-primary' : 'text-primary hover:bg-muted'}`}>
                             Custom
                         </button>
                     </div>
@@ -279,20 +279,20 @@ function RangeCalendarPanel({
                 <div className="shrink-0">
                     <div className="flex items-start">
                         <button onClick={onPrev}
-                            className="mt-4 ml-2 grid h-7 w-7 place-items-center rounded-md text-gray-500 hover:bg-gray-100">‹</button>
+                            className="mt-4 ml-2 grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-muted">‹</button>
                         <MonthCal base={view} />
                         <MonthCal base={addMonths(view, 1)} />
                         <button onClick={onNext}
-                            className="mt-4 mr-2 grid h-7 w-7 place-items-center rounded-md text-gray-500 hover:bg-gray-100">›</button>
+                            className="mt-4 mr-2 grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-muted">›</button>
                     </div>
-                    <div className="flex items-center gap-2 border-t border-gray-100 px-4 py-3">
+                    <div className="flex items-center gap-2 border-t border-border px-4 py-3">
                         {footerLeft}
-                        <span className="text-[11px] text-gray-400">
+                        <span className="text-[11px] text-muted-foreground/70">
                             {from && to ? windowLabel({ startDate: from, endDate: to }) : ''}
                         </span>
                         <span className="flex-1" />
                         <button onClick={onPrimary} disabled={primaryDisabled}
-                            className="rounded-md bg-blue-600 px-6 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-40">
+                            className="rounded-md bg-primary px-6 py-1.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:opacity-40">
                             {primaryLabel}
                         </button>
                     </div>
@@ -373,23 +373,23 @@ export default function WindowSelector({ presets, ctrl, suffix = '' }) {
     return (
         <div className="relative inline-block text-xs" ref={boxRef}>
             <button ref={triggerRef} onClick={() => (open ? setOpen(false) : openPop())}
-                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:border-gray-400">
-                <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-muted-foreground/40">
+                <CalendarDaysIcon className="h-4 w-4 text-muted-foreground" />
                 {isCustomActive ? 'Custom : ' : ''}{triggerLabel(window_)}
-                <span className="text-[11px] text-gray-400">▾</span>
+                <span className="text-[11px] text-muted-foreground/70">▾</span>
             </button>
 
             {open && (
                 // Rendered while open so it can be measured; kept invisible (not
                 // unmounted) until `pos` is computed so it never flashes at 0,0.
                 <div ref={panelRef} style={pos ? { ...pos, overflow: 'auto' } : { top: 0, left: 0, visibility: 'hidden', pointerEvents: 'none' }}
-                    className="fixed z-50 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+                    className="fixed z-50 overflow-hidden rounded-xl border border-border bg-card shadow-xl">
                     <RangeCalendarPanel
                         from={draftFrom} to={draftTo} onPickDay={pickDay}
                         view={view} onPrev={() => setView((v) => addMonths(v, -1))} onNext={() => setView((v) => addMonths(v, 1))}
                         presets={PRESETS.map((p) => ({ id: p.id, label: p.label, active: activePresetId === p.id, onClick: () => applyPreset(p.win) }))}
                         activeCustom={isCustomActive}
-                        footerLeft={suffix ? <span className="text-[11px] text-gray-400">{suffix}</span> : null}
+                        footerLeft={suffix ? <span className="text-[11px] text-muted-foreground/70">{suffix}</span> : null}
                         primaryLabel="Done" onPrimary={done}
                     />
                 </div>
@@ -490,7 +490,7 @@ export function CardRefreshButton({ onRefresh, loading, title = 'Refresh this ch
             disabled={loading}
             title={title}
             aria-label={title}
-            className="inline-flex shrink-0 items-center rounded-lg border border-gray-200 p-1 text-gray-500 transition hover:border-gray-300 hover:text-gray-700 disabled:opacity-50"
+            className="inline-flex shrink-0 items-center rounded-lg border border-border p-1 text-muted-foreground transition hover:border-muted-foreground/40 hover:text-foreground disabled:opacity-50"
         >
             <ArrowPathIcon className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -584,8 +584,8 @@ export function CardWindowControl({ ctrl, quickDays = [7, 14, 30] }) {
                 title={overridden ? 'Custom range for this chart — click to change' : 'This chart follows the dashboard range — click to set its own'}
                 className={`inline-flex shrink-0 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-medium transition ${
                     overridden
-                        ? 'border-orange-300 bg-orange-50 text-orange-700 hover:border-orange-400'
-                        : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                        ? 'border-primary/40 bg-primary/10 text-primary hover:border-primary/60'
+                        : 'border-border text-muted-foreground hover:border-muted-foreground/40 hover:text-foreground'
                 }`}
             >
                 <CalendarDaysIcon className="h-3.5 w-3.5" />
@@ -594,18 +594,18 @@ export function CardWindowControl({ ctrl, quickDays = [7, 14, 30] }) {
 
             {open && (
                 <div ref={panelRef} style={pos ? { ...pos, overflow: 'auto' } : { top: 0, left: 0, visibility: 'hidden', pointerEvents: 'none' }}
-                    className="fixed z-50 overflow-hidden rounded-xl border border-gray-200 bg-white text-xs shadow-xl">
+                    className="fixed z-50 overflow-hidden rounded-xl border border-border bg-card text-xs shadow-xl">
                     <RangeCalendarPanel
                         from={draftFrom} to={draftTo} onPickDay={pickDay}
                         view={view} onPrev={() => setView((v) => addMonths(v, -1))} onNext={() => setView((v) => addMonths(v, 1))}
                         presets={PRESETS.map((p) => ({ id: p.id, label: p.label, active: activePresetId === p.id, onClick: () => applyPreset(p.win) }))}
                         activeCustom={!activePresetId}
                         headerLeft={
-                            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2.5">
-                                <span className="font-semibold uppercase tracking-wider text-gray-400">Range for this chart</span>
+                            <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+                                <span className="font-semibold uppercase tracking-wider text-muted-foreground/70">Range for this chart</span>
                                 {overridden && (
                                     <button onClick={() => { reset(); setOpen(false) }}
-                                        className="text-[11px] font-medium text-gray-400 hover:text-gray-700">
+                                        className="text-[11px] font-medium text-muted-foreground/70 hover:text-foreground">
                                         Reset to dashboard
                                     </button>
                                 )}
@@ -614,17 +614,17 @@ export function CardWindowControl({ ctrl, quickDays = [7, 14, 30] }) {
                         footerLeft={
                             <>
                                 {quickDays?.length > 0 && (
-                                    <div className="flex items-center gap-1 text-gray-400">
+                                    <div className="flex items-center gap-1 text-muted-foreground/70">
                                         <span className="text-[11px]">Last</span>
                                         {quickDays.map((n) => (
                                             <button key={n} onClick={() => setQuick(n)}
-                                                className="rounded-md bg-gray-100 px-2 py-1 text-[11px] font-medium text-gray-700 transition hover:bg-gray-200">
+                                                className="rounded-md bg-muted px-2 py-1 text-[11px] font-medium text-foreground transition hover:bg-muted/70">
                                                 {n}d
                                             </button>
                                         ))}
                                     </div>
                                 )}
-                                {invalid && <span className="text-[11px] text-red-500">From ≤ To</span>}
+                                {invalid && <span className="text-[11px] text-destructive">From ≤ To</span>}
                             </>
                         }
                         primaryLabel="Apply" primaryDisabled={invalid}

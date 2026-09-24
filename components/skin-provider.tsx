@@ -22,10 +22,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { applySkin, applyParsedCustomTheme } from "@/lib/theme";
+import { applySkin, applyCustomCssRaw } from "@/lib/theme";
 import { SKINS, getSkin, DEFAULT_SKIN_ID, type Skin } from "@/lib/themes/skins";
 import { applyThemeConfig, type ThemeConfig } from "@/lib/themes/theme-config";
-import { parseCssTheme } from "@/lib/themes/parse-css-theme";
 
 type Mode = "light" | "dark";
 
@@ -87,23 +86,25 @@ export function SkinProvider({
 
   const skin = useMemo(() => getSkin(skinId), [skinId]);
 
-  // Parse the uploaded custom CSS once (null when none / unparseable).
-  const parsedCustom = useMemo(() => {
-    if (!customCss) return null;
-    const p = parseCssTheme(customCss);
-    return p.ok ? p : null;
-  }, [customCss]);
+  const hasCustomCss = !!(customCss && customCss.trim());
 
-  // Apply on any change. A valid custom theme OVERRIDES the preset skin (+ its token
-  // overrides); otherwise fall back to the skin + theme_config path.
+  // Apply on any change. Uploaded custom_css is INJECTED WHOLE (applyCustomCssRaw):
+  // its own :root/.dark rules theme the app, so we don't also run a skin. When there
+  // is no custom_css, fall back to the preset skin + theme_config token path (and
+  // clear any previously injected custom theme).
   useEffect(() => {
-    if (parsedCustom) {
-      applyParsedCustomTheme(parsedCustom, mode);
+    if (hasCustomCss) {
+      // The skin still sets a baseline first, so any token the custom file DOESN'T
+      // define still has a sane value; the injected file then overrides on top.
+      applySkin(skin, mode);
+      applyThemeConfig(themeConfig, mode);
+      applyCustomCssRaw(customCss, mode);
     } else {
+      applyCustomCssRaw(null, mode); // remove any injected theme
       applySkin(skin, mode);
       applyThemeConfig(themeConfig, mode);
     }
-  }, [skin, mode, themeConfig, parsedCustom]);
+  }, [skin, mode, themeConfig, customCss, hasCustomCss]);
 
   const setSkinId = useCallback((id: string) => {
     setSkinIdState(id);

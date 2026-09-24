@@ -13,10 +13,9 @@
  * check e.origin below.
  */
 import { useEffect } from "react";
-import { applySkin, applyBrandColor, applyParsedCustomTheme } from "@/lib/theme";
+import { applySkin, applyBrandColor, applyCustomCssRaw } from "@/lib/theme";
 import { getSkin } from "@/lib/themes/skins";
 import { applyThemeConfig, type ThemeConfig } from "@/lib/themes/theme-config";
-import { parseCssTheme } from "@/lib/themes/parse-css-theme";
 
 export type PreviewBranding = {
   app_name?: string | null;
@@ -43,18 +42,18 @@ export function PreviewListener() {
       const data = e.data as PreviewMessage;
       if (!data || data.type !== "mk-preview") return;
       const mode = data.mode === "dark" ? "dark" : "light";
-      // Store the brand accent first so it can be re-asserted last (wins over the theme).
-      applyBrandColor(data.accent ?? null);
-      // A valid uploaded custom CSS OVERRIDES the preset skin + token overrides.
-      const parsedCustom = data.customCss ? parseCssTheme(data.customCss) : null;
-      if (parsedCustom?.ok) {
-        applyParsedCustomTheme(parsedCustom, mode);
-      } else {
-        // Order (later wins): skin preset → theme_config token overrides.
-        applySkin(getSkin(data.skin), mode);
-        applyThemeConfig(data.themeConfig ?? null, mode);
-      }
-      if (data.accent) applyBrandColor(data.accent); // re-assert over theme accent
+      const hasCustom = !!(data.customCss && data.customCss.trim());
+      // When an uploaded custom theme is present it OWNS all colors — including
+      // --primary. The agency's separate brand accent (primary_color) must NOT
+      // override the file's own --primary, or the upload looks like it did nothing.
+      // So suppress the brand accent while custom CSS is active; otherwise apply it.
+      applyBrandColor(hasCustom ? null : (data.accent ?? null));
+      // Skin runs first as the baseline for any token the file omits, then the
+      // uploaded CSS is INJECTED WHOLE (its own :root/.dark rules theme the app).
+      applySkin(getSkin(data.skin), mode);
+      applyThemeConfig(data.themeConfig ?? null, mode);
+      applyCustomCssRaw(hasCustom ? data.customCss! : null, mode);
+      if (!hasCustom && data.accent) applyBrandColor(data.accent); // re-assert over theme accent
       // Broadcast branding to the preview shell so its header updates live.
       if (data.branding !== undefined) {
         window.dispatchEvent(

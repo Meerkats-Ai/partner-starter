@@ -11,10 +11,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <WorkspaceProvider>
-      <div className="min-h-screen flex">
+      {/* h-screen (not min-h-screen) pins the shell to the viewport so the sidebar
+          stays fixed and ONLY <main> scrolls. overflow-hidden on the row stops the
+          whole page from growing with content and dragging the sidebar off-screen. */}
+      <div className="h-screen flex overflow-hidden">
         <Sidebar email={session.email || ""} />
-        {/* min-h-screen + flex so children using min-h-full / sticky headers resolve correctly */}
-        <main className="flex-1 min-w-0 min-h-screen flex flex-col bg-muted/20">{children}</main>
+        <main className="flex-1 min-w-0 h-screen overflow-y-auto flex flex-col bg-muted/20">{children}</main>
       </div>
       <Toaster position="bottom-right" />
     </WorkspaceProvider>

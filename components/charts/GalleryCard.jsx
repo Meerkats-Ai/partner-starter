@@ -39,23 +39,23 @@ function SetupCard({ spec, onPinChange }) {
     }, [spec.id])
     const onToggle = () => { const now = togglePin(spec); setPinned(now); onPinChange?.(now) }
     return (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50/60 p-5">
+        <div className="rounded-xl border border-dashed border-border bg-muted/60 p-5">
             <div className="mb-2 flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <h3 className="truncate text-sm font-semibold text-gray-700" title={spec.title}>{spec.title}</h3>
-                    {spec.subtitle && <p className="mt-0.5 truncate text-xs text-gray-400" title={spec.subtitle}>{spec.subtitle}</p>}
+                    <h3 className="truncate text-sm font-semibold text-foreground" title={spec.title}>{spec.title}</h3>
+                    {spec.subtitle && <p className="mt-0.5 truncate text-xs text-muted-foreground/70" title={spec.subtitle}>{spec.subtitle}</p>}
                 </div>
                 <button type="button" onClick={onToggle}
                     title={pinned ? 'Unpin from Cockpit' : 'Pin to Cockpit'}
                     className={`inline-flex shrink-0 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-medium transition ${
-                        pinned ? 'border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100'
-                            : 'border-gray-200 bg-white text-gray-500 hover:border-orange-300 hover:text-orange-700'}`}>
+                        pinned ? 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20'
+                            : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-primary'}`}>
                     {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
                     {pinned ? 'Pinned' : 'Pin'}
                 </button>
             </div>
-            <div className="flex items-start gap-2.5 rounded-lg bg-white/70 px-3 py-3 text-xs text-gray-500">
-                <Wrench className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+            <div className="flex items-start gap-2.5 rounded-lg bg-card/70 px-3 py-3 text-xs text-muted-foreground">
+                <Wrench className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                 <span>{spec.setupNote || 'This chart needs extra data before it can show numbers.'}</span>
             </div>
         </div>

@@ -71,30 +71,30 @@ export default function PinnedStrip({ admin = false, workspaceId, platform = nul
     return (
         <section className="mb-8">
             <div className="mb-3 flex items-center gap-2">
-                <Pin className="h-4 w-4 text-orange-500" />
-                <h2 className="text-sm font-semibold text-gray-700">
+                <Pin className="h-4 w-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">
                     {specs.length ? 'Pinned charts' : 'Your dashboard'}
                 </h2>
                 {specs.length > 0 && (
-                    <span className="text-xs text-gray-400">{specs.length} pinned · manage in Explore</span>
+                    <span className="text-xs text-muted-foreground/70">{specs.length} pinned · manage in Explore</span>
                 )}
                 {/* Restore removed default charts */}
                 {hidden.length > 0 && (
                     <div className="relative ml-auto" ref={menuRef}>
                         <button onClick={() => setMenuOpen((o) => !o)}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-500 transition hover:border-gray-300 hover:text-gray-700">
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition hover:border-border hover:text-foreground">
                             <RotateCcw className="h-3.5 w-3.5" />
                             {hidden.length} removed
                             <ChevronDown className="h-3.5 w-3.5" />
                         </button>
                         {menuOpen && (
-                            <div className="absolute right-0 z-30 mt-1 w-64 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-                                <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Restore a chart</div>
+                            <div className="absolute right-0 z-30 mt-1 w-64 overflow-hidden rounded-lg border border-border bg-popover py-1 shadow-lg">
+                                <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">Restore a chart</div>
                                 {hidden.map((id) => (
                                     <button key={id} onClick={() => { unhideDefault(id); if (hidden.length === 1) setMenuOpen(false) }}
-                                        className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-gray-700 transition hover:bg-gray-50">
+                                        className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-foreground transition hover:bg-accent">
                                         {labelFor(id)}
-                                        <RotateCcw className="h-3.5 w-3.5 text-gray-400" />
+                                        <RotateCcw className="h-3.5 w-3.5 text-muted-foreground/70" />
                                     </button>
                                 ))}
                             </div>

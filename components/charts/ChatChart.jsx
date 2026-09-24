@@ -76,7 +76,7 @@ export function ChatChart({ spec, rows, chartRef }) {
         const metric = spec.metrics?.[0]
         const data = (rows || []).map((r) => num(r[metric]))
         const colors = data.map((_, i) => SERIES[i % SERIES.length])
-        const chartData = { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#fff', borderWidth: 1 }] }
+        const chartData = { labels, datasets: [{ data, backgroundColor: colors, borderColor: 'hsl(var(--card))', borderWidth: 1 }] }
         const Comp = type === 'doughnut' ? Doughnut : Pie
         return <Comp ref={chartRef} data={chartData} options={pieOpts(fmt)} />
     }
@@ -86,19 +86,19 @@ export function ChatChart({ spec, rows, chartRef }) {
 
 export function ChatChartTable({ rows }) {
     const list = Array.isArray(rows) ? rows.slice(0, 12) : []
-    if (!list.length) return <div className="py-6 text-center text-xs text-gray-400">No data</div>
+    if (!list.length) return <div className="py-6 text-center text-xs text-muted-foreground/70">No data</div>
     const cols = Array.from(list.reduce((s, r) => { Object.keys(r).forEach((k) => s.add(k)); return s }, new Set()))
     return (
         <div className="overflow-x-auto">
             <table className="w-full text-xs">
                 <thead>
-                    <tr className="border-b border-gray-100 text-left text-gray-400">
+                    <tr className="border-b border-border text-left text-muted-foreground/70">
                         {cols.map((c) => <th key={c} className="py-1.5 pr-3 font-medium">{c.replace(/_/g, ' ')}</th>)}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-border">
                     {list.map((r, i) => (
-                        <tr key={i} className="text-gray-700">
+                        <tr key={i} className="text-foreground">
                             {cols.map((c) => <td key={c} className="py-1.5 pr-3 tabular-nums">{r[c] == null ? '' : String(r[c])}</td>)}
                         </tr>
                     ))}

@@ -34,42 +34,56 @@ ChartJS.register(
 // theme_config / brand color). Chart.js accepts `hsl(var(--x))` color strings, so
 // charts follow the agency's theme instead of a hard-coded indigo. Falls back to
 // the raw hsl() if the var is unset. `<alpha>` fills work via the /-alpha syntax.
-export const primaryColor = (alpha) =>
-    alpha == null ? 'hsl(var(--primary))' : `hsl(var(--primary) / ${alpha})`;
-export const chartColor = (alpha) =>
-    alpha == null ? 'hsl(var(--chart-1, var(--primary)))' : `hsl(var(--chart-1, var(--primary)) / ${alpha})`;
+// All chart colors resolve to theme TOKENS (globals.css / skin / theme_config), so
+// charts re-theme with the rest of the app. Chart.js accepts `hsl(var(--x))` strings.
+// Helpers take optional alpha via the /-alpha syntax. `token()` centralizes the pattern.
+const token = (name, fallback, alpha) => {
+    const ref = fallback ? `var(${name}, ${fallback})` : `var(${name})`;
+    return alpha == null ? `hsl(${ref})` : `hsl(${ref} / ${alpha})`;
+};
+export const primaryColor = (alpha) => token('--primary', null, alpha);
+export const chartColor = (alpha) => token('--chart-1', 'var(--primary)', alpha);
 
-// Brand palette. `primary`/`primarySoft` are GETTERS so every read resolves the
-// current --primary token at paint time (they change when the theme changes).
+// Brand palette. Every entry is a GETTER so each read resolves the current token at
+// paint time (they change when the theme changes). green/amber/rose now map to the
+// --success/--warning/--info + --chart tokens instead of fixed hex.
 export const COLORS = {
     get primary() { return primaryColor(); },
     get primarySoft() { return primaryColor(0.15); },
-    green: '#059669',
-    greenSoft: 'rgba(5,150,105,0.15)',
-    amber: '#d97706',
-    amberSoft: 'rgba(217,119,6,0.15)',
-    rose: '#e11d48',
-    slate: '#64748b',
-    grid: 'rgba(100,116,139,0.12)',
+    get green() { return token('--success'); },
+    get greenSoft() { return token('--success', null, 0.15); },
+    get amber() { return token('--warning'); },
+    get amberSoft() { return token('--warning', null, 0.15); },
+    get rose() { return token('--destructive'); },
+    get slate() { return token('--muted-foreground'); },
+    get grid() { return token('--muted-foreground', null, 0.12); },
 }
 
-// A rotating palette for categorical (channel/platform) bars. The FIRST entry is
-// the live accent (so the lead series follows the theme); the rest are fixed
-// distinct hues for multi-series legibility.
-export const SERIES = ['hsl(var(--primary))', '#059669', '#d97706', '#e11d48', '#0891b2', '#7c3aed', '#65a30d', '#db2777']
+// A rotating palette for categorical (channel/platform) bars, all token-driven so
+// the whole set follows the theme. --chart-1 leads (it falls back to --primary).
+export const SERIES = [
+    'hsl(var(--chart-1, var(--primary)))',
+    'hsl(var(--chart-2))',
+    'hsl(var(--chart-3))',
+    'hsl(var(--chart-4))',
+    'hsl(var(--chart-5))',
+    'hsl(var(--primary))',
+    'hsl(var(--success))',
+    'hsl(var(--info))',
+]
 
 // Semantic good/warn/bad trio — performance-coloured marks (ROAS bars, deltas)
-// use these instead of the rotating SERIES palette.
+// use these instead of the rotating SERIES palette. Getters so they re-theme.
 export const SEMANTIC = {
-    good: '#16a34a',   // green-600
-    warn: '#f59e0b',   // amber-500
-    bad: '#ef4444',    // red-500
+    get good() { return token('--success'); },
+    get warn() { return token('--warning'); },
+    get bad() { return token('--destructive'); },
 }
 
 // ROAS → semantic colour. Bands: ≥2× healthy, 0.9–2× marginal, <0.9× losing money.
 export const roasColor = (v) => {
     const x = Number(v)
-    if (!isFinite(x)) return '#94a3b8'
+    if (!isFinite(x)) return token('--muted-foreground')
     return x >= 2 ? SEMANTIC.good : x >= 0.9 ? SEMANTIC.warn : SEMANTIC.bad
 }
 

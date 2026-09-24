@@ -6,9 +6,9 @@
  */
 export function AskBar({ isProcessing }) {
   return (
-    <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-400">
+    <div className="flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-2.5 text-sm text-muted-foreground/70">
       <span className="flex-1">Ask about your ads… (agent chat is not available on the public API)</span>
-      <button disabled className="rounded-full bg-gray-200 px-3 py-1 text-xs font-medium text-gray-400 cursor-not-allowed">
+      <button disabled className="rounded-full bg-muted-foreground/20 px-3 py-1 text-xs font-medium text-muted-foreground/70 cursor-not-allowed">
         {isProcessing ? "…" : "Send"}
       </button>
     </div>

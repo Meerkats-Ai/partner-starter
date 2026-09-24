@@ -54,10 +54,17 @@ export function Sidebar({ email }: { email: string }) {
     router.refresh();
   };
 
-  const doLogout = async () => { await logout(); router.push("/login"); };
+  const doLogout = async () => {
+    await logout();
+    // Hard navigation (not router.push): the destroyed session cookie must be
+    // re-read by the server. A soft client nav can keep the cached dashboard
+    // (Router Cache) and the still-mounted authed tree, so logout looks like a
+    // no-op. window.location forces a full reload past the auth guard.
+    window.location.href = "/login";
+  };
 
   return (
-    <aside className="w-60 shrink-0 border-r bg-background flex flex-col">
+    <aside className="w-60 shrink-0 border-r bg-background flex flex-col h-full">
       <div className="h-14 flex items-center px-4 border-b">
         <BrandMark compact />
       </div>
@@ -87,7 +94,7 @@ export function Sidebar({ email }: { email: string }) {
       </div>
 
       {/* nav */}
-      <nav className="flex-1 p-2 space-y-1">
+      <nav className="flex-1 min-h-0 overflow-y-auto p-2 space-y-1">
         {NAV.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;

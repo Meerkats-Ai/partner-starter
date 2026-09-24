@@ -116,7 +116,7 @@ export default function CockpitInfoPopover({ className = '', connectedPlatforms 
         onClick={() => setOpen((o) => !o)}
         title="Data sources & glossary"
         aria-label="Data sources & glossary"
-        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
       >
         <InformationCircleIcon className="h-5 w-5" />
       </button>
@@ -126,20 +126,20 @@ export default function CockpitInfoPopover({ className = '', connectedPlatforms 
       {open && pos && createPortal(
         <div ref={panelRef}
           style={{ position: 'fixed', top: pos.top, left: pos.left }}
-          className="z-[9999] w-[360px] max-w-[92vw] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl">
-          <div className="flex items-center justify-between border-b border-gray-100 bg-white px-4 py-2.5">
-            <span className="text-sm font-semibold text-gray-900">About these numbers</span>
-            <button onClick={() => setOpen(false)} className="rounded p-0.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"><XMarkIcon className="h-4 w-4" /></button>
+          className="z-[9999] w-[360px] max-w-[92vw] overflow-hidden rounded-xl border border-border bg-popover shadow-2xl">
+          <div className="flex items-center justify-between border-b border-border bg-popover px-4 py-2.5">
+            <span className="text-sm font-semibold text-foreground">About these numbers</span>
+            <button onClick={() => setOpen(false)} className="rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"><XMarkIcon className="h-4 w-4" /></button>
           </div>
 
-          <div className="max-h-[70vh] overflow-y-auto bg-white">
+          <div className="max-h-[70vh] overflow-y-auto bg-popover">
             {/* Data sources */}
             <div className="px-4 py-3">
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Data sources · last synced</div>
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Data sources · last synced</div>
               {!loaded ? (
-                <div className="py-2 text-xs text-gray-400">Loading sync status…</div>
+                <div className="py-2 text-xs text-muted-foreground">Loading sync status…</div>
               ) : sources.length === 0 ? (
-                <div className="py-2 text-xs text-gray-400">No connected sources yet.</div>
+                <div className="py-2 text-xs text-muted-foreground">No connected sources yet.</div>
               ) : (
                 <ul className="space-y-1.5">
                   {sources.map((src) => {
@@ -153,17 +153,17 @@ export default function CockpitInfoPopover({ className = '', connectedPlatforms 
                           target="_blank"
                           rel="noopener noreferrer"
                           title={`View ${src.label} data (Data Spine)`}
-                          className="-mx-2 flex items-center justify-between gap-3 rounded-md px-2 py-1 text-xs transition hover:bg-gray-50"
+                          className="-mx-2 flex items-center justify-between gap-3 rounded-md px-2 py-1 text-xs transition hover:bg-muted"
                         >
-                          <span className="flex items-center gap-1.5 text-gray-700">
-                            {err ? <ExclamationTriangleIcon className="h-3.5 w-3.5 text-red-500" />
-                              : <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-500" />}
+                          <span className="flex items-center gap-1.5 text-foreground">
+                            {err ? <ExclamationTriangleIcon className="h-3.5 w-3.5 text-destructive" />
+                              : <CheckCircleIcon className="h-3.5 w-3.5 text-success" />}
                             <span className="font-medium">{src.label}</span>
                             {typeof src.metric_count === 'number' && (
-                              <span className="text-gray-400">· {src.metric_count.toLocaleString()} {(src.metric_label || '').toLowerCase()}</span>
+                              <span className="text-muted-foreground">· {src.metric_count.toLocaleString()} {(src.metric_label || '').toLowerCase()}</span>
                             )}
                           </span>
-                          <span className={`flex items-center gap-1 whitespace-nowrap underline decoration-dotted underline-offset-2 ${err ? 'text-red-500' : 'text-gray-400'}`}>
+                          <span className={`flex items-center gap-1 whitespace-nowrap underline decoration-dotted underline-offset-2 ${err ? 'text-destructive' : 'text-muted-foreground'}`}>
                             <ClockIcon className="h-3 w-3" />
                             {err ? 'sync failed' : (ago ? `synced ${ago}` : 'not synced yet')}
                           </span>
@@ -176,16 +176,16 @@ export default function CockpitInfoPopover({ className = '', connectedPlatforms 
             </div>
 
             {/* Glossary */}
-            <div className="border-t border-gray-100 px-4 py-3">
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Glossary</div>
+            <div className="border-t border-border px-4 py-3">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Glossary</div>
               <dl className="space-y-2">
                 {COCKPIT_GLOSSARY.map((g) => (
                   <div key={g.abbr}>
                     <dt className="text-xs">
-                      <span className="font-semibold text-gray-900">{g.abbr}</span>
-                      <span className="text-gray-500"> — {g.full}</span>
+                      <span className="font-semibold text-foreground">{g.abbr}</span>
+                      <span className="text-muted-foreground"> — {g.full}</span>
                     </dt>
-                    <dd className="text-[11px] leading-snug text-gray-400">{g.desc}</dd>
+                    <dd className="text-[11px] leading-snug text-muted-foreground">{g.desc}</dd>
                   </div>
                 ))}
               </dl>
