@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Gauge, Compass, Bot, Inbox, LogOut, ChevronsUpDown } from "lucide-react";
+import { Gauge, Compass, FileSpreadsheet, Bot, Inbox, LogOut, ChevronsUpDown } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { authFetch, logout, setWorkspace } from "@/lib/client";
 import { useWorkspace } from "@/lib/useWorkspace";
@@ -13,6 +13,7 @@ interface Workspace { id: string; name: string; is_default?: boolean }
 const NAV = [
   { href: "/dashboard/cockpit", label: "Cockpit", icon: Gauge },
   { href: "/dashboard/explore", label: "Explore", icon: Compass },
+  { href: "/dashboard/reports", label: "Reports", icon: FileSpreadsheet },
   { href: "/dashboard/agents", label: "Agents", icon: Bot },
   { href: "/dashboard/queue", label: "Inbox", icon: Inbox },
 ];
@@ -26,14 +27,21 @@ export function Sidebar({ email }: { email: string }) {
   const { setCurrentWorkspace } = useWorkspace();
 
   useEffect(() => {
-    authFetch<{ data: Workspace[] }>("/workspaces").then((r) => {
+    authFetch<{ data: Workspace[] }>("/workspaces").then(async (r) => {
       const ws = r.data?.data || [];
       setWorkspaces(ws);
-      if (ws.length && !current) {
-        setCurrent(ws[0]);
-        setWorkspace(ws[0].id);                          // session cookie (server)
-        setCurrentWorkspace({ id: ws[0].id, name: ws[0].name }); // + localStorage for ported stores
-      }
+      if (!ws.length || current) return;
+      // Restore the last-used workspace if it's still granted, else the app's
+      // DEFAULT workspace (is_default), else the first one.
+      let saved: string | null = null;
+      try { saved = localStorage.getItem("currentWorkspaceId"); } catch { /* no storage */ }
+      const initial =
+        ws.find((w) => w.id === saved) ||
+        ws.find((w) => w.is_default) ||
+        ws[0];
+      setCurrent(initial);
+      await setWorkspace(initial.id);                               // session cookie (server) — set BEFORE first data pull
+      setCurrentWorkspace({ id: initial.id, name: initial.name }); // + localStorage / refresh signal
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

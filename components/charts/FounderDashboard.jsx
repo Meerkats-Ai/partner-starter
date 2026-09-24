@@ -121,6 +121,13 @@ export default function FounderDashboard({ admin = false, workspaceId, platform 
         }
     }, [admin, workspaceId, cohortGrain])
     useEffect(() => { loadCohorts() }, [loadCohorts])
+    // Cohorts read the CDP layer by session cookie (not a metrics query), so they
+    // don't refetch on workspace switch by themselves — re-pull on the global signal.
+    useEffect(() => {
+        const onRefresh = () => loadCohorts()
+        window.addEventListener('mk-metrics-refresh', onRefresh)
+        return () => window.removeEventListener('mk-metrics-refresh', onRefresh)
+    }, [loadCohorts])
 
     const deltaSuffix = weekly ? 'vs last week' : 'vs prev window'
 

@@ -40,6 +40,16 @@ export function useDataSyncedAt() {
     fetchLatest().then((v) => { if (alive) setSyncedAt(v) })
     return () => { alive = false }
   }, [])
+  // The module cache is per-workspace stale — on a workspace switch, drop it and
+  // re-pull so the "Data synced" footer reflects the new workspace.
+  useEffect(() => {
+    const onRefresh = () => {
+      _cache = null; _promise = null
+      fetchLatest().then((v) => setSyncedAt(v))
+    }
+    window.addEventListener('mk-metrics-refresh', onRefresh)
+    return () => window.removeEventListener('mk-metrics-refresh', onRefresh)
+  }, [])
   return syncedAt
 }
 

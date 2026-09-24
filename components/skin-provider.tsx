@@ -22,9 +22,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import { applySkin } from "@/lib/theme";
+import { applySkin, applyParsedCustomTheme } from "@/lib/theme";
 import { SKINS, getSkin, DEFAULT_SKIN_ID, type Skin } from "@/lib/themes/skins";
 import { applyThemeConfig, type ThemeConfig } from "@/lib/themes/theme-config";
+import { parseCssTheme } from "@/lib/themes/parse-css-theme";
 
 type Mode = "light" | "dark";
 
@@ -44,6 +45,8 @@ interface SkinContextValue {
   setAgencyDefaultSkin: (id: string | null | undefined) => void;
   /** Apply the agency's theme_config token overrides (from /branding). */
   setAgencyThemeConfig: (cfg: ThemeConfig | null | undefined) => void;
+  /** Apply the agency's uploaded custom CSS theme (overrides the preset skin). */
+  setAgencyCustomCss: (css: string | null | undefined) => void;
 }
 
 const SkinContext = createContext<SkinContextValue | null>(null);
@@ -70,6 +73,8 @@ export function SkinProvider({
   const [mode, setModeState] = useState<Mode>(defaultMode);
   // Agency token overrides (base/accent/chart/radius/fonts) applied on top of skin.
   const [themeConfig, setThemeConfig] = useState<ThemeConfig | null>(null);
+  // Agency's uploaded custom CSS theme (raw export). When set it OVERRIDES the skin.
+  const [customCss, setCustomCss] = useState<string | null>(null);
 
   // Hydrate ONLY the mode from localStorage (a legit per-user preference). The
   // SKIN is agency-authoritative (set from /branding), so we do NOT restore a
@@ -82,12 +87,23 @@ export function SkinProvider({
 
   const skin = useMemo(() => getSkin(skinId), [skinId]);
 
-  // Apply whenever skin, mode, or theme_config changes: skin first, then the
-  // token overrides on top.
+  // Parse the uploaded custom CSS once (null when none / unparseable).
+  const parsedCustom = useMemo(() => {
+    if (!customCss) return null;
+    const p = parseCssTheme(customCss);
+    return p.ok ? p : null;
+  }, [customCss]);
+
+  // Apply on any change. A valid custom theme OVERRIDES the preset skin (+ its token
+  // overrides); otherwise fall back to the skin + theme_config path.
   useEffect(() => {
-    applySkin(skin, mode);
-    applyThemeConfig(themeConfig, mode);
-  }, [skin, mode, themeConfig]);
+    if (parsedCustom) {
+      applyParsedCustomTheme(parsedCustom, mode);
+    } else {
+      applySkin(skin, mode);
+      applyThemeConfig(themeConfig, mode);
+    }
+  }, [skin, mode, themeConfig, parsedCustom]);
 
   const setSkinId = useCallback((id: string) => {
     setSkinIdState(id);
@@ -121,6 +137,10 @@ export function SkinProvider({
     setThemeConfig(cfg ?? null);
   }, []);
 
+  const setAgencyCustomCss = useCallback((css: string | null | undefined) => {
+    setCustomCss(css || null);
+  }, []);
+
   const value: SkinContextValue = {
     skin,
     skinId,
@@ -131,6 +151,7 @@ export function SkinProvider({
     toggleMode,
     setAgencyDefaultSkin,
     setAgencyThemeConfig,
+    setAgencyCustomCss,
   };
 
   return <SkinContext.Provider value={value}>{children}</SkinContext.Provider>;

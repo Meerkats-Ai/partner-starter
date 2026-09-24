@@ -44,6 +44,21 @@ export function applyBrandColor(primaryColorHex?: string | null) {
   root.style.setProperty("--ring", hsl);
 }
 
+/**
+ * Swap the browser-tab favicon to the agency's, client-side. Rewrites (or creates)
+ * the <link rel="icon"> in <head>. A falsy url leaves the starter's default in place.
+ */
+export function applyFavicon(faviconUrl?: string | null) {
+  if (typeof document === "undefined" || !faviconUrl) return;
+  const head = document.head;
+  // Remove any existing icon links so the agency's is the only one.
+  head.querySelectorAll('link[rel~="icon"]').forEach((el) => el.parentNode?.removeChild(el));
+  const link = document.createElement("link");
+  link.rel = "icon";
+  link.href = faviconUrl;
+  head.appendChild(link);
+}
+
 import type { Skin } from "./themes/skins";
 
 /**
@@ -100,10 +115,41 @@ export function applySkin(skin: Skin, mode: "light" | "dark") {
   }
 }
 
+/**
+ * Apply an uploaded custom theme (parsed from a tweakcn/shadcn CSS export) as the
+ * token set for `mode`. Same mechanism as applySkin but sourced from the parsed
+ * tokens; used when the agency uploaded custom_css (which OVERRIDES the preset skin).
+ * Falls back gracefully: only sets tokens the parse produced. Brand color still wins.
+ */
+export function applyParsedCustomTheme(
+  parsed: { light: Record<string, string>; dark: Record<string, string>; radius?: string },
+  mode: "light" | "dark",
+) {
+  if (typeof document === "undefined" || !parsed) return;
+  const root = document.documentElement;
+  const tokens = mode === "dark" ? parsed.dark : parsed.light;
+  for (const [name, value] of Object.entries(tokens || {})) {
+    root.style.setProperty(`--${name}`, value);
+  }
+  if (parsed.radius) root.style.setProperty("--radius", parsed.radius);
+  root.classList.toggle("dark", mode === "dark");
+  root.style.colorScheme = mode;
+  // Brand color override still wins over the custom theme's --primary.
+  if (brandPrimaryHex) {
+    const hsl = hexToHslString(brandPrimaryHex);
+    if (hsl) {
+      root.style.setProperty("--primary", hsl);
+      root.style.setProperty("--ring", hsl);
+    }
+  }
+}
+
 export interface Branding {
   app_name: string | null;
   tagline: string | null;
   logo_url: string | null;
+  /** Browser-tab icon URL. NULL = starter default favicon. */
+  favicon_url?: string | null;
   primary_color: string | null;
   support_email: string | null;
   /** Agency-chosen skin id (matches lib/themes/skins.ts). NULL = starter default. */
@@ -112,4 +158,6 @@ export interface Branding {
   template?: string | null;
   /** tweakcn-style token overrides (base/accent/chart/radius/fonts). */
   theme_config?: import("./themes/theme-config").ThemeConfig | null;
+  /** Uploaded tweakcn/shadcn CSS export (raw text). When set it OVERRIDES the skin. */
+  custom_css?: string | null;
 }

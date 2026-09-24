@@ -31,12 +31,20 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setCurrentWorkspace = useCallback((w: CurrentWorkspace) => {
-    setWs(w);
+    setWs((prev) => (prev?.id === w.id && prev?.name === w.name ? prev : w));
     try {
+      const changed = localStorage.getItem("currentWorkspaceId") !== w.id;
       localStorage.setItem("currentWorkspaceId", w.id);
       if (w.name) localStorage.setItem("currentWorkspaceName", w.name);
-      // Notify the ported stores that key on the workspace.
-      window.dispatchEvent(new Event("workspaceChanged"));
+      if (changed) {
+        // Notify the ported stores that key on the workspace...
+        window.dispatchEvent(new Event("workspaceChanged"));
+        // ...and force every data view to re-pull for the new workspace. The metrics
+        // hooks already listen for this; the CDP/report loaders listen for it too
+        // (see below). Without this the server proxy switches the cookie but the
+        // client keeps showing the previous workspace's data until a full reload.
+        window.dispatchEvent(new Event("mk-metrics-refresh"));
+      }
     } catch { /* ignore */ }
   }, []);
 

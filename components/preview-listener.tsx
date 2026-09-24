@@ -13,9 +13,10 @@
  * check e.origin below.
  */
 import { useEffect } from "react";
-import { applySkin, applyBrandColor } from "@/lib/theme";
+import { applySkin, applyBrandColor, applyParsedCustomTheme } from "@/lib/theme";
 import { getSkin } from "@/lib/themes/skins";
 import { applyThemeConfig, type ThemeConfig } from "@/lib/themes/theme-config";
+import { parseCssTheme } from "@/lib/themes/parse-css-theme";
 
 export type PreviewBranding = {
   app_name?: string | null;
@@ -29,6 +30,7 @@ export type PreviewMessage = {
   accent?: string | null; // hex; overrides the skin primary
   mode?: "light" | "dark";
   themeConfig?: ThemeConfig | null; // base/accent/chart/radius/fonts overrides
+  customCss?: string | null;        // uploaded tweakcn/shadcn export — overrides skin
   branding?: PreviewBranding | null; // live app_name / logo / tagline
 };
 
@@ -41,14 +43,18 @@ export function PreviewListener() {
       const data = e.data as PreviewMessage;
       if (!data || data.type !== "mk-preview") return;
       const mode = data.mode === "dark" ? "dark" : "light";
-      // Order (later wins): skin preset → theme_config token overrides → brand
-      // accent. Store the brand accent first so applySkin re-applies it last; then
-      // theme_config overrides base/accent/chart/radius/fonts on top of the skin;
-      // then re-apply brand accent so an explicit brand color still wins.
+      // Store the brand accent first so it can be re-asserted last (wins over the theme).
       applyBrandColor(data.accent ?? null);
-      applySkin(getSkin(data.skin), mode);
-      applyThemeConfig(data.themeConfig ?? null, mode);
-      if (data.accent) applyBrandColor(data.accent); // re-assert over theme_config accent
+      // A valid uploaded custom CSS OVERRIDES the preset skin + token overrides.
+      const parsedCustom = data.customCss ? parseCssTheme(data.customCss) : null;
+      if (parsedCustom?.ok) {
+        applyParsedCustomTheme(parsedCustom, mode);
+      } else {
+        // Order (later wins): skin preset → theme_config token overrides.
+        applySkin(getSkin(data.skin), mode);
+        applyThemeConfig(data.themeConfig ?? null, mode);
+      }
+      if (data.accent) applyBrandColor(data.accent); // re-assert over theme accent
       // Broadcast branding to the preview shell so its header updates live.
       if (data.branding !== undefined) {
         window.dispatchEvent(

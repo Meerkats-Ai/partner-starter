@@ -18,6 +18,14 @@ const cdp = {
   connectedPlatforms: () => proxy("GET", "/cdp/connected-platforms"),
   getConnectorStats: () => proxy("GET", "/cdp/connector-stats"),
   getCohorts: (grain = "month") => proxy("GET", `/cdp/cohorts?grain=${encodeURIComponent(grain)}`),
+  // Cross-platform Reporting Pack bundle: { platforms, rows, placement, placementPlatforms }.
+  getDailyLog: (startDate?: string, endDate?: string) => {
+    const qs = new URLSearchParams();
+    if (startDate) qs.set("startDate", startDate);
+    if (endDate) qs.set("endDate", endDate);
+    const q = qs.toString();
+    return proxy("GET", `/cdp/daily-log${q ? `?${q}` : ""}`);
+  },
 };
 
 // Admin cohorts alias (never taken on the public API — end user is single-ws).
