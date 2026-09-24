@@ -18,15 +18,18 @@ safely server-side.
 ```bash
 git clone https://github.com/Meerkats-Ai/partner-starter.git
 cd partner-starter
-npm install
+npm install          # auto-creates .env.local with a generated SESSION_SECRET
 
-cp .env.example .env.local
-#   MEERKATS_API_KEY   → from the Meerkats dashboard (API Keys → Create key)
-#   MEERKATS_API_BASE  → https://partners.meerkats.ai/api/public/v1
-#   SESSION_SECRET     → openssl rand -base64 32
+# Set your one required value in .env.local:
+#   MEERKATS_API_KEY → from the Meerkats dashboard (API Keys → Create key)
 
 npm run dev          # http://localhost:3000
 ```
+
+That's the only setup. `npm install` writes `.env.local` for you with a random
+`SESSION_SECRET`, and the app hardcodes the production Partner API base
+(`https://partners.meerkats.ai/api/public/v1`) — set `MEERKATS_API_BASE` only if
+you want to point at a local/staging API.
 
 Sign up (or add a user in **Meerkats dashboard → API Keys → View users**), then
 you're in. Land on the **Cockpit** by default.

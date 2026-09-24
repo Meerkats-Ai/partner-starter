@@ -4,6 +4,7 @@
   "private": true,
   "description": "White-label starter kit for the Meerkats Partner API — themed auth + dashboard + automations, with the API key kept server-side.",
   "scripts": {
+    "postinstall": "node scripts/setup-env.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
