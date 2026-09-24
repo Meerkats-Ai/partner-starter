@@ -68,16 +68,17 @@ export function applyBrandFont(fontStack?: string | null, fontUrl?: string | nul
   brandFontStack = fontStack ?? null;
   if (typeof document === "undefined" || !fontStack) return;
   // Inject the webfont href once (idempotent) so the family actually renders.
+  // Reuse OUR OWN tagged link and only update its href — never removeChild (keeps
+  // us clear of React's head manager and avoids DOM churn).
   if (fontUrl) {
-    const existing = document.querySelector<HTMLLinkElement>(`link[data-brand-font]`);
-    if (!existing || existing.href !== fontUrl) {
-      existing?.parentNode?.removeChild(existing);
-      const link = document.createElement("link");
+    let link = document.querySelector<HTMLLinkElement>("link[data-brand-font]");
+    if (!link) {
+      link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = fontUrl;
       link.dataset.brandFont = "1";
       document.head.appendChild(link);
     }
+    if (link.href !== fontUrl) link.href = fontUrl;
   }
   const root = document.documentElement;
   root.style.setProperty("--font-sans", fontStack);
@@ -98,12 +99,17 @@ export function reassertBrandFont() {
 export function applyFavicon(faviconUrl?: string | null) {
   if (typeof document === "undefined" || !faviconUrl) return;
   const head = document.head;
-  // Remove any existing icon links so the agency's is the only one.
-  head.querySelectorAll('link[rel~="icon"]').forEach((el) => el.parentNode?.removeChild(el));
-  const link = document.createElement("link");
-  link.rel = "icon";
+  // Reuse OUR OWN tagged icon link (never touch links React/Next rendered from
+  // generateMetadata — removing a React-owned node makes its parentNode null and
+  // crashes the reconciler on its next unmount: "removeChild … parentNode is null").
+  let link = head.querySelector<HTMLLinkElement>('link[data-brand-favicon]');
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "icon";
+    link.dataset.brandFavicon = "1";
+    head.appendChild(link);
+  }
   link.href = faviconUrl;
-  head.appendChild(link);
 }
 
 import type { Skin } from "./themes/skins";
@@ -226,24 +232,26 @@ export function applyCustomCssRaw(rawCss: string | null | undefined, mode: "ligh
   let styleEl = document.getElementById(CUSTOM_CSS_STYLE_ID) as HTMLStyleElement | null;
 
   if (!rawCss || !rawCss.trim()) {
-    // No custom CSS — remove any previously injected theme.
-    styleEl?.parentNode?.removeChild(styleEl);
+    // No custom CSS — remove any previously injected theme (our own node only).
+    styleEl?.remove();
     return;
   }
 
   // Normalize color VALUES to triplets; keep every selector/declaration.
   const normalized = normalizeCssColors(rawCss);
 
+  // Append our <style> ONCE, then only update its text. Do NOT re-append on every
+  // call to "keep it last" — that thrashes <head> and can race Next's React-owned
+  // head manager (→ "removeChild … parentNode is null"). It's a plain <style> we
+  // own; ordering after globals.css holds because it's appended after first paint,
+  // and our overrides use higher specificity / !important where they must win.
   if (!styleEl) {
     styleEl = document.createElement("style");
     styleEl.id = CUSTOM_CSS_STYLE_ID;
-    // Append LAST so agency :root/.dark rules win over globals.css by source order.
-    head.appendChild(styleEl);
-  } else if (styleEl.parentNode !== head || head.lastElementChild !== styleEl) {
-    // Keep it last in <head> even if something else was appended after it.
+    styleEl.setAttribute("data-agency-theme", "1");
     head.appendChild(styleEl);
   }
-  styleEl.textContent = normalized;
+  if (styleEl.textContent !== normalized) styleEl.textContent = normalized;
 
   root.classList.toggle("dark", mode === "dark");
   root.style.colorScheme = mode;
