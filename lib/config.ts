@@ -44,13 +44,17 @@ export function appIdFromHost(host: string | null | undefined): string | undefin
 }
 
 /**
- * Resolve the app id for an incoming request in HOST mode. Prefers an explicit
- * MEERKATS_APP_ID env (handy for local dev / testing a specific app without a
- * subdomain), else derives it from the Host / X-Forwarded-Host header. Returns
- * undefined in secret-key mode or when it can't be determined.
+ * Resolve the app id for an incoming request in HOST mode.
+ *
+ * The SHARED hosted deployment serves every app off `<appId>.meerkats.ai` and it
+ * ALSO has a MEERKATS_API_KEY set — so we must NOT let a key's presence force
+ * secret-key mode. Mode is decided by the REQUEST: if the host is an app subdomain
+ * (or MEERKATS_APP_ID is pinned), it's HOST mode and we resolve by app id; the key
+ * is ignored for that request. A genuine single-tenant clone has a key but is
+ * served on its OWN domain (not `*.meerkats.ai`), so appIdFromHost returns
+ * undefined there and it correctly stays in secret-key mode.
  */
 export function appIdFromRequest(req: { headers: Headers }): string | undefined {
-  if (config.apiKey) return undefined; // secret-key mode ignores host identity
   if (process.env.MEERKATS_APP_ID) return process.env.MEERKATS_APP_ID;
   const host =
     req.headers.get("x-forwarded-host") || req.headers.get("host") || undefined;

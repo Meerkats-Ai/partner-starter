@@ -23,9 +23,11 @@ export async function GET(req: NextRequest) {
   assertServerConfig();
 
   const appId = appIdFromRequest(req);
-  // HOST mode: resolve branding by subdomain app id (no secret key).
+  // HOST mode: resolve branding by subdomain app id (unauth endpoint; pass appId so
+  // apiCall uses X-App-Id, not the shared deployment's ambient key). Secret-key mode
+  // (single-tenant clone, no subdomain): the keyed /branding.
   const r = appId
-    ? await apiCall(`/apps/${encodeURIComponent(appId)}/public-branding`)
+    ? await apiCall(`/apps/${encodeURIComponent(appId)}/public-branding`, { appId })
     : await apiCall("/branding");
 
   return NextResponse.json(r.data ?? { success: false }, { status: r.status || 200 });

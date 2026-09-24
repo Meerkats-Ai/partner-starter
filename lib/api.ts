@@ -26,9 +26,13 @@ interface CallOpts {
 
 export async function apiCall<T = any>(path: string, opts: CallOpts = {}): Promise<ApiResult<T>> {
   const headers: Record<string, string> = {};
-  // Auth: secret key wins if configured; otherwise host-mode app id.
-  if (config.apiKey) headers["X-API-Key"] = config.apiKey;
-  else if (opts.appId) headers["X-App-Id"] = opts.appId;
+  // Auth: HOST mode wins when an app id is supplied for THIS request (the shared
+  // <appId>.meerkats.ai deployment has an ambient MEERKATS_API_KEY too, but a
+  // host-resolved request must identify by X-App-Id, NOT the ambient key — sending
+  // the key there 401s / serves the wrong app). Fall back to the secret key only
+  // when no app id is in play (genuine single-tenant clone).
+  if (opts.appId) headers["X-App-Id"] = opts.appId;
+  else if (config.apiKey) headers["X-API-Key"] = config.apiKey;
   if (opts.body) headers["Content-Type"] = "application/json";
   if (opts.token) headers["Authorization"] = `Bearer ${opts.token}`;
   if (opts.workspaceId) headers["X-Workspace-Id"] = opts.workspaceId;

@@ -13,12 +13,19 @@ export const useBranding = () => useContext(BrandContext);
 
 export function BrandProvider({ children }: { children: React.ReactNode }) {
   const [branding, setBranding] = useState<Branding | null>(null);
+  // Gate the first paint until branding is resolved + applied, so the app never
+  // flashes the default skin/color and THEN swaps to the agency's (FOUC). Flips
+  // true on success AND failure (never hangs) — a failed fetch falls back to the
+  // built-in default, which is fine to show.
+  const [ready, setReady] = useState(false);
   const { setAgencyDefaultSkin, setAgencyThemeConfig, setAgencyCustomCss } = useSkin();
 
   useEffect(() => {
+    let alive = true;
     fetch("/api/branding")
       .then((r) => r.json())
       .then((res) => {
+        if (!alive) return;
         const b: Branding = res?.data || res || {};
         setBranding(b);
         // Agency-configured skin becomes the default (unless the user picked one).
@@ -35,9 +42,22 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
         applyFavicon(b.favicon_url);
         if (b.app_name) document.title = b.app_name;
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { if (alive) setReady(true); });
+    return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <BrandContext.Provider value={branding}>{children}</BrandContext.Provider>;
+  return (
+    <BrandContext.Provider value={branding}>
+      {/* Hold paint until the agency theme is applied. The splash is theme-neutral
+          (uses --background/--foreground, which the applied theme also sets) so
+          there's no color flash either way. */}
+      {ready ? children : (
+        <div className="min-h-screen grid place-items-center bg-background">
+          <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-primary animate-spin" aria-label="Loading" />
+        </div>
+      )}
+    </BrandContext.Provider>
+  );
 }
